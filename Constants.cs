@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace d9.utils
+namespace d9.utl
 {
     /// <summary>
     /// Useful global variables.

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace d9.utils
+namespace d9.utl
 {
     /// <summary>
     /// Utilities which convert objects to strings or perform operations on strings.
@@ -20,7 +20,7 @@ namespace d9.utils
             string result = "";
             foreach ((T t, int width) in values)
             {
-                result += t.PrintNullable().PadRight(width);
+                result += t.PrintNull().PadRight(width);
             }
             return result;
         }
@@ -34,7 +34,13 @@ namespace d9.utils
         /// </summary>
         /// <param name="chars">The characters to join.</param>
         /// <returns>The specified characters, joined to a string.</returns>
-        public static string JoinToString(this IEnumerable<char> chars) => chars.Select(x => "" + x).Aggregate((x, y) => x + y);
+        public static string Join(this IEnumerable<char> chars) => chars.Select(x => "" + x).Aggregate((x, y) => x + y);
+        /// <summary>
+        /// Concatenates a collection of strings.
+        /// </summary>
+        /// <param name="strings">The strings to join.</param>
+        /// <returns>The specified strings, concatenated together.</returns>
+        public static string Join(this IEnumerable<string> strings) => strings.Aggregate((x, y) => x + y);
         /// <summary>
         /// Represents an enumerable in human-readable format.
         /// </summary>
@@ -42,14 +48,17 @@ namespace d9.utils
         /// <param name="enumerable">The enumerable to print.</param>
         /// <returns>A string of the format <c>[item1, item2, ... itemN]</c> representing the items in <c>enumerable</c>.</returns>
         public static string ListNotation<T>(this IEnumerable<T> enumerable)
-            => $"[{enumerable.Select(x => x.PrintNullable()).Aggregate((a, b) => $"{a}, {b}")}]";
+        {
+            if (enumerable is null) return "(null)";
+            return $"[{enumerable.Select(x => x.PrintNull()).Aggregate((a, b) => $"{a}, {b}")}]";
+        }
         /// <summary>
         /// Represents an object in human-readable format, even if it's <see langword="null"/>.
         /// </summary>
         /// <param name="obj">The object or <see langword="null"/> value to represent.</param>
         /// <param name="ifNull">The string to print if <c>obj</c> is null.</param>
         /// <returns>A string which is either <c>obj.ToString()</c>, if <c>obj</c> is not <see langword="null"/>, or <c>ifNull</c> otherwise.</returns>
-        public static string PrintNullable(this object? obj, string ifNull = "(null (not Null))") => obj?.ToString() ?? ifNull;
+        public static string PrintNull(this object? obj, string ifNull = "(null)") => obj?.ToString() ?? ifNull;
         /// <summary>
         /// Repeats a character a specified number of times.
         /// </summary>
@@ -61,6 +70,14 @@ namespace d9.utils
             string result = "";
             for (int i = 0; i < times; i++) result += c;
             return result;
+        }
+        public static (string, string?) SplitArg(this string s, string separator = "=")
+        {
+            if (s is null) throw new ArgumentNullException(s);
+            if (s == string.Empty) return (s, null);
+            string[] split = s.Split(separator);
+            if (split.Length == 1) return (s, null);
+            return (split.First(), split[1..].Join());
         }
         /// <summary>Removes a set of characters from a string.</summary>
         /// <param name="s">The string from which the characters will be removed.</param>
