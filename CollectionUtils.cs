@@ -31,6 +31,7 @@ public static class CollectionUtils
             ct += thisSize;
         }
     }
+    /* this is stupid
     /// <summary>
     /// Adds an element into the collection at a key in a dictionary of collections.
     /// </summary>
@@ -46,5 +47,5 @@ public static class CollectionUtils
     {
         if (!dict.ContainsKey(key) || dict[key] is null) dict[key] = new();
         dict[key].Add(value);
-    }
+    } */
 }

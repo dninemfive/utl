@@ -50,6 +50,12 @@ public static class MathUtils
     /// of the two middle numbers if it has an even number of elements.</returns>
     public static T Median<T>(params T[] numbers) where T : IComparable, IAdditionOperators<T, T, T>, IDivisionOperators<T, int, T>
         => Median(numbers, (x, y) => Mean(x, y));
+    /// <typeparam name="T">A <see href="https://learn.microsoft.com/en-us/dotnet/api/system.numerics.inumberbase-1">numeric</see> type.</typeparam>
+    /// <param name="t">The number whose oddness to check.</param>
+    /// <returns><see langword="true"/> if the number is odd, or <see langword="false"/> otherwise.</returns>
     public static bool IsOdd<T>(this T t) where T : INumberBase<T> => T.IsOddInteger(t);
+    /// <typeparam name="T">A <see href="https://learn.microsoft.com/en-us/dotnet/api/system.numerics.inumberbase-1">numeric</see> type.</typeparam>
+    /// <param name="t">The number whose evenness to check.</param>
+    /// <returns><see langword="true"/> if the number is even, or <see langword="false"/> otherwise.</returns>
     public static bool IsEven<T>(this T t) where T : INumberBase<T> => T.IsEvenInteger(t);
 }

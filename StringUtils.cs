@@ -71,14 +71,6 @@ namespace d9.utl
             for (int i = 0; i < times; i++) result += c;
             return result;
         }
-        public static (string, string?) SplitArg(this string s, string separator = "=")
-        {
-            if (s is null) throw new ArgumentNullException(s);
-            if (s == string.Empty) return (s, null);
-            string[] split = s.Split(separator);
-            if (split.Length == 1) return (s, null);
-            return (split.First(), split[1..].Join());
-        }
         /// <summary>Removes a set of characters from a string.</summary>
         /// <param name="s">The string from which the characters will be removed.</param>
         /// <param name="chars">The characters to be removed.</param>
