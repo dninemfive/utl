@@ -6,7 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
-    <RootNamespace>d9.utils</RootNamespace>
+    <RootNamespace>d9.utl</RootNamespace>
   </PropertyGroup>
 
 </Project>
