@@ -31,21 +31,14 @@ public static class CollectionUtils
             ct += thisSize;
         }
     }
-    /* this is stupid
     /// <summary>
-    /// Adds an element into the collection at a key in a dictionary of collections.
+    /// Randomly reorders a collection.
     /// </summary>
-    /// <typeparam name="K">The type of the key.</typeparam>
-    /// <typeparam name="C">The type of the collection stored in the dictionary.</typeparam>
-    /// <typeparam name="V">The type of the elements of <c>C</c>.</typeparam>
-    /// <param name="dict">The dictionary containing the collections to add to.</param>
-    /// <param name="key">The key to add the item to.</param>
-    /// <param name="value">The item to add to the collection in the dictionary at K.</param>
-    public static void Add<K, C, V>(this Dictionary<K, C> dict, K key, V value) 
-        where K : notnull 
-        where C : ICollection<V>, new()
+    /// <typeparam name="T">The type of the enumerable's elements.</typeparam>
+    /// <param name="original">The original enumerable, which is not modified.</param>
+    /// <returns>The elements of <c>original</c>, in a random order.</returns>
+    public static IEnumerable<T> Shuffled<T>(this IEnumerable<T> original)
     {
-        if (!dict.ContainsKey(key) || dict[key] is null) dict[key] = new();
-        dict[key].Add(value);
-    } */
+        throw new NotImplementedException();
+    }
 }
