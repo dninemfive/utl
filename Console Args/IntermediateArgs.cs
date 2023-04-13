@@ -18,7 +18,7 @@ namespace d9.utl.console
     /// is parsed to
     /// <br/>
     /// <code>
-    /// ParsedArgs {
+    /// IntermediateArgs {
     ///   args: {
     ///     // note that dictionaries are unordered; i sorted this for convenience
     ///     arg1: ["69"]
@@ -33,7 +33,7 @@ namespace d9.utl.console
     /// }
     /// </code>
     /// </remarks>
-    internal partial record ParsedArgs
+    public partial record IntermediateArgs
     {
         /// <summary>
         /// The arguments without dashes, organized by their keys.
@@ -57,11 +57,11 @@ namespace d9.utl.console
         /// </summary>
         private enum ArgCase { Terminator, Flag, Arg, Value }
         /// <summary>
-        /// Constructs a new ParsedArgs instance from the unparsed arguments passed to the program.
+        /// Constructs a new IntermediateArgs instance from the unparsed arguments passed to the program.
         /// </summary>
         /// <param name="args">The unparsed args, corresponding to the <see langword="args"/> keyword or the <c>args</c> argument to a program's
         /// <c>Main(<see langword="string"/>[] args)</c> method.</param>
-        public ParsedArgs(string[] args)
+        public IntermediateArgs(string[] args)
         {
             string? currentKey = null;
             static ArgCase getCase(string arg)
@@ -102,7 +102,7 @@ namespace d9.utl.console
         /// <returns>If the key was present at least once in the args, a non-null IEnumerable, with corresponding values, if there were any, in
         /// order of appearance.<br/><br/>If the key was <em>not</em> present in the args, <see langword="null"/>.</returns>
         public IEnumerable<string>? this[string key] => _args.TryGetValue(key, out ICollection<string>? value) ? value : null;
-        // gets error CS8795, but this is a bug: see https://github.com/dotnet/roslyn/issues/66451
+        // gets error CS8795, but this is a bug: see 
         [GeneratedRegex("-.")]
         private static partial Regex FlagMatcher();
         // see above comment

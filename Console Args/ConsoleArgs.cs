@@ -9,8 +9,8 @@ namespace d9.utl.console
 {
     public static class ConsoleArgs
     {
-        private static ParsedArgs _parsed;
-        public static T? Get<T>(string key) => (T?)_parsed[key];
+        private static IntermediateArgs _parsed;
+        public static T? Get<T>(IConsoleArg<T> ica, string key) => ica.Parse(_parsed);
         public static object Get(string key, Type type) => Activator.CreateInstance(type, )
         public static void SetVariables()
         {
@@ -21,7 +21,11 @@ namespace d9.utl.console
                 {
                     foreach(FieldInfo field in type.GetFields())
                     {
-                        
+                        Attribute[] attributes = Attribute.GetCustomAttributes(field, typeof(IUntypedConsoleArg)); 
+                        foreach(Attribute attribute in attributes)
+                        {
+                            if (attributes.Length > 1) throw new Exception($"Can't have multiple console arg attributes on one field!");
+                        }
                         Type fieldType = field.FieldType;
                         field.SetValue(null, Get(field.Name, field.FieldType));
                     }
