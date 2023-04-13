@@ -18,13 +18,13 @@ namespace d9.utl.console
         /// <summary>
         /// A function which takes the values for a console arg, if any, and returns an object, if applicable.
         /// </summary>
-        private readonly Func<IEnumerable<string>?, object?> _parser;
+        private readonly ConsoleArgParser _parser;
         /// <summary>
         /// Creates a <c>ConsoleArgAttribute</c> with the specified characteristics.
         /// </summary>
         /// <param name="parser"><inheritdoc cref="_parser" path="/summary"/></param>
         /// <param name="defaultValue"><inheritdoc cref="DefaultValue" path="/summary"/></param>
-        public ConsoleArgAttribute(Func<IEnumerable<string>?, object?> parser, object? defaultValue = null)
+        public ConsoleArgAttribute(ConsoleArgParser parser, object? defaultValue = null)
         {
             _parser = parser;
             DefaultValue = defaultValue;
@@ -32,4 +32,8 @@ namespace d9.utl.console
         /// <inheritdoc cref="IConsoleArg.Parse(IntermediateArgs, string)"/>
         public object? Parse(IntermediateArgs ia, string key) => _parser(ia[key]);
     }
+    /// <summary>
+    /// Wrapper around a <c>Func{IEnumerable{string}?, object?}</c> because i apparently can't have generics in attribute constructors.
+    /// </summary>
+    public delegate object? ConsoleArgParser(string[]? enumerable);
 }
