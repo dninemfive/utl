@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace d9.utl
@@ -52,6 +53,12 @@ namespace d9.utl
             if (enumerable is null) return "(null)";
             return $"[{enumerable.Select(x => x.PrintNull()).Aggregate((a, b) => $"{a}, {b}")}]";
         }
+        /// <summary>
+        /// Prints an object in its entirety in relatively readable JSON format.
+        /// </summary>
+        /// <param name="obj">The object to print.</param>
+        /// <returns>A pretty-printed object.</returns>
+        public static string PrettyPrint(this object? obj) => JsonSerializer.Serialize(obj, new JsonSerializerOptions() { WriteIndented = true });
         /// <summary>
         /// Represents an object in human-readable format, even if it's <see langword="null"/>.
         /// </summary>
