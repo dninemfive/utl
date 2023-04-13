@@ -9,7 +9,7 @@ using System.Text.RegularExpressions;
 namespace d9.utl.console
 {
     /// <summary>
-    /// Parses console args formatted as an approximation of Unix console args into a structure representing arguments and their values.
+    /// Parses console _args formatted as an approximation of Unix console _args into a structure representing arguments and their values.
     /// <br/><br/>
     /// </summary>
     /// <remarks>
@@ -19,7 +19,7 @@ namespace d9.utl.console
     /// <br/>
     /// <code>
     /// IntermediateArgs {
-    ///   args: {
+    ///   _args: {
     ///     // note that dictionaries are unordered; i sorted this for convenience
     ///     arg1: ["69"]
     ///     arg2: ["42"]
@@ -59,8 +59,8 @@ namespace d9.utl.console
         /// <summary>
         /// Constructs a new IntermediateArgs instance from the unparsed arguments passed to the program.
         /// </summary>
-        /// <param name="args">The unparsed args, corresponding to the <see langword="args"/> keyword or the <c>args</c> argument to a program's
-        /// <c>Main(<see langword="string"/>[] args)</c> method.</param>
+        /// <param name="args">The unparsed _args, corresponding to the <see langword="_args"/> keyword or the <c>_args</c> argument to a program's
+        /// <c>Main(<see langword="string"/>[] _args)</c> method.</param>
         public IntermediateArgs(string[] args)
         {
             string? currentKey = null;
@@ -99,8 +99,8 @@ namespace d9.utl.console
         /// Gets the values corresponding to the specified key, if any.
         /// </summary>
         /// <param name="key">The key to look for in the underlying dictionary.</param>
-        /// <returns>If the key was present at least once in the args, a non-null IEnumerable, with corresponding values, if there were any, in
-        /// order of appearance.<br/><br/>If the key was <em>not</em> present in the args, <see langword="null"/>.</returns>
+        /// <returns>If the key was present at least once in the _args, a non-null IEnumerable, with corresponding values, if there were any, in
+        /// order of appearance.<br/><br/>If the key was <em>not</em> present in the _args, <see langword="null"/>.</returns>
         public IEnumerable<string>? this[string key] => _args.TryGetValue(key, out ICollection<string>? value) ? value : null;
         // gets error CS8795, but this is a bug: see 
         [GeneratedRegex("-.")]

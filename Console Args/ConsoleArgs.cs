@@ -9,11 +9,11 @@ namespace d9.utl.console
 {
     public static class ConsoleArgs
     {
-        private static IntermediateArgs _parsed;
-        public static T? Get<T>(IConsoleArg<T> ica, string key) => ica.Parse(_parsed);
-        public static object Get(string key, Type type) => Activator.CreateInstance(type, )
-        public static void SetVariables()
+        private static IntermediateArgs _args;
+        public static object? Get(IConsoleArg ica, string key) => ica.Parse(_args, key);
+        public static void SetVariables(string[] args)
         {
+            _args = new(args);
             // todo: assembly- and type-level attributes to filter faster
             foreach(Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
             {
@@ -21,13 +21,13 @@ namespace d9.utl.console
                 {
                     foreach(FieldInfo field in type.GetFields())
                     {
-                        Attribute[] attributes = Attribute.GetCustomAttributes(field, typeof(IUntypedConsoleArg)); 
-                        foreach(Attribute attribute in attributes)
+                        Attribute[] attributes = Attribute.GetCustomAttributes(field, typeof(IConsoleArg));
+                        if (!attributes.Any()) continue;
+                        if (attributes.Length > 1) throw new Exception($"Can't have multiple console arg attributes on one field!");
+                        if(attributes.First() is IConsoleArg ica)
                         {
-                            if (attributes.Length > 1) throw new Exception($"Can't have multiple console arg attributes on one field!");
+                            field.SetValue(null, Get(ica, field.Name));
                         }
-                        Type fieldType = field.FieldType;
-                        field.SetValue(null, Get(field.Name, field.FieldType));
                     }
                 }
             }

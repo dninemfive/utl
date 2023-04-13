@@ -8,22 +8,28 @@ using System.Threading.Tasks;
 namespace d9.utl.console
 {
     /// <summary>
-    /// Implements <see cref="IConsoleArg{T}"/> for a generic type as an attribute on a field or property in a <see cref="ConsoleArgs"/> class.
+    /// Implements <see cref="IConsoleArg"/> for a generic type as an attribute on a field or property in a <see cref="ConsoleArgs"/> class.
     /// </summary>
-    /// <typeparam name="T">The type of the variable to set.</typeparam>
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
-    public class ConsoleArgAttribute<T> : Attribute, IConsoleArg<T>, IUntypedConsoleArg
+    public class ConsoleArgAttribute : Attribute, IConsoleArg
     {
-        /// <inheritdoc cref="IConsoleArg{T}.Key"/>
-        public string Key => "asdf";
-        /// <inheritdoc cref="IConsoleArg{T}.DefaultValue"/>
-        public T? DefaultValue => default;
-        /// <inheritdoc cref="IConsoleArg{T}.TryGet(out T)"/>
-        public bool TryGet(out T? value)
+        /// <inheritdoc cref="IConsoleArg.DefaultValue"/>
+        public object? DefaultValue { get; private set; }
+        /// <summary>
+        /// A function which takes the values for a console arg, if any, and returns an object, if applicable.
+        /// </summary>
+        private readonly Func<IEnumerable<string>?, object?> _parser;
+        /// <summary>
+        /// Creates a <c>ConsoleArgAttribute</c> with the specified characteristics.
+        /// </summary>
+        /// <param name="parser"><inheritdoc cref="_parser" path="/summary"/></param>
+        /// <param name="defaultValue"><inheritdoc cref="DefaultValue" path="/summary"/></param>
+        public ConsoleArgAttribute(Func<IEnumerable<string>?, object?> parser, object? defaultValue = null)
         {
-            value = DefaultValue;
-            return false;
+            _parser = parser;
+            DefaultValue = defaultValue;
         }
-        public object? Value => TryGet(out T? val) ? val : DefaultValue;
+        /// <inheritdoc cref="IConsoleArg.Parse(IntermediateArgs, string)"/>
+        public object? Parse(IntermediateArgs ia, string key) => _parser(ia[key]);
     }
 }

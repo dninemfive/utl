@@ -14,12 +14,12 @@ namespace d9.utl
         /// <summary>
         /// The path to the log file for this program.<br/><br/> If <see langword="null"/>, logs will only be output to the console.
         /// </summary>
-        /// <remarks>TODO: get this from console args.</remarks>
+        /// <remarks>TODO: get this from console _args.</remarks>
         public static string? LogPath = null;
         /// <summary>
         /// Whether or not to perform debug prints.
         /// </summary>
-        /// <remarks>TODO: get this from console args.</remarks>
+        /// <remarks>TODO: get this from console _args.</remarks>
         public static bool DebugEnabled = false;
         /// <summary>
         /// Logs an object to the console and, if <see cref="LogPath"/> is not <see langword="null"/>, writes it to the log file.<br/>
