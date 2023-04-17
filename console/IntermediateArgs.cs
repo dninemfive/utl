@@ -102,6 +102,7 @@ namespace d9.utl.console
         /// <returns>If the key was present at least once in the _args, a non-null IEnumerable, with corresponding values, if there were any, in
         /// order of appearance.<br/><br/>If the key was <em>not</em> present in the _args, <see langword="null"/>.</returns>
         public IEnumerable<string>? this[string key] => _args.TryGetValue(key, out ICollection<string>? value) ? value : null;
+        public bool ContainsKey(string key) => _args.ContainsKey(key);
         // gets error CS8795, but this is a bug: see 
         [GeneratedRegex("-.")]
         private static partial Regex FlagMatcher();

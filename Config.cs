@@ -9,7 +9,7 @@ namespace d9.utl
 {
     public static class Config
     {
-        [ConsoleArg((x) => x?.Where(x => File.Exists(x)).First())]
+        [ConsoleArg("configPath")]
         public static string ConfigPath { get; }
     }
 }
