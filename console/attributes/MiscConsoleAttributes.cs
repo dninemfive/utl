@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 namespace d9.utl.console
 {
     [AttributeUsage(AttributeTargets.Assembly | AttributeTargets.Class)]
-    public class HasConsoleArgsAttribute : Attribute { }
+    public class HasCommandLineArgsAttribute : Attribute { }
     [AttributeUsage(AttributeTargets.Class)]
-    public class HasConsoleArgParsersAttribute : Attribute { }
+    public class HasCommandLineArgParsersAttribute : Attribute { }
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
     public class CommandLineArgParserAttribute : Attribute
     {

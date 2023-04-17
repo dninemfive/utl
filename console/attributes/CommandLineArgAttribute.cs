@@ -14,11 +14,13 @@ namespace d9.utl.console
     public class CommandLineArgAttribute : Attribute
     {
         public string Key { get; private set; }
+        public string ParserKey { get; private set; }
         public string Description { get; private set; }
-        public char? Alias { get; private set; }
-        public CommandLineArgAttribute(string key, string description = "", char? alias = null)
+        public char? Alias { get; private set; }        
+        public CommandLineArgAttribute(string key, string parserKey, string description = "", char? alias = null)
         {
             Key = key;
+            ParserKey = parserKey;
             Description = description;
             Alias = alias;
         }

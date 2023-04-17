@@ -39,9 +39,14 @@ namespace d9.utl
         }
         public static IEnumerable<Type> TypesInAssembliesWithAttribute(Type attributeType) 
             => TypesInAssembliesWhere(x => x.HasCustomAttribute(attributeType), x => x.HasCustomAttribute(attributeType));
-        public static IEnumerable<(MemberInfo member, Attribute attr)> MembersWithAttribute(this Type type)
+        public static IEnumerable<(MemberInfo member, T attr)> MembersWithAttribute<T>(this Type type) where T : Attribute
         {
-            foreach()
+            Type attributeType = typeof(T);
+            foreach(MemberInfo mi in type.GetMembers())
+            {
+                T? attribute;
+                if ((attribute = mi.GetCustomAttribute(attributeType) as T) is not null) yield return (mi, attribute);
+            }
         }
     }
 }
