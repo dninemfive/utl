@@ -11,14 +11,16 @@ namespace d9.utl.console
     /// Implements <see cref="IConsoleArg"/> for a generic type.
     /// </summary>
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
-    public class ConsoleArgAttribute : Attribute, IConsoleArg
+    public class CommandLineArgAttribute : Attribute
     {
         public string Key { get; private set; }
         public string Description { get; private set; }
-        public ConsoleArgAttribute(string key, string description = "")
+        public char? Alias { get; private set; }
+        public CommandLineArgAttribute(string key, string description = "", char? alias = null)
         {
             Key = key;
             Description = description;
+            Alias = alias;
         }
     }
 }

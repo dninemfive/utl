@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace d9.utl.console
 {
     /// <summary>
-    /// Static class which initializes any variables with a <see cref="ConsoleArgAttribute"/> or <see cref="ConsoleFlagAttribute"/>.
+    /// Static class which initializes any variables with a <see cref="CommandLineArgAttribute"/> or <see cref="ConsoleFlagAttribute"/>.
     /// </summary>
     public static class ConsoleArgs
     {
@@ -23,11 +23,12 @@ namespace d9.utl.console
         {
             string[] args = Environment.GetCommandLineArgs()[1..];
             Utils.DebugLog($"Initializing ConsoleArgs with args `{args.PrettyPrint()}`.");
-            // todo: assembly- and type-level attributes to filter faster
-            Type hasConsoleArgs = typeof(HasConsoleArgsAttribute);
-            foreach(Type type) {
+            foreach(Type type in ReflectionUtils.TypesInAssembliesWithAttribute(typeof(HasConsoleArgsAttribute))) {
+                foreach(FieldInfo fi in type.GetFields())
+                {
+                    IConsoleArg ica;
+                }
             }
         }
-        public static bool HasConsoleArgs(this )
     }
 }
