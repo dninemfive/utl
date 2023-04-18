@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
 #pragma warning disable IDE1006
-namespace d9.utl.console
+namespace d9.utl
 {
     /// <summary>
     /// Parses console _args formatted as an approximation of Unix console _args into a structure representing arguments and their values.
@@ -40,7 +40,7 @@ namespace d9.utl.console
         /// </summary>
         private Dictionary<string, ICollection<string>> _args { get; set; } = new();
         /// <summary>
-        /// The flags set on the program. Note that flags can repeat, and that the <see cref="ConsoleFlagAttribute">default implementation</see>
+        /// The flags set on the program. Note that flags can repeat, and that the <see cref="CommandLineArgParsers.Flag">default implementation</see>
         /// counts occurrences of empty lists in <see cref="_args">_args</see> corresponding to its alias as occurrences of that key.
         /// </summary>
         public IEnumerable<char> Flags => _flags;
@@ -102,6 +102,11 @@ namespace d9.utl.console
         /// <returns>If the key was present at least once in the _args, a non-null IEnumerable, with corresponding values, if there were any, in
         /// order of appearance.<br/><br/>If the key was <em>not</em> present in the _args, <see langword="null"/>.</returns>
         public IEnumerable<string>? this[string key] => _args.TryGetValue(key, out ICollection<string>? value) ? value : null;
+        /// <summary>
+        /// Tells whether the given key corresponds to the name of an argument which was passed to the program.
+        /// </summary>
+        /// <param name="key">The key to look for.</param>
+        /// <returns><see langword="true"/> if the key was found, or <see langword="false"/> otherwise.</returns>
         public bool ContainsKey(string key) => _args.ContainsKey(key);
         // gets error CS8795, but this is a bug: see 
         [GeneratedRegex("-.")]

@@ -19,8 +19,8 @@ namespace d9.utl
         /// <summary>
         /// Whether or not to perform debug prints.
         /// </summary>
-        /// <remarks>TODO: get this from console _args.</remarks>
-        public static bool DebugEnabled = false;
+        [CommandLineArg("debug", "Bool", alias: 'd')]
+        public static bool DebugEnabled { get; private set; } = true;
         /// <summary>
         /// Logs an object to the console and, if <see cref="LogPath"/> is not <see langword="null"/>, writes it to the log file.<br/>
         /// Uses <see cref="StringUtils.PrintNull(object?, string)"/>, and therefore produces a non-empty line if a <see langword="null"/> is passed in.
