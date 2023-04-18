@@ -54,7 +54,7 @@ namespace d9.utl.console
         [CommandLineArgParser("flag")]
         public static readonly CommandLineArgParser<bool> Flag = delegate (CommandLineArgAttribute cla, IntermediateArgs ia)
         {
-            if (cla.Alias is not null && ia.Flags.Contains(cla.Alias.Value)) return true;
+            if (cla.Alias != Constants.NullCharacter && ia.Flags.Contains(cla.Alias)) return true;
             return ia.ContainsKey(cla.Key);
         };
         public static readonly CommandLineArgParser<string> FirstString = delegate (CommandLineArgAttribute cla, IntermediateArgs ia)

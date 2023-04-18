@@ -19,5 +19,6 @@ namespace d9.utl
         /// Normal quotation marks plus the weird ones that iPhones automatically replace the normal ones with.
         /// </summary>
         public static readonly char[] FancyQuotes = new[] { '"', '“', '”' };
+        public const char NullCharacter = (char)0;
     }
 }

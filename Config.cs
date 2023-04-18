@@ -9,7 +9,7 @@ namespace d9.utl
 {
     public static class Config
     {
-        [CommandLineArg("configPath")]
+        [CommandLineArg("configPath", "Bool")]
         public static string ConfigPath { get; }
     }
 }
