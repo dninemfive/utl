@@ -53,6 +53,12 @@ namespace d9.utl
             if (enumerable is null) return "(null)";
             return $"[{enumerable.Select(x => x.PrintNull()).Aggregate((a, b) => $"{a}, {b}")}]";
         }
+        public static string LowerFirst(this string s) => s.Length switch
+        {
+            0 => s,
+            1 => s.ToLower(),
+            _ => $"{s[0].ToLower()}{s[1..]}"
+        };
         /// <summary>
         /// Prints an object in its entirety in relatively readable JSON format.
         /// </summary>
@@ -78,6 +84,7 @@ namespace d9.utl
             for (int i = 0; i < times; i++) result += c;
             return result;
         }
+        public static char ToLower(this char c) => char.ToLower(c);
         /// <summary>Removes a set of characters from a string.</summary>
         /// <param name="s">The string from which the characters will be removed.</param>
         /// <param name="chars">The characters to be removed.</param>
