@@ -43,7 +43,7 @@ namespace d9.utl
         /// The flags set on the program. Note that flags can repeat, and that the <see cref="CommandLineArgParsers.Flag">default implementation</see>
         /// counts occurrences of empty lists in <see cref="_args">_args</see> corresponding to its alias as occurrences of that key.
         /// </summary>
-        public IEnumerable<char> Flags => _flags;
+        private IEnumerable<char> Flags => _flags;
         /// <inheritdoc cref="Flags"/>
         private List<char> _flags { get; set; } = new();
         /// <summary>
@@ -102,6 +102,7 @@ namespace d9.utl
         /// <returns>If the key was present at least once in the _args, a non-null IEnumerable, with corresponding values, if there were any, in
         /// order of appearance.<br/><br/>If the key was <em>not</em> present in the _args, <see langword="null"/>.</returns>
         public IEnumerable<string>? this[string key] => _args.TryGetValue(key, out ICollection<string>? value) ? value : null;
+        public bool this[char flag] => Flags.Contains(flag);
         /// <summary>
         /// Tells whether the given key corresponds to the name of an argument which was passed to the program.
         /// </summary>
