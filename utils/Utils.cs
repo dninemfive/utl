@@ -14,7 +14,8 @@ namespace d9.utl
         /// <summary>
         /// The path to the log file for this program.<br/><br/> If <see langword="null"/>, logs will only be output to the console.
         /// </summary>
-        public static readonly string LogPath = CommandLineArgs.TryGet("logPath", CommandLineArgs.Parsers.FirstNonNullString) ?? $"{DateTime.Now.FileNameFormat()}.log";
+        public static readonly string LogPath = CommandLineArgs.TryGet(nameof(LogPath).LowerFirst(), CommandLineArgs.Parsers.FirstNonNullOrEmptyString) 
+                                             ?? $"{DateTime.Now.FileNameFormat()}.log";
         /// <summary>
         /// Whether or not to perform debug prints.
         /// </summary>
