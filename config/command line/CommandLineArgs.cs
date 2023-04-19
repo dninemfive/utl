@@ -26,7 +26,7 @@ namespace d9.utl
         }
         public static T? TryGet<T>(string argName, Parser<T> parser)
             => parser(_intermediateArgs[argName], false);
-        public static bool GetFlag(string argName, char? flag)
+        public static bool GetFlag(string argName, char? flag = null)
             => Parsers.Flag(_intermediateArgs[argName], _intermediateArgs[flag ?? argName.First().ToLower()]);
         public static T Get<T>(string argName, Parser<T> parser, Exception? exception = null)
             => TryGet(argName, parser) ?? throw exception ?? new Exception($"Tried to get command-line argument {argName}, but it was not found!");

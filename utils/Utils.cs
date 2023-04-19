@@ -14,13 +14,11 @@ namespace d9.utl
         /// <summary>
         /// The path to the log file for this program.<br/><br/> If <see langword="null"/>, logs will only be output to the console.
         /// </summary>
-        /// <remarks>TODO: get this from console _args.</remarks>
-        public static string? LogPath = null;
+        public static readonly string LogPath = CommandLineArgs.TryGet("logPath", CommandLineArgs.Parsers.FirstNonNullString) ?? $"{DateTime.Now.FileNameFormat()}.log";
         /// <summary>
         /// Whether or not to perform debug prints.
         /// </summary>
-        [CommandLineArg("debug", "Bool", alias: 'd')]
-        public static bool DebugEnabled { get; private set; } = true;
+        public static readonly bool DebugEnabled = CommandLineArgs.GetFlag("debug");
         /// <summary>
         /// Logs an object to the console and, if <see cref="LogPath"/> is not <see langword="null"/>, writes it to the log file.<br/>
         /// Uses <see cref="StringUtils.PrintNull(object?, string)"/>, and therefore produces a non-empty line if a <see langword="null"/> is passed in.

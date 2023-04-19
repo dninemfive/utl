@@ -11,7 +11,8 @@ namespace d9.utl
     /// Utilities which convert objects to strings or perform operations on strings.
     /// </summary>
     public static class StringUtils
-    {        
+    {
+        public static string FileNameFormat(this DateTime datetime) => $"{datetime:yyyy-MM-dd-HHmm}";
         /// <summary></summary>
         /// <typeparam name="T">The type of the objects to print.</typeparam>
         /// <param name="values">An enumerable holding the objects to print paired with the width of their respective columns.</param>
