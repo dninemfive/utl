@@ -11,7 +11,9 @@ namespace d9.utl;
 public static class CollectionUtils
 {
     /// <summary>
-    /// Breaks a collection into <c>n</c> parts of roughly equal size.
+    /// Breaks a collection into <c><paramref name="n"/></c> parts of roughly equal size.<br/><br/>
+    /// Specifically, the size of each part will either be <c>floor(<paramref name="original"/>.Count()</c> / <c><paramref name="n"/>)</c>
+    /// or <c>floor(<paramref name="original"/>.Count()</c> / <c><paramref name="n"/>) + 1</c>, with the larger parts coming first.
     /// </summary>
     /// <remarks>Does not modify the original.</remarks>
     /// <typeparam name="T">The type the enumerable to break up holds.</typeparam>
