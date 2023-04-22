@@ -15,5 +15,14 @@ namespace d9.utl.unit_tests
             Assert.AreEqual(2, n(1));
             Assert.AreEqual(2, n(2));
         }
+        [TestMethod]
+        public void Test_Shuffled()
+        {
+            List<int> list = new();
+            for (int i = 0; i < 20; i++) list.Add(i);
+            List<int> shuffled = list.Shuffled().ToList();
+            Assert.AreNotEqual(list, shuffled);
+            foreach (int i in shuffled.Distinct()) Assert.IsTrue(list.Count(x => x == i) == shuffled.Count(x => x == i));
+        }
     }
 }
