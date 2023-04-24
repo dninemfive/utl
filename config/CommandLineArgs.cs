@@ -120,5 +120,15 @@ namespace d9.utl
             }
             return path;
         }
+        public static string? TryGetDirectory(string argName)
+        {
+            try
+            {
+                return GetDirectory(argName);
+            } catch
+            {
+                return null;
+            }
+        }
     }
 }

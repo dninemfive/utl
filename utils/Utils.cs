@@ -25,11 +25,12 @@ namespace d9.utl
         /// Uses <see cref="StringUtils.PrintNull(object?, string)"/>, and therefore produces a non-empty line if a <see langword="null"/> is passed in.
         /// </summary>
         /// <param name="obj">The object to write.</param>
-        public static void Log(object? obj)
+        public static void Log(object? obj, string? altPath = null)
         {
             string message = obj.PrintNull();
             Console.WriteLine(message);
-            if (LogPath is not null) File.AppendAllText(LogPath, message);
+            string? path = altPath ?? LogPath;
+            if (path is not null) File.AppendAllText(path, $"{message}\n");
         }
         /// <summary>
         /// <see cref="Log"/>s the given object if <see cref="DebugEnabled"/> is <see langword="true"/>. Otherwise, does nothing.

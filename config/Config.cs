@@ -14,7 +14,7 @@ namespace d9.utl
     /// </summary>
     public static class Config
     {
-        public static readonly string BaseFolderPath = Path.GetFullPath(CommandLineArgs.Get(nameof(BaseFolderPath), CommandLineArgs.Parsers.FirstNonNullOrEmptyString));
+        public static readonly string BaseFolderPath = CommandLineArgs.TryGetDirectory(nameof(BaseFolderPath)) ?? Environment.CurrentDirectory;
         private static readonly Dictionary<string, Dictionary<string, object>> _configs = new();
         public delegate T? Parser<T>(object obj);
         public static class Parsers 
