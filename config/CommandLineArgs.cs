@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -45,6 +46,19 @@ namespace d9.utl
             /// to the exact values passed when specifying the given variable.
             /// </summary>
             public static Parser<IEnumerable<string>?> Raw => (values, _) => values;
+            public static Parser<double?> Double
+                => (values, _) => double.TryParse(FirstNonNullOrEmptyString(values, false), out double result) ? result : null;
+            public static Parser<TimeSpan?> TimeSpan
+                => (values, _) => System.TimeSpan.TryParse(FirstNonNullOrEmptyString(values, false), out TimeSpan result) ? result : null;
+            public static Parser<TimeSpan?> UsingParser(Func<double, TimeSpan> parser)
+                => delegate (IEnumerable<string>? values, bool _)
+                {
+                    double? d = Double(values, false);
+                    if (d is not null) return parser(d.Value);
+                    return null;
+                };
+            public static Parser<DateTime?> DateTime
+                => (values, _) => System.DateTime.TryParse(FirstNonNullOrEmptyString(values, false), out DateTime result) ? result : null;
         }
         static CommandLineArgs()
         {
@@ -84,5 +98,27 @@ namespace d9.utl
         /// <returns>The value of the argument named <c><paramref name="argName"/></c>, if it exists.</returns>
         public static T Get<T>(string argName, Parser<T> parser, Exception? exception = null)
             => TryGet(argName, parser) ?? throw exception ?? new Exception($"Tried to get command-line argument {argName}, but it was not found!");
+        public static string GetDirectory(string argName)
+        {
+            string intro = $"Error when trying to get directory with argument {argName}: ";
+            string possiblePath = TryGet(argName, Parsers.FirstNonNullOrEmptyString) 
+                ?? throw new Exception($"{intro}No non-null-or-empty string was provided!");
+            string path;
+            try
+            {
+                path = Path.GetFullPath(possiblePath);
+            }
+            catch (Exception e)
+            {
+                throw new Exception($"{intro}Path was not valid: {e.Message}");
+            }
+            if (!Directory.Exists(path)) Directory.CreateDirectory(path);
+            // https://stackoverflow.com/a/1395226
+            if (!File.GetAttributes(path).HasFlag(FileAttributes.Directory))
+            {
+                throw new Exception($"{intro} Path `{path}` is a file, not a folder!");
+            }
+            return path;
+        }
     }
 }
