@@ -14,14 +14,15 @@ namespace d9.utl
         /// <summary>
         /// Normal apostrophes plus the weird ones that iPhones automatically replace the normal ones with.
         /// </summary>
-        public static readonly char[] FancyApostrophes = new[] { '\'', '‘', '’' };
+        public static readonly char[] Apostrophes = new[] { '\'', '‘', '’' };
         /// <summary>
         /// Normal quotation marks plus the weird ones that iPhones automatically replace the normal ones with.
         /// </summary>
-        public static readonly char[] FancyQuotes = new[] { '"', '“', '”' };
+        public static readonly char[] Quotes = new[] { '"', '“', '”' };
         /// <summary>
         /// The null character, traditionally used for ending strings.
         /// </summary>
         public const char NullCharacter = (char)0;
+        public static readonly char[] ForbiddenCharacters = { '<', '>', ':', '/', '\\', '|', '?', '*' };
     }
 }

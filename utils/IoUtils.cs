@@ -74,5 +74,8 @@ namespace d9.utl
             oldPath.CopyFileTo(newPath, overwrite);
             File.Delete(oldPath);
         }
+        // https://stackoverflow.com/a/23182807
+        public static string PathSafe(this string s)
+            => string.Join("_", s.Split(Path.GetInvalidFileNameChars()));
     }
 }
