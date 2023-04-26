@@ -67,8 +67,8 @@ namespace d9.utl
             static ArgCase getCase(string arg)
             {
                 if (arg == "--") return ArgCase.Terminator;
-                if (FlagMatcher().IsMatch(arg)) return ArgCase.Flag;
                 if (ArgMatcher().IsMatch(arg)) return ArgCase.Arg;
+                if (FlagMatcher().IsMatch(arg)) return ArgCase.Flag;                
                 return ArgCase.Value;
             };
             int pos = 1;
@@ -94,6 +94,7 @@ namespace d9.utl
                         break;
                 }
             }
+            Console.WriteLine(ToString());
         }
         /// <summary>
         /// Gets the values corresponding to the specified key, if any.
@@ -109,6 +110,7 @@ namespace d9.utl
         /// <param name="key">The key to look for.</param>
         /// <returns><see langword="true"/> if the key was found, or <see langword="false"/> otherwise.</returns>
         public bool ContainsKey(string key) => _args.ContainsKey(key);
+        public override string ToString() => $"IntermediateArgs {_args.Select(x => $"<{x.Key}: {x.Value.ListNotation()}>").ListNotation()} {Flags.ListNotation()}";
         // gets error CS8795, but this is a bug: see 
         [GeneratedRegex("-.")]
         private static partial Regex FlagMatcher();

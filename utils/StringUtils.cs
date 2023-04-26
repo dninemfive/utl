@@ -52,6 +52,8 @@ namespace d9.utl
         public static string ListNotation<T>(this IEnumerable<T> enumerable)
         {
             if (enumerable is null) return "(null)";
+            if (!enumerable.Any()) return "[]";
+            if (enumerable.Count() == 1) return $"[{enumerable.First()}]";
             return $"[{enumerable.Select(x => x.PrintNull()).Aggregate((a, b) => $"{a}, {b}")}]";
         }
         public static bool NullOrEmpty(this string s) => string.IsNullOrEmpty(s);
