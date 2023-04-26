@@ -32,7 +32,7 @@ namespace d9.utl
         /// </summary>
         /// <param name="folder">The folder to delete.</param>
         /// <exception cref="ArgumentException"></exception>
-        public static void DeleteFolderRecursive(string folder)
+        public static void DeleteFolderRecursive(this string folder)
         {
             if (!Directory.Exists(folder))
                 throw new ArgumentException($"Attempted to delete directory `{folder}`, but it either does not exist or is not a directory.");
