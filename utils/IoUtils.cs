@@ -78,7 +78,8 @@ namespace d9.utl
         // https://stackoverflow.com/a/23182807
         public static string PathSafe(this string s)
         {
-            return string.Join("_", s.Split(Path.GetInvalidFileNameChars()));
+            if (s is null) throw new ArgumentNullException(nameof(s));
+            return string.Join("_", s.Split(Path.GetInvalidFileNameChars())).Trim();
         }
         public static bool IsSubfolderOf(this string folder, string possibleParent)
         {

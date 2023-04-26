@@ -56,7 +56,7 @@ namespace d9.utl
             if (enumerable.Count() == 1) return $"[{enumerable.First()}]";
             return $"[{enumerable.Select(x => x.PrintNull()).Aggregate((a, b) => $"{a}, {b}")}]";
         }
-        public static bool NullOrEmpty(this string s) => string.IsNullOrEmpty(s);
+        public static bool NullOrEmpty(this string? s) => string.IsNullOrEmpty(s);
         public static string LowerFirst(this string s) => s.Length switch
         {
             0 => s,
