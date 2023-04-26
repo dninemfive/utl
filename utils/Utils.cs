@@ -25,6 +25,7 @@ namespace d9.utl
         /// Uses <see cref="StringUtils.PrintNull(object?, string)"/>, and therefore produces a non-empty line if a <see langword="null"/> is passed in.
         /// </summary>
         /// <param name="obj">The object to write.</param>
+        /// <param name="altPath">The path to an alternate log file than the default..</param>
         public static void Log(object? obj, string? altPath = null)
         {
             string message = obj.PrintNull();
