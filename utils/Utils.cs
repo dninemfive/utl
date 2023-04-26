@@ -39,6 +39,6 @@ namespace d9.utl
             if (DebugEnabled) Log(obj);
         }
         public static T Sieve<T>(Func<T, bool> lambda, T @default, params T[] ts)
-            => ts.FirstOrDefault(x => lambda(x), @default);
+            => ts.FirstOrDefault(lambda, @default);
     }
 }

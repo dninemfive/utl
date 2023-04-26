@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -32,7 +33,7 @@ namespace d9.utl
         /// </summary>
         /// <param name="folder">The folder to delete.</param>
         /// <exception cref="ArgumentException"></exception>
-        public static void DeleteFolderRecursive(this string folder)
+        public static void DeleteFolderRecursive(this string folder, bool suppressWarnings = true)
         {
             if (!Directory.Exists(folder))
                 throw new ArgumentException($"Attempted to delete directory `{folder}`, but it either does not exist or is not a directory.");
@@ -43,7 +44,7 @@ namespace d9.utl
             }
             else
             {
-                Console.WriteLine($"Can't delete directory `{folder}` because it isn't empty.");
+                if(!suppressWarnings) Utils.Log($"Can't delete directory `{folder}` because it isn't empty.");
             }
         }
         /// <summary>
@@ -54,7 +55,7 @@ namespace d9.utl
         /// <remarks>TODO: update to support relative paths in <c><paramref name="pathsToIgnore"/></c> as well.</remarks>
         public static void DeleteEmptyFolders(this string folder, params string[] pathsToIgnore)
         {
-            foreach (string path in Directory.EnumerateDirectories(folder)) if (!pathsToIgnore.Contains(path)) DeleteFolderRecursive(path);
+            foreach (string path in Directory.EnumerateDirectories(folder)) if (!pathsToIgnore.Contains(path)) DeleteFolderRecursive(path, true);
         }
         /// <summary>
         /// Whether the specified <c><paramref name="folder"/></c> is empty.
@@ -76,6 +77,20 @@ namespace d9.utl
         }
         // https://stackoverflow.com/a/23182807
         public static string PathSafe(this string s)
-            => string.Join("_", s.Split(Path.GetInvalidFileNameChars()));
+        {
+            return string.Join("_", s.Split(Path.GetInvalidFileNameChars()));
+        }
+        public static bool IsSubfolderOf(this string folder, string possibleParent)
+        {
+            if (!Directory.Exists(folder)) throw new Exception($"{folder.PrintNull()} can't be a subfolder because it does not exist!");
+            if (!Directory.Exists(possibleParent)) throw new Exception($"{possibleParent.PrintNull()} can't be a parent to {folder.PrintNull()} because it does not exist!");
+            string relPath = Path.GetRelativePath(possibleParent, folder);
+            return relPath.Length < 2 || !(Path.GetRelativePath(possibleParent, folder)[0..2] == "..");
+        }
+        public static bool IsInFolder(this string path, string folder)
+        {
+            string? directoryName = Path.GetDirectoryName(path) ?? throw new Exception($"{path} can't be in {folder} because it has no valid directory name!");
+            return directoryName.IsSubfolderOf(folder);
+        }
     }
 }
