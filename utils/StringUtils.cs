@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace d9.utl
@@ -68,7 +69,11 @@ namespace d9.utl
         /// </summary>
         /// <param name="obj">The object to print.</param>
         /// <returns>A pretty-printed object.</returns>
-        public static string PrettyPrint(this object? obj) => JsonSerializer.Serialize(obj, new JsonSerializerOptions() { WriteIndented = true });
+        public static string PrettyPrint(this object? obj) => JsonSerializer.Serialize(obj, new JsonSerializerOptions() 
+        { 
+            WriteIndented = true, 
+            NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals 
+        });
         /// <summary>
         /// Represents an object in human-readable format, even if it's <see langword="null"/>.
         /// </summary>
@@ -97,6 +102,17 @@ namespace d9.utl
         {
             foreach (char c in chars) s = s.Replace("" + c, "");
             return s;
+        }
+        public static string ToHex(this byte b) => new[] { b }.ToHex();
+        public static string ToHex(this byte[] bytes) => BitConverter.ToString(bytes);
+        public static IEnumerable<(T val, int i)> WithProgress<T>(this IEnumerable<T> enumerable, Log log, int numberOfPrints = 10)
+        {
+            int total = enumerable.Count(), ct = 0, interval = total / numberOfPrints;
+            foreach(T t in enumerable)
+            {
+                if(ct++ % interval == 0) log.WriteLine($"{ct,8}/{total,-8} ({ct / (float)total:P0})");
+                yield return (t, ct);
+            }
         }
     }
 }
