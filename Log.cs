@@ -11,20 +11,33 @@ namespace d9.utl
     /// </summary>
     public class Log : IDisposable
     {
+        /// <summary>
+        /// The way a <see cref="Log"/> writes to a file.
+        /// </summary>
         public enum Mode
         {
+            /// <summary>
+            /// Opens the file, appends the text, and closes it again. Less efficient but potentially more reliable.
+            /// </summary>
             WriteImmediate,
+            /// <summary>
+            /// Writes to the file as it goes. More efficient.
+            /// </summary>
             Stream,
             // NYI
             // Flush
         }
-        /// <summary>
-        /// The streamwriter used by the log file. If null, the log file is not written to.
-        /// </summary>
-        /// <remarks>TODO: options to periodically or on close flush to the log file without a streamwriter.</remarks>
         private readonly StreamWriter? Stream = null;
         private readonly string? Path = null;
         private readonly IConsole? Console = null;
+        /// <summary>
+        /// Creates and, if applicable, initializes a new logging session.
+        /// </summary>
+        /// <param name="path">The path to the log file to write to. If not specified, the log will only write to the console.</param>
+        /// <param name="console">The <see cref="IConsole"/> to write to. If not specified, will write to <see cref="System.Console"/> by default.</param>
+        /// <param name="overwrite">If <see langword="true"/>, will overwrite any file at <c><paramref name="path"/></c> if one exists. 
+        /// If <see langword="false"/>, will instead append to any such file.</param>
+        /// <param name="mode">The <see cref="Mode"/> to use when writing to the file.</param>
         public Log(string? path = null, IConsole? console = null, bool overwrite = true, Mode mode = Mode.Stream)
         {
             Path = path;
@@ -35,10 +48,15 @@ namespace d9.utl
             }
             Console = console;
         }
+        /// <summary>
+        /// Flushes and closes the <see cref="StreamWriter">stream</see> used to write to the log file, if any.
+        /// </summary>
+        /// <remarks>Implements <see cref="IDisposable.Dispose()"/>.</remarks>
         public void Dispose()
         {
             Stream?.Flush();
             Stream?.Close();
+            GC.SuppressFinalize(this);
         }
         /// <summary>
         /// Writes the specified object (converted to a <see langword="string"/> with <see cref="StringUtils.PrintNull(object?, string)"/>) to the console
