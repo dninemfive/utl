@@ -21,13 +21,13 @@ namespace d9.utl
         {
             public static Parser<string> String => s => s.ToString();
         }
-        public static T? TryGet<T>(string variableName, string configPath, Parser<T> parser)
+        public static T? TryGet<T>(string configPath, string variableName, Parser<T> parser)
         {
             if (!_configs.ContainsKey(configPath)) return parser(_configs[configPath][variableName]);
             return default;
         }
-        public static T Get<T>(string variableName, string configPath, Parser<T> parser, Exception? exception = null)
-            => TryGet(variableName, configPath, parser) ?? throw exception ?? new Exception($"Failed to get config variable {variableName} in config file `{configPath}`!");
+        public static T Get<T>(string configPath, string variableName, Parser<T> parser, Exception? exception = null)
+            => TryGet(configPath, variableName, parser) ?? throw exception ?? new Exception($"Failed to get config variable {variableName} in config file `{configPath}`!");
         public static void Load(string path)
         {
             path = path.AbsolutePath();
