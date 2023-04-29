@@ -18,7 +18,7 @@ namespace d9.utl
         /// </summary>
         /// <param name="datetime">The <see cref="DateTime"/> to format.</param>
         /// <returns>The specified <c><paramref name="datetime"/></c> formatted as described above.</returns>
-        public static string FileNameFormat(this DateTime datetime) => $"{datetime:yyyy-MM-dd-HHmm}";
+        public static string FileNameFormat(this DateTime datetime) => $"{datetime:yyyy-MM-dd-HHmmss}";
         /// <summary><inheritdoc cref="InColumns{T}(IEnumerable{T}, IEnumerable{int})" path="/summary"/></summary>
         /// <typeparam name="T">The type of the objects to print.</typeparam>
         /// <param name="values">An enumerable holding the objects to print paired with the width of their respective columns.</param>

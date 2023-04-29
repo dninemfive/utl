@@ -17,7 +17,7 @@ namespace d9.utl.compat
     /// <summary>
     /// Utilities for authenticating and interfacing with Google services.
     /// </summary>
-    internal class GoogleUtils
+    public static class GoogleUtils
     {
         /// <summary>
         /// Configuration class which loads the necessary variables for Google authentication.
@@ -57,7 +57,11 @@ namespace d9.utl.compat
         /// <summary>
         /// The <see cref="GoogleAuthConfig"/> loaded from the file, or <see langword="null"/> if it could not be loaded.
         /// </summary>
-        private static readonly GoogleAuthConfig? AuthConfig = Config.TryLoad<GoogleAuthConfig>(ConfigPath, true);
+        private static readonly GoogleAuthConfig? AuthConfig = Config.TryLoad<GoogleAuthConfig>(ConfigPath);
+        /// <summary>
+        /// <see langword="true"/> if the auth config is usable or <see langword="false"/> otherwise.
+        /// </summary>
+        public static bool IsValid => AuthConfig?.IsValid ?? false;
         /// <summary>
         /// The exception thrown when the <see cref="GoogleAuthConfig"/> is not <see cref="IValidityCheck">valid</see>.
         /// </summary>
@@ -121,7 +125,7 @@ namespace d9.utl.compat
         /// <param name="mimeType">The type of the file to download. Should be a valid 
         /// <see href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types">MIME type</see>.</param>
         /// <returns>The path to the downloaded file, if successfully downloaded, or <see langword="null"/> otherwise.</returns>
-        public static string? DownloadTsv(string fileId, string filePath, string mimeType)
+        public static string? Download(string fileId, string filePath, string mimeType)
         {
             FilesResource.ExportRequest request = new(DriveService, fileId, mimeType);
             filePath = filePath.AbsolutePath();

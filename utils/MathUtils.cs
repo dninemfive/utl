@@ -12,6 +12,19 @@ namespace d9.utl;
 public static class MathUtils
 {
     /// <summary>
+    /// Clamps an <see cref="IComparable"/> within a specified range.
+    /// </summary>
+    /// <typeparam name="T">The type of the arguments. Must implement <see cref="IComparable"/>.</typeparam>
+    /// <param name="t">The value to clamp.</param>
+    /// <param name="min">The smaller of the two values.</param>
+    /// <param name="max">The larger of the two values.</param>
+    /// <returns><c>min</c> if it's larger than <c>t</c>, <c>max</c> if it's smaller than <c>t</c>, or <c>t</c> otherwise.</returns>
+    public static T Clamp<T>(this T t, T min, T max) where T : IComparable
+    {
+        IEnumerable<T> sorted = new[] { t, min, max }.OrderBy(x => x);
+        return sorted.ElementAt(1);
+    }
+    /// <summary>
     /// Gets the mean of an arbitrary set of numbers.
     /// </summary>
     /// <typeparam name="T">A type which implements 

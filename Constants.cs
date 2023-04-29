@@ -15,11 +15,11 @@ namespace d9.utl
         /// <summary>
         /// Normal apostrophes plus the weird ones that iPhones automatically replace the normal ones with.
         /// </summary>
-        public static readonly char[] Apostrophes = new[] { '\'', '‘', '’' };
+        public static readonly string Apostrophes = "'‘’";
         /// <summary>
         /// Normal quotation marks plus the weird ones that iPhones automatically replace the normal ones with.
         /// </summary>
-        public static readonly char[] Quotes = new[] { '"', '“', '”' };
+        public static readonly string Quotes = new[] { '"', '“', '”' }.Join();
         /// <summary>
         /// The null character, traditionally used for ending strings.
         /// </summary>
@@ -33,7 +33,7 @@ namespace d9.utl
         /// if an invalid type is passed in.</returns>
         /// <remarks>See <see href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types">here</see>
         /// for more information.</remarks>
-        public static string? MimeType(this string fileExtension) => fileExtension switch
+        public static string MimeType(this string fileExtension) => fileExtension switch
         {
             "tsv" => "text/tab-separated-values",
             // https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types

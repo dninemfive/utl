@@ -30,18 +30,19 @@ namespace d9.utl
         /// <returns>A <typeparamref name="T"/> instance loaded from the specified path, if successful, or <see langword="null"/> otherwise.</returns>
         public static T? TryLoad<T>(string? path, bool suppressWarnings = false)
         {
-            if (path is null || !File.Exists(path))
+            T? failWithMessage(string msg)
             {
-                if (!suppressWarnings) Utils.DebugLog($"Failed to load config at path `{path}`: path does not point to an existing file!");
+                if (!suppressWarnings) Utils.DebugLog($"Failed to load config at path `{path}`: {msg}!");
                 return default;
             }
+            path = path?.AbsolutePath();
+            if (path is null || !File.Exists(path)) return failWithMessage("path does not point to an existing file");
             try
             {
                 return JsonSerializer.Deserialize<T>(File.ReadAllText(path));
             } catch (Exception e)
             {
-                if (!suppressWarnings) Utils.DebugLog($"Failed to load config at path `{path}`: {e.Message}");
-                return default;
+                return failWithMessage(e.Message);
             }
         }
         /// <summary>
