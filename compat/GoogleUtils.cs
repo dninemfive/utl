@@ -14,25 +14,59 @@ using System.Threading.Tasks;
 
 namespace d9.utl.compat
 {
+    /// <summary>
+    /// Utilities for authenticating and interfacing with Google services.
+    /// </summary>
     internal class GoogleUtils
     {
+        /// <summary>
+        /// Configuration class which loads the necessary variables for Google authentication.
+        /// </summary>
+        /// <remarks>For more info, see <see href="https://console.cloud.google.com/"/>.</remarks>
         private class GoogleAuthConfig : IValidityCheck
         {
+            /// <summary>
+            /// Whether or not the <see cref="GoogleAuthConfig"/> has been fully and correctly loaded. Implements <see cref="IValidityCheck"/>.
+            /// </summary>
             [JsonIgnore]
             public bool IsValid => !(new string?[] { KeyPath, Email, FileId, AppName }.Any(x => x is null));
+            /// <summary>
+            /// The path to a <see href="https://en.wikipedia.org/wiki/PKCS_12">p12</see> file containing the key for the desired Google service.
+            /// </summary>
             [JsonInclude]
             public readonly string? KeyPath;
+            /// <summary>
+            /// The email associated with the service in OAuth. This is not the email for the account which created the service, but rather the
+            /// one provided when you register your project at <see href="https://console.cloud.google.com/"/>.
+            /// </summary>
             [JsonInclude]
             public readonly string? Email;
+            /// <summary>
+            /// The File ID of the file to load.
+            /// </summary>
+            [Obsolete("Will add a string argument to LoadTsv later")]
             [JsonInclude]
             public readonly string? FileId;
+            /// <summary>
+            /// The name of the application to authenticate with.
+            /// </summary>
             [JsonInclude]
             public readonly string? AppName;
         }
+        /// <summary>
+        /// The path to the <see cref="GoogleAuthConfig">config file</see> for Google authentication, provided via command-line argument.
+        /// </summary>
         // todo: equivalent to TryGetDirectory for files
         private static readonly string? ConfigPath = CommandLineArgs.TryGet("googleAuth", CommandLineArgs.Parsers.FirstNonNullOrEmptyString);
+        /// <summary>
+        /// The <see cref="GoogleAuthConfig"/> loaded from the file, or <see langword="null"/> if it could not be loaded.
+        /// </summary>
         private static readonly GoogleAuthConfig? AuthConfig = Config.TryLoad<GoogleAuthConfig>(ConfigPath, true);
-        private static Exception NoValidAuthConfig = new($"Cannot authenticate with google because AuthConfig at path {ConfigPath}!");
+        /// <summary>
+        /// The exception thrown when the <see cref="GoogleAuthConfig"/> is not <see cref="IValidityCheck">valid</see>.
+        /// </summary>
+        private static readonly Exception NoValidAuthConfig 
+            = new($"Cannot authenticate with Google because no AuthConfig at path {ConfigPath} could be successfully loaded!");
         /// <summary>
         /// Gets the Google Auth certificate from the (privately-stored) key and password files.
         /// </summary>
@@ -48,7 +82,7 @@ namespace d9.utl.compat
             }
         }
         /// <summary>
-        /// Constructs a ServiceAccountCredential initializer from the <see cref="Certificate"/>.
+        /// Constructs a <see cref="ServiceAccountCredential"/> <see cref="ServiceAccountCredential.Initializer">Initializer</see> from the <see cref="Certificate"/>.
         /// </summary>
         /// <remarks>Largely a copy of code from <see href="https://www.daimto.com/google-drive-authentication-c/">this example</see>.</remarks>
         private static ServiceAccountCredential.Initializer CredentialInitializer
@@ -65,9 +99,9 @@ namespace d9.utl.compat
         /// Constructs a credential using the <see cref="CredentialInitializer"/>.
         /// </summary>
         /// <remarks>Largely a copy of code from <see href="https://www.daimto.com/google-drive-authentication-c/">this example</see>.</remarks>
-        public static ServiceAccountCredential Credential => new(CredentialInitializer);
+        private static ServiceAccountCredential Credential => new(CredentialInitializer);
         /// <summary>
-        /// Gets the Drive service using the <see cref="Credential"/> previously established.
+        /// Gets the <see cref="DriveService"/> using the <see cref="Credential"/> previously established.
         /// </summary>
         public static DriveService DriveService
         {
@@ -82,7 +116,7 @@ namespace d9.utl.compat
             }
         }
         /// <summary>
-        /// Attempts to download the data TSV file from a Drive URL to the <see cref="Paths.BaseFolder">default base folder</see> 
+        /// Attempts to download the data TSV file from a Drive URL to the <see cref="Config.BaseFolderPath">default base folder</see> 
         /// and prints whether or not it was successful, as well as the response code.
         /// </summary>
         /// <remarks>The file must be shared, through the Sheets UI, with the <see cref="GoogleAuthConfig.Email">email associated with the service account</see>.</remarks>
