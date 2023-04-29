@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace d9.utl;
 /// <summary>
-/// Utilities which perform operations on collections.
+/// If Linq is so good, why isn't there a-
 /// </summary>
-public static class CollectionUtils
+public static class Linq2
 {
     /// <summary>
     /// Breaks a collection into <c><paramref name="n"/></c> parts of roughly equal size.<br/><br/>

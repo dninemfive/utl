@@ -34,7 +34,6 @@ namespace d9.utl
                 if(mode is Mode.Stream) Stream = File.AppendText(Path);
             }
             Console = console;
-
         }
         public void Dispose()
         {

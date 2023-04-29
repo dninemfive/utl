@@ -13,8 +13,13 @@ namespace d9.utl
     /// </summary>
     public static class StringUtils
     {
+        /// <summary>
+        /// Formats a <see cref="DateTime"/> into a sortable and filesystem-safe string which can be used to name files.
+        /// </summary>
+        /// <param name="datetime">The <see cref="DateTime"/> to format.</param>
+        /// <returns>The specified <c><paramref name="datetime"/></c> formatted as described above.</returns>
         public static string FileNameFormat(this DateTime datetime) => $"{datetime:yyyy-MM-dd-HHmm}";
-        /// <summary></summary>
+        /// <summary><inheritdoc cref="InColumns{T}(IEnumerable{T}, IEnumerable{int})" path="/summary"/></summary>
         /// <typeparam name="T">The type of the objects to print.</typeparam>
         /// <param name="values">An enumerable holding the objects to print paired with the width of their respective columns.</param>
         /// <returns>A string corresponding to the objects <c>t</c> in order, with columns padded to <c>width</c>.</returns>
@@ -27,6 +32,7 @@ namespace d9.utl
             }
             return result;
         }
+        /// <summary>Prints the specified objects in columns with specified widths.</summary>
         /// <typeparam name="T">The type of the objects to print.</typeparam>
         /// <param name="values">An enumerable holding the objects to print.</param>
         /// <param name="widths">An enumerable holding the widths of the columns, which will be applied in the same order as the objects.</param>
@@ -57,13 +63,23 @@ namespace d9.utl
             if (enumerable.Count() == 1) return $"[{enumerable.First()}]";
             return $"[{enumerable.Select(x => x.PrintNull()).Aggregate((a, b) => $"{a}, {b}")}]";
         }
-        public static bool NullOrEmpty(this string? s) => string.IsNullOrEmpty(s);
+        /// <summary>
+        /// Changes the first character of the specified string, if applicable, to lowercase.
+        /// </summary>
+        /// <param name="s">The string to format.</param>
+        /// <returns>The string specified, with its first letter guaranteed to be in lower case.</returns>
         public static string LowerFirst(this string s) => s.Length switch
         {
             0 => s,
             1 => s.ToLower(),
             _ => $"{s[0].ToLower()}{s[1..]}"
         };
+        /// <summary>
+        /// Wrapper for <see cref="string.IsNullOrEmpty(string?)"/>, because it reads better to me as an extension method.
+        /// </summary>
+        /// <param name="s">The string to check.</param>
+        /// <returns><inheritdoc cref="string.IsNullOrEmpty(string?)" path="/returns"/></returns>
+        public static bool NullOrEmpty(this string? s) => string.IsNullOrEmpty(s);
         /// <summary>
         /// Prints an object in its entirety in relatively readable JSON format.
         /// </summary>
@@ -93,6 +109,11 @@ namespace d9.utl
             for (int i = 0; i < times; i++) result += c;
             return result;
         }
+        /// <summary>
+        /// Converts a character to lowercase. Wrapper for <see cref="char.ToLower(char)"/>, because it reads better to me as an extension method.
+        /// </summary>
+        /// <param name="c">The character to format.</param>
+        /// <returns><inheritdoc cref="char.ToLower(char)"/></returns>
         public static char ToLower(this char c) => char.ToLower(c);
         /// <summary>Removes a set of characters from a string.</summary>
         /// <param name="s">The string from which the characters will be removed.</param>
@@ -103,15 +124,39 @@ namespace d9.utl
             foreach (char c in chars) s = s.Replace("" + c, "");
             return s;
         }
+        /// <summary>
+        /// Converts a single <see langword="byte"/> to its hexadecimal equivalent.
+        /// </summary>
+        /// <param name="b">The <see langword="byte"/> to convert.</param>
+        /// <returns>The <see langword="byte"/>, formatted to hexadecimal as with <see cref="ToHex(byte[])"/>.</returns>
         public static string ToHex(this byte b) => new[] { b }.ToHex();
-        public static string ToHex(this byte[] bytes) => BitConverter.ToString(bytes);
-        public static IEnumerable<(T val, int i)> WithProgress<T>(this IEnumerable<T> enumerable, Log log, int numberOfPrints = 10)
+        /// <summary>
+        /// Writes <see langword="byte"/>s in hexadecimal without separating them with hyphens.
+        /// </summary>
+        /// <param name="bytes">The <see langword="byte"/>s to convert.</param>
+        /// <returns>As described above.</returns>
+        public static string ToHex(this byte[] bytes) => BitConverter.ToString(bytes).Without("-");
+        /// <summary>
+        /// Enumerates over the specified enumerable and returns each element with its corresponding index.
+        /// </summary>
+        /// <typeparam name="T">The type of the elements to enumerate.</typeparam>
+        /// <param name="enumerable">The enumerable containing the elements to enumerate.</param>
+        /// <param name="log">The <see cref="Log"/> to write to. If not specified, uses <see cref="Utils.Log(object?)"/> instead.</param>
+        /// <param name="numberOfPrints">The total number of lines of progress which will be printed.</param>
+        /// <returns>The elements of the specified <c><paramref name="enumerable"/></c>, with their respective indices.</returns>
+        public static IEnumerable<(T val, int i)> WithProgress<T>(this IEnumerable<T> enumerable, Log? log = null, int numberOfPrints = 10)
         {
             int total = enumerable.Count(), ct = 0, interval = total / numberOfPrints;
             foreach(T t in enumerable)
             {
-                if(ct++ % interval == 0) log.WriteLine($"{ct,8}/{total,-8} ({ct / (float)total:P0})");
+                if (ct % interval == 0)
+                {
+                    string msg = $"{ct,8}/{total,-8} ({ct / (float)total:P0})";
+                    if (log is not null) log.WriteLine(msg);
+                    else Utils.Log(msg);
+                }
                 yield return (t, ct);
+                ct++;
             }
         }
     }

@@ -30,6 +30,8 @@ namespace d9.utl.compat
             /// </summary>
             [JsonIgnore]
             public bool IsValid => !(new string?[] { KeyPath, Email, AppName }.Any(x => x is null));
+            // initialized by JsonSerializer
+#pragma warning disable CS0649
             /// <summary>
             /// The path to a <see href="https://en.wikipedia.org/wiki/PKCS_12">p12</see> file containing the key for the desired Google service.
             /// </summary>
@@ -46,6 +48,7 @@ namespace d9.utl.compat
             /// </summary>
             [JsonInclude]
             public readonly string? AppName;
+#pragma warning restore CS0649
         }
         /// <summary>
         /// The path to the <see cref="GoogleAuthConfig">config file</see> for Google authentication, provided via command-line argument.
