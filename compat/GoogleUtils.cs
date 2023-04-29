@@ -29,7 +29,7 @@ namespace d9.utl.compat
             /// Whether or not the <see cref="GoogleAuthConfig"/> has been fully and correctly loaded. Implements <see cref="IValidityCheck"/>.
             /// </summary>
             [JsonIgnore]
-            public bool IsValid => !(new string?[] { KeyPath, Email, FileId, AppName }.Any(x => x is null));
+            public bool IsValid => !(new string?[] { KeyPath, Email, AppName }.Any(x => x is null));
             /// <summary>
             /// The path to a <see href="https://en.wikipedia.org/wiki/PKCS_12">p12</see> file containing the key for the desired Google service.
             /// </summary>
@@ -41,12 +41,6 @@ namespace d9.utl.compat
             /// </summary>
             [JsonInclude]
             public readonly string? Email;
-            /// <summary>
-            /// The File ID of the file to load.
-            /// </summary>
-            [Obsolete("Will add a string argument to LoadTsv later")]
-            [JsonInclude]
-            public readonly string? FileId;
             /// <summary>
             /// The name of the application to authenticate with.
             /// </summary>
@@ -116,26 +110,29 @@ namespace d9.utl.compat
             }
         }
         /// <summary>
-        /// Attempts to download the data TSV file from a Drive URL to the <see cref="Config.BaseFolderPath">default base folder</see> 
+        /// Attempts to download a file from a Drive URL to the <paramref name="filePath">specified path</paramref>
         /// and prints whether or not it was successful, as well as the response code.
         /// </summary>
         /// <remarks>The file must be shared, through the Sheets UI, with the <see cref="GoogleAuthConfig.Email">email associated with the service account</see>.</remarks>
-        /// <param name="fileId">The <see cref="GoogleAuthConfig.FileId">Sheets ID</see> of the file to download.</param>
-        /// <param name="filename">The name the file should have when downloaded.</param>
+        /// <param name="fileId">The Drive ID of the file to download.</param>
+        /// <param name="filePath">The path to the file when downloaded.</param>
+        /// <param name="mimeType">The type of the file to download. Should be a valid 
+        /// <see href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types">MIME type</see>.</param>
         /// <returns>The path to the downloaded file, if successfully downloaded, or <see langword="null"/> otherwise.</returns>
-        public static string? DownloadTsv(string fileId, string filename)
+        public static string? DownloadTsv(string fileId, string filePath, string mimeType)
         {
-            FilesResource.ExportRequest request = new(DriveService, fileId, "text/tab-separated-values");
-            using FileStream fs = new(filename.AbsolutePath(), FileMode.Create);
+            FilesResource.ExportRequest request = new(DriveService, fileId, mimeType);
+            filePath = filePath.AbsolutePath();
+            using FileStream fs = new(filePath, FileMode.Create);
             IDownloadProgress progress = request.DownloadWithStatus(fs);
             try
             {
                 progress.ThrowOnFailure();
-                return filename.AbsolutePath();
+                return filePath;
             }
             catch (Exception e)
             {
-                Console.WriteLine($"Error when downloading file from Drive!\n\t{e.Message}");
+                Utils.DebugLog($"Error when downloading file from Drive!\n\t{e.Message}");
                 return null;
             }
         }
