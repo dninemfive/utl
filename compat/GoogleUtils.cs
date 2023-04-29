@@ -50,8 +50,7 @@ namespace d9.utl.compat
         /// <summary>
         /// The path to the <see cref="GoogleAuthConfig">config file</see> for Google authentication, provided via command-line argument.
         /// </summary>
-        // todo: equivalent to TryGetDirectory for files
-        private static readonly string? ConfigPath = CommandLineArgs.TryGet("googleAuth", CommandLineArgs.Parsers.FirstNonNullOrEmptyString);
+        private static readonly string? ConfigPath = CommandLineArgs.TryGet("googleAuth", CommandLineArgs.Parsers.FilePath);
         /// <summary>
         /// The <see cref="GoogleAuthConfig"/> loaded from the file, or <see langword="null"/> if it could not be loaded.
         /// </summary>

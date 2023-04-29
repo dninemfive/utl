@@ -9,7 +9,7 @@ using System.Text.RegularExpressions;
 namespace d9.utl
 {
     /// <summary>
-    /// Parses console _args formatted as an approximation of Unix console _args into a structure representing arguments and their values.
+    /// Parses console <see langword="args"/> formatted as an approximation of Unix console arguments into a structure representing arguments and their values.
     /// <br/><br/>
     /// </summary>
     /// <remarks>
@@ -40,11 +40,9 @@ namespace d9.utl
         /// </summary>
         private Dictionary<string, ICollection<string>> _args { get; set; } = new();
         /// <summary>
-        /// The flags set on the program. Note that flags can repeat, and that the <see cref="CommandLineArgParsers.Flag">default implementation</see>
-        /// counts occurrences of empty lists in <see cref="_args">_args</see> corresponding to its alias as occurrences of that key.
+        /// The flags set on the program. Note that flags can repeat, and that the <see cref="CommandLineArgs.GetFlag(string, char?)">default implementation</see>
+        /// counts occurrences of empty but non-<see langword="null"/> collections in <see cref="_args">_args</see> corresponding to its alias as occurrences of that key.
         /// </summary>
-        private IEnumerable<char> Flags => _flags;
-        /// <inheritdoc cref="Flags"/>
         private List<char> _flags { get; set; } = new();
         /// <summary>
         /// Any warnings generated due to syntax errors in the arguments and their respective positions.
@@ -59,8 +57,8 @@ namespace d9.utl
         /// <summary>
         /// Constructs a new IntermediateArgs instance from the unparsed arguments passed to the program.
         /// </summary>
-        /// <param name="args">The unparsed _args, corresponding to the <see langword="_args"/> keyword or the <c>_args</c> argument to a program's
-        /// <c>Main(<see langword="string"/>[] _args)</c> method.</param>
+        /// <param name="args">The unparsed arguments, corresponding to the <see langword="args"/> keyword or the <c>args</c> argument to a program's
+        /// <c>Main(<see langword="string"/>[] args)</c> method.</param>
         public IntermediateArgs(string[] args)
         {
             string? currentKey = null;
@@ -100,17 +98,26 @@ namespace d9.utl
         /// Gets the values corresponding to the specified key, if any.
         /// </summary>
         /// <param name="key">The key to look for in the underlying dictionary.</param>
-        /// <returns>If the key was present at least once in the _args, a non-null IEnumerable, with corresponding values, if there were any, in
-        /// order of appearance.<br/><br/>If the key was <em>not</em> present in the _args, <see langword="null"/>.</returns>
+        /// <returns>If the key was present at least once in the args, a non-<see langword="null"/> IEnumerable, with corresponding values, if there were any, in
+        /// order of appearance.<br/><br/>If the key was <b>not</b> present in the args, <see langword="null"/>.</returns>
         public IEnumerable<string>? this[string key] => _args.TryGetValue(key, out ICollection<string>? value) ? value : null;
-        public bool this[char flag] => Flags.Contains(flag);
+        /// <summary>
+        /// Gets the value of a given flag character.
+        /// </summary>
+        /// <param name="flag">The single-character abbreviation of a <see cref="CommandLineArgs.GetFlag(string, char?)">flag</see> whose presence to check.</param>
+        /// <returns><see langword="true"/> if the flag was specified using its abbreviation, or <see langword="false"/> otherwise.</returns>
+        public bool this[char flag] => _flags.Contains(flag);
         /// <summary>
         /// Tells whether the given key corresponds to the name of an argument which was passed to the program.
         /// </summary>
         /// <param name="key">The key to look for.</param>
         /// <returns><see langword="true"/> if the key was found, or <see langword="false"/> otherwise.</returns>
         public bool ContainsKey(string key) => _args.ContainsKey(key);
-        public override string ToString() => $"IntermediateArgs {_args.Select(x => $"<{x.Key}: {x.Value.ListNotation()}>").ListNotation()} {Flags.ListNotation()}";
+        /// <summary>
+        /// Represents these intermediate args as a human-readable <see langword="string"/>.
+        /// </summary>
+        /// <returns>A <see langword="string"/> listing the args and flags specified when the program was executed.</returns>
+        public override string ToString() => $"IntermediateArgs {_args.Select(x => $"<{x.Key}: {x.Value.ListNotation()}>").ListNotation()} {_flags.ListNotation()}";
         // gets error CS8795, but this is a bug: see 
         [GeneratedRegex("-.")]
         private static partial Regex FlagMatcher();
