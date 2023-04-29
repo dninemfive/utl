@@ -12,7 +12,7 @@ namespace d9.utl
     /// </summary>
     public static class IoUtils
     {
-        public static string AbsolutePath(this string path) => Path.IsPathFullyQualified(path) ? Path.Join(Config.BaseFolderPath, path) : path;
+        public static string AbsolutePath(this string path) => Path.IsPathFullyQualified(path) ? path : Path.Join(Config.BaseFolderPath, path);
         /// <summary>
         /// Copies a file from <c><paramref name="oldPath"/></c> to <c><paramref name="newPath"/></c>.
         /// </summary>

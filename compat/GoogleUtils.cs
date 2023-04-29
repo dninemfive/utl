@@ -1,22 +1,38 @@
-﻿using System;
+﻿using Google.Apis.Auth.OAuth2;
+using Google.Apis.Download;
+using Google.Apis.Drive.v3;
+using Google.Apis.Services;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace d9.utl.compat
 {
     internal class GoogleUtils
     {
-        private static class GoogleAuthConfig
+        private class GoogleAuthConfig : IValidityCheck
         {
-            public static readonly string? KeyPath = Config.TryGet("google auth.json.secret", nameof(KeyPath), x => x.ToString());
-            public static readonly string? Email = Config.TryGet("google auth.json.secret", nameof(Email), x => x.ToString());
-            public static readonly string? FileId = Config.TryGet("google auth.json.secret", nameof(FileId), x => x.ToString());
+            [JsonIgnore]
+            public bool IsValid => !(new string?[] { KeyPath, Email, FileId, AppName }.Any(x => x is null));
+            [JsonInclude]
+            public readonly string? KeyPath;
+            [JsonInclude]
+            public readonly string? Email;
+            [JsonInclude]
+            public readonly string? FileId;
+            [JsonInclude]
+            public readonly string? AppName;
         }
+        // todo: equivalent to TryGetDirectory for files
+        private static readonly string? ConfigPath = CommandLineArgs.TryGet("googleAuth", CommandLineArgs.Parsers.FirstNonNullOrEmptyString);
+        private static readonly GoogleAuthConfig? AuthConfig = Config.TryLoad<GoogleAuthConfig>(ConfigPath, true);
+        private static Exception NoValidAuthConfig = new($"Cannot authenticate with google because AuthConfig at path {ConfigPath}!");
         /// <summary>
         /// Gets the Google Auth certificate from the (privately-stored) key and password files.
         /// </summary>
@@ -26,8 +42,9 @@ namespace d9.utl.compat
         {
             get
             {
-                if (Config.Current.GoogleAuth is null) throw new Exception("Attempted to get Google account certificate, but no auth config was found!");
-                return new(Paths.GoogleKey, "notasecret", X509KeyStorageFlags.Exportable);
+                if (!AuthConfig.IsValid()) throw NoValidAuthConfig;
+                // AuthConfig and KeyPath are certainly non-null because they're checked by IsValid
+                return new(AuthConfig!.KeyPath!, "notasecret", X509KeyStorageFlags.Exportable);
             }
         }
         /// <summary>
@@ -38,8 +55,9 @@ namespace d9.utl.compat
         {
             get
             {
-                if (Config.Current.GoogleAuth is null) throw new Exception("Attempted to get Google account credentials, but no auth config was found!");
-                return new ServiceAccountCredential.Initializer(Config.Current.GoogleAuth.Email) { Scopes = new[] { DriveService.Scope.Drive } }
+                if (!AuthConfig.IsValid()) throw NoValidAuthConfig;
+                // AuthConfig and Email are certainly non-null because they're checked by IsValid
+                return new ServiceAccountCredential.Initializer(AuthConfig!.Email) { Scopes = new[] { DriveService.Scope.Drive } }
                     .FromCertificate(Certificate);
             }
         }
@@ -51,28 +69,35 @@ namespace d9.utl.compat
         /// <summary>
         /// Gets the Drive service using the <see cref="Credential"/> previously established.
         /// </summary>
-        public static DriveService DriveService => new(new BaseClientService.Initializer()
+        public static DriveService DriveService
         {
-            HttpClientInitializer = Credential,
-            ApplicationName = "misc-grp"
-        });
+            get
+            {
+                if (!AuthConfig.IsValid()) throw NoValidAuthConfig;
+                return new(new BaseClientService.Initializer()
+                {
+                    HttpClientInitializer = Credential,
+                    ApplicationName = AuthConfig!.AppName
+                });
+            }
+        }
         /// <summary>
         /// Attempts to download the data TSV file from a Drive URL to the <see cref="Paths.BaseFolder">default base folder</see> 
         /// and prints whether or not it was successful, as well as the response code.
         /// </summary>
         /// <remarks>The file must be shared, through the Sheets UI, with the <see cref="GoogleAuthConfig.Email">email associated with the service account</see>.</remarks>
         /// <param name="fileId">The <see cref="GoogleAuthConfig.FileId">Sheets ID</see> of the file to download.</param>
-        /// <param name="fileName">The name the file should have when downloaded.</param>
+        /// <param name="filename">The name the file should have when downloaded.</param>
         /// <returns>The path to the downloaded file, if successfully downloaded, or <see langword="null"/> otherwise.</returns>
         public static string? DownloadTsv(string fileId, string filename)
         {
             FilesResource.ExportRequest request = new(DriveService, fileId, "text/tab-separated-values");
-            using FileStream fs = new(filename.AbsoluteOrInBaseFolder(), FileMode.Create);
+            using FileStream fs = new(filename.AbsolutePath(), FileMode.Create);
             IDownloadProgress progress = request.DownloadWithStatus(fs);
             try
             {
                 progress.ThrowOnFailure();
-                return filename.AbsoluteOrInBaseFolder();
+                return filename.AbsolutePath();
             }
             catch (Exception e)
             {

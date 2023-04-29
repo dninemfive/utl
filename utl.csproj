@@ -15,4 +15,10 @@
     <None Remove="test\**" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Google.Apis" Version="1.60.0" />
+    <PackageReference Include="Google.Apis.Calendar.v3" Version="1.60.0.3017" />
+    <PackageReference Include="Google.Apis.Drive.v3" Version="1.60.0.3034" />
+  </ItemGroup>
+
 </Project>

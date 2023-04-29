@@ -15,35 +15,26 @@ namespace d9.utl
     public static class Config
     {
         public static readonly string BaseFolderPath = CommandLineArgs.TryGetDirectory(nameof(BaseFolderPath)) ?? Environment.CurrentDirectory;
-        private static readonly Dictionary<string, Dictionary<string, object>> _configs = new();
-        public delegate T? Parser<T>(object obj);
-        public static class Parsers 
+        public static T? TryLoad<T>(string? path, bool suppressWarnings = false)
         {
-            public static Parser<string> String => s => s.ToString();
-        }
-        public static T? TryGet<T>(string configPath, string variableName, Parser<T> parser)
-        {
-            if (!_configs.ContainsKey(configPath)) return parser(_configs[configPath][variableName]);
-            return default;
-        }
-        public static T Get<T>(string configPath, string variableName, Parser<T> parser, Exception? exception = null)
-            => TryGet(configPath, variableName, parser) ?? throw exception ?? new Exception($"Failed to get config variable {variableName} in config file `{configPath}`!");
-        public static void Load(string path)
-        {
-            path = path.AbsolutePath();
-            if (_configs.ContainsKey(path)) Utils.DebugLog($"Reloading config at {path}.");
+            if (path is null || !File.Exists(path))
+            {
+                if (!suppressWarnings) Utils.DebugLog($"Failed to load config at path `{path}`: path does not point to an existing file!");
+                return default;
+            }
             try
             {
-                _configs[path] = JsonSerializer.Deserialize<Dictionary<string, object>>(File.ReadAllText(path))!;
-            } catch(Exception e)
+                return JsonSerializer.Deserialize<T>(File.ReadAllText(path));
+            } catch (Exception e)
             {
-                Utils.DebugLog($"Caughted exception while deserializing in `Config.Load({path})`: {e.Message}");
+                if (!suppressWarnings) Utils.DebugLog($"Failed to load config at path `{path}`: {e.Message}");
+                return default;
             }
-            // potential thing: if infinite loop occurs when trying to load, add a null value for the given config?
         }
-        public static void Load(string key, Dictionary<string, object> dict)
-        {
-            _configs[key] = dict;
-        }
+        public static bool IsValid(this IValidityCheck? ivc) => ivc is not null && ivc.IsValid;
+    }
+    public interface IValidityCheck
+    {
+        public abstract bool IsValid { get; }
     }
 }
