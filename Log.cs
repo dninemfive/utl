@@ -102,7 +102,7 @@ namespace d9.utl
             }
             else if (Path is not null)
             {
-                File.WriteAllText(Path, s);
+                File.AppendAllText(Path, s);
             }
         }
     }
