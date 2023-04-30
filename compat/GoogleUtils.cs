@@ -1,4 +1,5 @@
 ﻿using Google.Apis.Auth.OAuth2;
+using Google.Apis.Calendar.v3;
 using Google.Apis.Download;
 using Google.Apis.Drive.v3;
 using Google.Apis.Services;
@@ -36,18 +37,18 @@ namespace d9.utl.compat
             /// The path to a <see href="https://en.wikipedia.org/wiki/PKCS_12">p12</see> file containing the key for the desired Google service.
             /// </summary>
             [JsonInclude]
-            public readonly string? KeyPath;
+            public string? KeyPath;
             /// <summary>
             /// The email associated with the service in OAuth. This is not the email for the account which created the service, but rather the
             /// one provided when you register your project at <see href="https://console.cloud.google.com/"/>.
             /// </summary>
             [JsonInclude]
-            public readonly string? Email;
+            public string? Email;
             /// <summary>
             /// The name of the application to authenticate with.
             /// </summary>
             [JsonInclude]
-            public readonly string? AppName;
+            public string? AppName;
 #pragma warning restore CS0649
         }
         /// <summary>
@@ -65,8 +66,8 @@ namespace d9.utl.compat
         /// <summary>
         /// The exception thrown when the <see cref="GoogleAuthConfig"/> is not <see cref="IValidityCheck">valid</see>.
         /// </summary>
-        private static readonly Exception NoValidAuthConfig 
-            = new($"Cannot authenticate with Google because no AuthConfig at path {ConfigPath} could be successfully loaded!");
+        private static Exception NoValidAuthConfig(string methodName) =>
+            new($"{methodName}: Cannot authenticate with Google because no AuthConfig at path {ConfigPath} could be successfully loaded!");
         /// <summary>
         /// Gets the Google Auth certificate from the (privately-stored) key and password files.
         /// </summary>
@@ -76,7 +77,7 @@ namespace d9.utl.compat
         {
             get
             {
-                if (!AuthConfig.IsValid()) throw NoValidAuthConfig;
+                if (!AuthConfig.IsValid()) throw NoValidAuthConfig(nameof(Certificate));
                 // AuthConfig and KeyPath are certainly non-null because they're checked by IsValid
                 return new(AuthConfig!.KeyPath!, "notasecret", X509KeyStorageFlags.Exportable);
             }
@@ -89,7 +90,7 @@ namespace d9.utl.compat
         {
             get
             {
-                if (!AuthConfig.IsValid()) throw NoValidAuthConfig;
+                if (!AuthConfig.IsValid()) throw NoValidAuthConfig(nameof(CredentialInitializer));
                 // AuthConfig and Email are certainly non-null because they're checked by IsValid
                 return new ServiceAccountCredential.Initializer(AuthConfig!.Email) { Scopes = new[] { DriveService.Scope.Drive } }
                     .FromCertificate(Certificate);
@@ -107,7 +108,19 @@ namespace d9.utl.compat
         {
             get
             {
-                if (!AuthConfig.IsValid()) throw NoValidAuthConfig;
+                if (!AuthConfig.IsValid()) throw NoValidAuthConfig(nameof(DriveService));
+                return new(new BaseClientService.Initializer()
+                {
+                    HttpClientInitializer = Credential,
+                    ApplicationName = AuthConfig!.AppName
+                });
+            }
+        }
+        public static CalendarService CalendarService
+        {
+            get
+            {
+                if (!AuthConfig.IsValid()) throw NoValidAuthConfig(nameof(CalendarService));
                 return new(new BaseClientService.Initializer()
                 {
                     HttpClientInitializer = Credential,

@@ -30,6 +30,7 @@ namespace d9.utl
         /// <returns>A <typeparamref name="T"/> instance loaded from the specified path, if successful, or <see langword="null"/> otherwise.</returns>
         public static T? TryLoad<T>(string? path, bool suppressWarnings = false)
         {
+            Utils.DebugLog($"TryLoad<{typeof(T).Name}>({path.PrintNull()}, {suppressWarnings})");
             T? failWithMessage(string msg)
             {
                 if (!suppressWarnings) Utils.DebugLog($"Failed to load config at path `{path}`: {msg}!");
