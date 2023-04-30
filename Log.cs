@@ -65,26 +65,45 @@ namespace d9.utl
         /// <param name="obj">The object to write.</param>
         public void Write(object? obj)
         {
+            string s = obj.PrintNull();
             if (Console is not null)
             {
-                Console.Write(obj.PrintNull());
+                Console.Write(s);
             }
-            else System.Console.Write(obj.PrintNull());
-            if(Stream is not null) Stream?.Write(obj.PrintNull());
+            else System.Console.Write(s);
+            WriteToFile(s);
         }
         /// <summary>
         /// Writes the specified object (converted to a <see langword="string"/> with <see cref="StringUtils.PrintNull(object?, string)"/>) to the console
         /// and the log file, if any, <b>with</b> a trailing newline character.
         /// </summary>
+        /// <remarks>Doesn't call <see cref="Write(object?)"/> in case the <see cref="Console"/> handles writing lines differently.</remarks>
         /// <param name="obj">The object to write.</param>
         public void WriteLine(object? obj)
         {
+            string s = obj.PrintNull();
             if (Console is not null)
             {
-                Console.WriteLine(obj.PrintNull());
+                Console.WriteLine(s);
             }
-            else System.Console.WriteLine(obj.PrintNull());
-            Stream?.WriteLine(obj.PrintNull());
-        }        
+            else System.Console.WriteLine(s);
+            WriteToFile($"{s}\n");
+        }
+        /// <summary>
+        /// Writes the specified string to a file, either the Stream if applicable, to the Path,
+        /// or does nothing if neither is specified.
+        /// </summary>
+        /// <param name="s">The string to write.</param>
+        private void WriteToFile(string s)
+        {
+            if (Stream is not null)
+            {
+                Stream?.Write(s);
+            }
+            else if (Path is not null)
+            {
+                File.WriteAllText(Path, s);
+            }
+        }
     }
 }
