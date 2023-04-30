@@ -83,26 +83,42 @@ namespace d9.utl.compat
             }
         }
         /// <summary>
-        /// Constructs a <see cref="ServiceAccountCredential"/> <see cref="ServiceAccountCredential.Initializer">Initializer</see> from the <see cref="Certificate"/>.
+        /// Constructs a credential with the specified scopes.
         /// </summary>
         /// <remarks>Largely a copy of code from <see href="https://www.daimto.com/google-drive-authentication-c/">this example</see>.</remarks>
-        private static ServiceAccountCredential.Initializer CredentialInitializer
+        /// <param name="scopes">The <see href="https://developers.google.com/identity/protocols/oauth2/scopes">Google scopes</see> the credential 
+        /// is permitted to use.</param>
+        private static ServiceAccountCredential Credential(params string[] scopes)
+        {
+            if (!AuthConfig.IsValid()) throw NoValidAuthConfig(nameof(Credential));
+            return new(new ServiceAccountCredential.Initializer(AuthConfig!.Email) { Scopes = scopes }
+                    .FromCertificate(Certificate));
+        }
+        /// <summary>
+        /// Gets a 
+        /// <see href="https://googleapis.dev/dotnet/Google.Apis.Calendar.v3/latest/api/Google.Apis.Calendar.v3.CalendarService.html">
+        ///     calendar service
+        /// </see>
+        /// using a <see cref="Credential">Credential</see> scoped to allow all Calendar operations.
+        /// </summary>
+        public static CalendarService CalendarService
         {
             get
             {
-                if (!AuthConfig.IsValid()) throw NoValidAuthConfig(nameof(CredentialInitializer));
-                // AuthConfig and Email are certainly non-null because they're checked by IsValid
-                return new ServiceAccountCredential.Initializer(AuthConfig!.Email) { Scopes = new[] { DriveService.Scope.Drive } }
-                    .FromCertificate(Certificate);
+                if (!AuthConfig.IsValid()) throw NoValidAuthConfig(nameof(CalendarService));
+                return new(new BaseClientService.Initializer()
+                {
+                    HttpClientInitializer = Credential(CalendarService.Scope.Calendar),
+                    ApplicationName = AuthConfig!.AppName
+                });
             }
         }
         /// <summary>
-        /// Constructs a credential using the <see cref="CredentialInitializer"/>.
-        /// </summary>
-        /// <remarks>Largely a copy of code from <see href="https://www.daimto.com/google-drive-authentication-c/">this example</see>.</remarks>
-        private static ServiceAccountCredential Credential => new(CredentialInitializer);
-        /// <summary>
-        /// Gets the <see cref="DriveService"/> using the <see cref="Credential"/> previously established.
+        /// Gets a 
+        /// <see href="https://developers.google.com/resources/api-libraries/documentation/drive/v3/csharp/latest/classGoogle_1_1Apis_1_1Drive_1_1v3_1_1DriveService.html">
+        ///     drive service
+        /// </see>
+        /// using a <see cref="Credential">Credential</see> scoped to allow all Drive operations.
         /// </summary>
         public static DriveService DriveService
         {
@@ -111,23 +127,11 @@ namespace d9.utl.compat
                 if (!AuthConfig.IsValid()) throw NoValidAuthConfig(nameof(DriveService));
                 return new(new BaseClientService.Initializer()
                 {
-                    HttpClientInitializer = Credential,
+                    HttpClientInitializer = Credential(DriveService.Scope.Drive),
                     ApplicationName = AuthConfig!.AppName
                 });
             }
-        }
-        public static CalendarService CalendarService
-        {
-            get
-            {
-                if (!AuthConfig.IsValid()) throw NoValidAuthConfig(nameof(CalendarService));
-                return new(new BaseClientService.Initializer()
-                {
-                    HttpClientInitializer = Credential,
-                    ApplicationName = AuthConfig!.AppName
-                });
-            }
-        }
+        }        
         /// <summary>
         /// Attempts to download a file from a Drive URL to the <paramref name="filePath">specified path</paramref>
         /// and prints whether or not it was successful, as well as the response code.
