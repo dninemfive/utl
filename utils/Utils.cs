@@ -51,5 +51,10 @@ namespace d9.utl
         /// <returns>The first object satisfying <c><paramref name="lambda"/></c>, if any, or <c><paramref name="default"/></c> if none do.</returns>
         public static T Sieve<T>(Func<T, bool> lambda, T @default, params T[] ts)
             => ts.FirstOrDefault(lambda, @default);
+        /// <summary>
+        /// Pauses execution for the specified <c><paramref name="duration"/></c>.
+        /// </summary>
+        /// <param name="duration">The amount of time to sleep for.</param>
+        public static void Sleep(TimeSpan duration) => Thread.Sleep((int)duration.TotalMilliseconds);
     }
 }
