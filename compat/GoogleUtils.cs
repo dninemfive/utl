@@ -1,5 +1,6 @@
 ﻿using Google.Apis.Auth.OAuth2;
 using Google.Apis.Calendar.v3;
+using Google.Apis.Calendar.v3.Data;
 using Google.Apis.Download;
 using Google.Apis.Drive.v3;
 using Google.Apis.Services;
@@ -54,7 +55,7 @@ namespace d9.utl.compat
         /// <summary>
         /// The path to the <see cref="GoogleAuthConfig">config file</see> for Google authentication, provided via command-line argument.
         /// </summary>
-        private static readonly string? ConfigPath = CommandLineArgs.TryGet("googleAuth", CommandLineArgs.Parsers.FilePath);
+        private static readonly string? ConfigPath = CommandLineArgs.TryGet("googleAuth", CommandLineArgs.Parsers.FilePath) ?? "google auth.json.secret";
         /// <summary>
         /// The <see cref="GoogleAuthConfig"/> loaded from the file, or <see langword="null"/> if it could not be loaded.
         /// </summary>
@@ -62,7 +63,7 @@ namespace d9.utl.compat
         /// <summary>
         /// <see langword="true"/> if the auth config is usable or <see langword="false"/> otherwise.
         /// </summary>
-        public static bool IsValid => AuthConfig?.IsValid ?? false;
+        public static bool ValidConfig => AuthConfig?.IsValid ?? false;
         /// <summary>
         /// The exception thrown when the <see cref="GoogleAuthConfig"/> is not <see cref="IValidityCheck">valid</see>.
         /// </summary>
@@ -113,6 +114,16 @@ namespace d9.utl.compat
                 });
             }
         }
+        public static void AddEventTo(string calendarId, string eventTitle, DateTime start, DateTime end, string? ColorId = null) {
+            EventsResource.InsertRequest request = new(CalendarService, new()
+            {
+                Summary = eventTitle,
+                Start = start.ToEventDateTime(),
+                End = end.ToEventDateTime()
+            }, calendarId);
+            Utils.Log(request.Execute());
+        }
+        public static EventDateTime ToEventDateTime(this DateTime dateTime) => new() { DateTime = dateTime };
         /// <summary>
         /// Gets a 
         /// <see href="https://developers.google.com/resources/api-libraries/documentation/drive/v3/csharp/latest/classGoogle_1_1Apis_1_1Drive_1_1v3_1_1DriveService.html">
