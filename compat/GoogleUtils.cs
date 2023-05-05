@@ -95,6 +95,7 @@ namespace d9.utl.compat
             return new(new ServiceAccountCredential.Initializer(AuthConfig!.Email) { Scopes = scopes }
                     .FromCertificate(Certificate));
         }
+        #region calendar
         /// <summary>
         /// Gets a 
         /// <see href="https://googleapis.dev/dotnet/Google.Apis.Calendar.v3/latest/api/Google.Apis.Calendar.v3.CalendarService.html">
@@ -114,7 +115,8 @@ namespace d9.utl.compat
                 });
             }
         }
-        public static Event AddEventTo(string calendarId, Event newEvent) {
+        public static Event AddEventTo(string calendarId, Event newEvent)
+        {
             EventsResource.InsertRequest request = new(CalendarService, newEvent, calendarId);
             Event result = request.Execute();
             Utils.DebugLog($"Event {result.Id} \"{result.Summary}\" created.");
@@ -128,6 +130,63 @@ namespace d9.utl.compat
             return result;
         }
         public static EventDateTime ToEventDateTime(this DateTime dateTime) => new() { DateTime = dateTime };
+        /// <summary>
+        /// The 11 colors available to Google Calendar events.
+        /// </summary>
+        /// <remarks>
+        /// Acquired 
+        /// <see href="https://googleapis.dev/dotnet/Google.Apis.Calendar.v3/latest/api/Google.Apis.Calendar.v3.ColorsResource.GetRequest.html">via the API</see>;
+        /// color names from <see href="https://www.color-name.com/">color-name.com</see>.
+        /// </remarks>
+        public enum EventColor
+        {
+            /// <summary>
+            /// The first hardcoded color for Google Calendar events, hex code <c>#a4bdfc</c>. 
+            /// </summary>
+            BabyBlue = 1,
+            /// <summary>
+            /// The second hardcoded color for Google Calendar events, hex code <c>#7ae7bf</c>. 
+            /// </summary>
+            PearlAqua = 2,
+            /// <summary>
+            /// The third hardcoded color for Google Calendar events, hex code <c>#dbadff</c>. 
+            /// </summary>
+            Mauve = 3,
+            /// <summary>
+            /// The fourth hardcoded color for Google Calendar events, hex code <c>#ff887c</c>. 
+            /// </summary>
+            CongoPink = 4,
+            /// <summary>
+            /// The fifth hardcoded color for Google Calendar events, hex code <c>#fbd75b</c>. 
+            /// </summary>
+            NaplesYellow = 5,
+            /// <summary>
+            /// The sixth hardcoded color for Google Calendar events, hex code <c>#ffb878</c>.
+            /// </summary>
+            MellowApricot = 6,
+            /// <summary>
+            /// The seventh hardcoded color for Google Calendar events, hex code <c>#46d6db</c>.
+            /// </summary>
+            MediumTurquoise = 7,
+            /// <summary>
+            /// The eighth hardcoded color for Google Calendar events, hex code <c>#e1e1e1</c>.
+            /// </summary>
+            ChineseWhite = 8,
+            /// <summary>
+            /// The ninth hardcoded color for Google Calendar events, hex code <c>#5484ed</c>.
+            /// </summary>
+            Blueberry = 9,
+            /// <summary>
+            /// The tenth hardcoded color for Google Calendar events, hex code <c>#51b749</c>.
+            /// </summary>
+            Apple = 10,
+            /// <summary>
+            /// The eleventh hardcoded color for Google Calendar events, hex code <c>#dc2127</c>.
+            /// </summary>
+            MaximumRed = 11
+        }
+        #endregion calendar
+        #region drive
         /// <summary>
         /// Gets a 
         /// <see href="https://developers.google.com/resources/api-libraries/documentation/drive/v3/csharp/latest/classGoogle_1_1Apis_1_1Drive_1_1v3_1_1DriveService.html">
@@ -146,7 +205,7 @@ namespace d9.utl.compat
                     ApplicationName = AuthConfig!.AppName
                 });
             }
-        }        
+        }
         /// <summary>
         /// Attempts to download a file from a Drive URL to the <paramref name="filePath">specified path</paramref>
         /// and prints whether or not it was successful, as well as the response code.
@@ -174,5 +233,6 @@ namespace d9.utl.compat
                 return null;
             }
         }
+        #endregion drive
     }
 }
