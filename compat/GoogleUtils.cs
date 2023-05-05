@@ -114,14 +114,31 @@ namespace d9.utl.compat
                 });
             }
         }
-        public static void AddEventTo(string calendarId, string eventTitle, DateTime start, DateTime end, string? ColorId = null) {
+        public static Event AddEventTo(string calendarId, string eventTitle, DateTime start, DateTime end, string? description = null, string? ColorId = null) {
+            Utils.DebugLog($"{nameof(AddEventTo)}({calendarId}, {eventTitle}, {start}, {end}, {ColorId.PrintNull()})");
             EventsResource.InsertRequest request = new(CalendarService, new()
             {
                 Summary = eventTitle,
+                Description = description,
                 Start = start.ToEventDateTime(),
                 End = end.ToEventDateTime()
             }, calendarId);
-            Utils.Log(request.Execute());
+            Event ev = request.Execute();
+            Utils.DebugLog($"\tEvent {ev.Id} \"{ev.Summary}\" created.");
+            return ev;
+        }
+        public static Event UpdateEvent(string calendarId, string eventId, string? newTitle = null, DateTime? newStart = null, DateTime? newEnd = null)
+        {
+            Utils.DebugLog($"{nameof(UpdateEvent)}({calendarId}, {eventId}, {newTitle.PrintNull()}, {newStart.PrintNull()}, {newEnd.PrintNull()})");
+            EventsResource.UpdateRequest request = new(CalendarService, new()
+            {
+                Summary = newTitle,
+                Start = newStart?.ToEventDateTime(),
+                End = newEnd?.ToEventDateTime()
+            }, calendarId, eventId);
+            Event ev = request.Execute();
+            Utils.DebugLog($"\tEvent {ev.Id} \"{ev.Summary}\" updated.");
+            return ev;
         }
         public static EventDateTime ToEventDateTime(this DateTime dateTime) => new() { DateTime = dateTime };
         /// <summary>
