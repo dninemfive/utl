@@ -127,14 +127,14 @@ namespace d9.utl.compat
             Utils.DebugLog($"\tEvent {ev.Id} \"{ev.Summary}\" created.");
             return ev;
         }
-        public static Event UpdateEvent(string calendarId, string eventId, string? newTitle = null, DateTime? newStart = null, DateTime? newEnd = null)
+        public static Event UpdateEvent(string calendarId, string eventId, string newTitle, DateTime newStart, DateTime newEnd)
         {
             Utils.DebugLog($"{nameof(UpdateEvent)}({calendarId}, {eventId}, {newTitle.PrintNull()}, {newStart.PrintNull()}, {newEnd.PrintNull()})");
             EventsResource.UpdateRequest request = new(CalendarService, new()
             {
                 Summary = newTitle,
-                Start = newStart?.ToEventDateTime(),
-                End = newEnd?.ToEventDateTime()
+                Start = newStart.ToEventDateTime(),
+                End = newEnd.ToEventDateTime()
             }, calendarId, eventId);
             Event ev = request.Execute();
             Utils.DebugLog($"\tEvent {ev.Id} \"{ev.Summary}\" updated.");
