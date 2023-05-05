@@ -163,7 +163,7 @@ namespace d9.utl
         public static T? TryGet<T>(string argName, Parser<T> parser)
             => parser(_intermediateArgs[argName], false);
         /// <summary>
-        /// Gets the specified <see cref="CommandLineArgs.GetFlag(string, char?)">command-line flag</see>.
+        /// Gets the specified <see cref="GetFlag(string, char?)">command-line flag</see>.
         /// </summary>
         /// <remarks>Currently, conflicting flag identifiers are <b>not</b> detected, so be careful that variables which are not supposed to be equivalent
         /// do not share their abbreviations.</remarks>
