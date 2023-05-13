@@ -115,6 +115,12 @@ namespace d9.utl.compat
                 });
             }
         }
+        /// <summary>
+        /// Adds an event to the specified calendar.
+        /// </summary>
+        /// <param name="calendarId">The ID of the calendar to which to add the specified event.</param>
+        /// <param name="newEvent">The event to add to the specified calendar.</param>
+        /// <returns>The created event.</returns>
         public static Event AddEventTo(string calendarId, Event newEvent)
         {
             EventsResource.InsertRequest request = new(CalendarService, newEvent, calendarId);
@@ -122,6 +128,13 @@ namespace d9.utl.compat
             Utils.DebugLog($"Event {result.Id} \"{result.Summary}\" created.");
             return result;
         }
+        /// <summary>
+        /// Updates a specified event on a specified calendar.
+        /// </summary>
+        /// <param name="calendarId">The ID of the calendar which contains the event to update.</param>
+        /// <param name="eventId">The ID of the event to update.</param>
+        /// <param name="newEvent">The event with which to replace the specified event.</param>
+        /// <returns>The updated event.</returns>
         public static Event UpdateEvent(string calendarId, string eventId, Event newEvent)
         {
             EventsResource.UpdateRequest request = new(CalendarService, newEvent, calendarId, eventId);
@@ -129,61 +142,64 @@ namespace d9.utl.compat
             Utils.DebugLog($"Event {result.Id} \"{result.Summary}\" updated.");
             return result;
         }
+        /// <summary>
+        /// Converts a normal <see cref="DateTime"/> to a Google Calendar <see cref="EventDateTime"/>.</summary>
+        /// <param name="dateTime">The <see cref="DateTime"/> to convert.</param>
+        /// <returns>An <see cref="EventDateTime"/> corresponding to the given <c><paramref name="dateTime"/></c>.</returns>
         public static EventDateTime ToEventDateTime(this DateTime dateTime) => new() { DateTime = dateTime };
         /// <summary>
         /// The 11 colors available to Google Calendar events.
         /// </summary>
         /// <remarks>
-        /// Acquired 
-        /// <see href="https://googleapis.dev/dotnet/Google.Apis.Calendar.v3/latest/api/Google.Apis.Calendar.v3.ColorsResource.GetRequest.html">via the API</see>;
-        /// color names from <see href="https://www.color-name.com/">color-name.com</see>.
+        /// The API returns hex codes which do not match the colors shown in the desktop app; 
+        /// <see href="https://docs.google.com/spreadsheets/d/1M2lyC0jHT3Mj-eA9OPJ2m_JQr1f3qpJVX5a8dNXnDB0/edit?usp=sharing">see this sheet for the exact details</see>.
         /// </remarks>
         public enum EventColor
         {
             /// <summary>
-            /// The first hardcoded color for Google Calendar events, hex code <c>#a4bdfc</c>. 
+            /// The first hardcoded color for Google Calendar events, hex code <c>#7986cb</c>. 
             /// </summary>
-            BabyBlue = 1,
+            Lavender = 1,
             /// <summary>
-            /// The second hardcoded color for Google Calendar events, hex code <c>#7ae7bf</c>. 
+            /// The second hardcoded color for Google Calendar events, hex code <c>#33b679</c>. 
             /// </summary>
-            PearlAqua = 2,
+            Sage = 2,
             /// <summary>
-            /// The third hardcoded color for Google Calendar events, hex code <c>#dbadff</c>. 
+            /// The third hardcoded color for Google Calendar events, hex code <c>#8e24aa</c>. 
             /// </summary>
-            Mauve = 3,
+            Grape = 3,
             /// <summary>
-            /// The fourth hardcoded color for Google Calendar events, hex code <c>#ff887c</c>. 
+            /// The fourth hardcoded color for Google Calendar events, hex code <c>#e67c73</c>. 
             /// </summary>
-            CongoPink = 4,
+            Flamingo = 4,
             /// <summary>
-            /// The fifth hardcoded color for Google Calendar events, hex code <c>#fbd75b</c>. 
+            /// The fifth hardcoded color for Google Calendar events, hex code <c>#f6bf26</c>. 
             /// </summary>
-            NaplesYellow = 5,
+            Banana = 5,
             /// <summary>
-            /// The sixth hardcoded color for Google Calendar events, hex code <c>#ffb878</c>.
+            /// The sixth hardcoded color for Google Calendar events, hex code <c>#f4511e</c>.
             /// </summary>
-            MellowApricot = 6,
+            Tangerine = 6,
             /// <summary>
-            /// The seventh hardcoded color for Google Calendar events, hex code <c>#46d6db</c>.
+            /// The seventh hardcoded color for Google Calendar events, hex code <c>#039be5</c>.
             /// </summary>
-            MediumTurquoise = 7,
+            Peacock = 7,
             /// <summary>
-            /// The eighth hardcoded color for Google Calendar events, hex code <c>#e1e1e1</c>.
+            /// The eighth hardcoded color for Google Calendar events, hex code <c>#616161</c>.
             /// </summary>
-            ChineseWhite = 8,
+            Graphite = 8,
             /// <summary>
-            /// The ninth hardcoded color for Google Calendar events, hex code <c>#5484ed</c>.
+            /// The ninth hardcoded color for Google Calendar events, hex code <c>#3f51b5</c>.
             /// </summary>
             Blueberry = 9,
             /// <summary>
-            /// The tenth hardcoded color for Google Calendar events, hex code <c>#51b749</c>.
+            /// The tenth hardcoded color for Google Calendar events, hex code <c>#0b8043</c>.
             /// </summary>
-            Apple = 10,
+            Basil = 10,
             /// <summary>
-            /// The eleventh hardcoded color for Google Calendar events, hex code <c>#dc2127</c>.
+            /// The eleventh hardcoded color for Google Calendar events, hex code <c>#d50000</c>.
             /// </summary>
-            MaximumRed = 11
+            Tomato = 11
         }
         #endregion calendar
         #region drive
