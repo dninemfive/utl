@@ -5,6 +5,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace d9.utl
@@ -20,6 +21,18 @@ namespace d9.utl
         /// <remarks>It is intended that configuration files go into this folder or a subfolder, but this is not required.</remarks>
         public static readonly string BaseFolderPath = CommandLineArgs.TryGet(nameof(BaseFolderPath), CommandLineArgs.Parsers.FolderPath)
                                                     ?? Environment.CurrentDirectory;
+        /// <summary>
+        /// The default serializer options to use when writing and reading config files.
+        /// </summary>
+        public static readonly JsonSerializerOptions DefaultSerializerOptions = new()
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            WriteIndented = true,
+            Converters =
+            {
+                new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)
+            }
+        };
         /// <summary>
         /// Tries to load a json file at the specified <c><paramref name="path"/></c>, catching any errors in case
         /// the file does not exist or is malformed.
@@ -40,7 +53,7 @@ namespace d9.utl
             if (path is null || !File.Exists(path)) return failWithMessage("path does not point to an existing file");
             try
             {
-                return JsonSerializer.Deserialize<T>(File.ReadAllText(path));
+                return JsonSerializer.Deserialize<T>(File.ReadAllText(path), DefaultSerializerOptions);
             } catch (Exception e)
             {
                 return failWithMessage(e.Message);

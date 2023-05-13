@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using static System.Net.WebRequestMethods;
 
@@ -39,6 +40,6 @@ namespace d9.utl
             // https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types
             // > An unknown file type should use this type.
             _ => "application/octet-stream"
-        };
+        };        
     }
 }
