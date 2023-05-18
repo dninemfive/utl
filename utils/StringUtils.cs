@@ -85,10 +85,14 @@ namespace d9.utl
         /// </summary>
         /// <param name="obj">The object to print.</param>
         /// <returns>A pretty-printed object.</returns>
-        public static string PrettyPrint(this object? obj) => JsonSerializer.Serialize(obj, new JsonSerializerOptions() 
-        { 
-            WriteIndented = true, 
-            NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals 
+        public static string PrettyPrint(this object? obj) => JsonSerializer.Serialize(obj, new JsonSerializerOptions()
+        {
+            WriteIndented = true,
+            NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals,
+            Converters =
+            {
+                new JsonStringEnumConverter()
+            }
         });
         /// <summary>
         /// Represents an object in human-readable format, even if it's <see langword="null"/>.

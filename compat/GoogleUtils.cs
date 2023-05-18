@@ -63,7 +63,7 @@ namespace d9.utl.compat
         /// <summary>
         /// <see langword="true"/> if the auth config is usable or <see langword="false"/> otherwise.
         /// </summary>
-        public static bool ValidConfig => AuthConfig?.IsValid ?? false;
+        public static bool HasValidAuthConfig => AuthConfig?.IsValid ?? false;
         /// <summary>
         /// The exception thrown when the <see cref="GoogleAuthConfig"/> is not <see cref="IValidityCheck">valid</see>.
         /// </summary>
