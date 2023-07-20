@@ -22,6 +22,10 @@ namespace d9.utl
         /// </summary>
         public static readonly string Quotes = new[] { '"', '“', '”' }.Join();
         /// <summary>
+        /// Dashes of various lengths.
+        /// </summary>
+        public static readonly string Hyphens = "-–—";
+        /// <summary>
         /// The null character, traditionally used for ending strings.
         /// </summary>
         public const char NullCharacter = (char)0;
