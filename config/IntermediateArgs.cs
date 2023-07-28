@@ -92,7 +92,7 @@ namespace d9.utl
                         break;
                 }
             }
-            Console.WriteLine(this);
+            // Console.WriteLine(this);
         }
         /// <summary>
         /// Gets the values corresponding to the specified key, if any.
