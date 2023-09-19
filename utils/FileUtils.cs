@@ -11,7 +11,7 @@ namespace d9.utl
     /// Utilities for file, path, and directory manipulation.
     /// </summary>
     /// <remarks>Ensure that <see cref="AbsolutePath(string)"/> is deterministic (and therefore can be used for comparisons)</remarks>
-    public static class IoUtils
+    public static class FileUtils
     {
         /// <summary>
         /// If the specified <c><paramref name="path"/></c> is an absolute path, returns it unmodified; otherwise, creates an absolute path
@@ -31,7 +31,7 @@ namespace d9.utl
         public static void CopyFileTo(this string oldPath, string newPath, bool overwrite = false)
         {
             string dirPath = Path.GetDirectoryName(newPath) ?? throw new Exception($"{newPath} has a null directory path.");
-            if (!Directory.Exists(dirPath)) Directory.CreateDirectory(dirPath);
+            if (!Directory.Exists(dirPath)) _ = Directory.CreateDirectory(dirPath);
             if (overwrite && File.Exists(newPath)) File.Delete(newPath);
             File.Copy(oldPath, newPath, overwrite);
         }
@@ -130,6 +130,14 @@ namespace d9.utl
         {
             if (s is null) throw new ArgumentNullException(nameof(s));
             return string.Join(replacement, s.Split(Path.GetInvalidFileNameChars())).Trim();
-        }             
+        }
+        public static IEnumerable<string> EnumerateFilesRecursive(this string folder)
+        {
+            foreach (string s in Directory.EnumerateFiles(folder))
+                yield return s;
+            foreach (string s in Directory.EnumerateDirectories(folder))
+                foreach (string t in s.EnumerateFilesRecursive())
+                    yield return t;
+        }
     }
 }

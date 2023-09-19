@@ -26,7 +26,7 @@ public class CountingDictionary<K, V> : IEnumerable<KeyValuePair<K,V>>
     /// Adds to a specific key.
     /// </summary>
     /// <param name="key">The object instance to count.</param>
-    public void Add(K key)
+    public void Increment(K key)
     {
 #pragma warning disable CA1854
         // double lookup is unavoidable because i need ref access to the variable
@@ -41,7 +41,7 @@ public class CountingDictionary<K, V> : IEnumerable<KeyValuePair<K,V>>
         }
     }
     /// <param name="key">The key whose count to retrieve.</param>
-    /// <returns>The number of times that key has been <see cref="Add(K)">added</see> to the dictionary.</returns>
+    /// <returns>The number of times that key has been <see cref="Increment(K)">inc</see> to the dictionary.</returns>
     public V this[K key] => _dict.TryGetValue(key, out V? value) ? value : V.Zero;
     IEnumerator<KeyValuePair<K,V>> IEnumerable<KeyValuePair<K,V>>.GetEnumerator() => _dict.GetEnumerator();
     /// <summary>

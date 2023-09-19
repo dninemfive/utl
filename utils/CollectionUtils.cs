@@ -39,8 +39,31 @@ public static class Linq2
     /// <typeparam name="T">The type of the elements of the enumerable.</typeparam>
     /// <param name="original">The original enumerable, which is not modified.</param>
     /// <returns>The elements of <c>original</c>, in a random order.</returns>
-    public static IEnumerable<T> Shuffled<T>(this IEnumerable<T> original)
+    public static IEnumerable<T> Shuffled<T>(this IEnumerable<T> original, Random? random = null)
     {
-        throw new NotImplementedException();
+        random ??= new();
+        List<T> items = original.ToList();
+        while(items.Any())
+        {
+            T item = items.RandomElement(random);
+            _ = items.Remove(item);
+            yield return item;
+        }
+    }
+    /// <summary>
+    /// Selects an element from the given <paramref name="enumerable"/> randomly.
+    /// </summary>
+    /// <typeparam name="T">The type of the elements of the given <paramref name="enumerable"/>.</typeparam>
+    /// <param name="enumerable">The input enumerable.</param>
+    /// <param name="random">
+    ///     A <see cref="Random"/> object which, if provided, will be used to generate the index of the element to return.
+    ///     <br/><br/>
+    ///     If <see langword="null"/>, a new <see cref="Random"/> will be created for use in this function.
+    /// </param>
+    /// <returns>A random element from <paramref name="enumerable"/>.</returns>
+    public static T RandomElement<T>(this IEnumerable<T> enumerable, Random? random = null)
+    {
+        random ??= new();
+        return enumerable.ElementAt(random.Next(enumerable.Count()));
     }
 }

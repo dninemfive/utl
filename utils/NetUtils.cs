@@ -1,26 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace d9.utl;
 public static class NetUtils
-{
-    public class ParsedQuery
-    {
-        public IEnumerable<(string key, string value)> Items { get; private set; }
-        internal ParsedQuery(IEnumerable<(string key, string value)> items)
-        {
-            Items = items;
-        }
-        public IEnumerable<string> this[string key] => Items.Where(x => x.key == key).Select(x => x.value);
-        public IEnumerable<T> Get<T>(string key) where T : class
-            => this[key].Select(x => x as T).Where(x => x is not null)!;
-        public string? First(string key) => this[key].Any() ? this[key].First() : null;
-        public T? First<T>(string key) where T : class
-            => First(key) as T;
-    }
+{    
     /// <summary>
     /// Parses the query portion of a <see cref="Uri"/> and returns each item and its corresponding value.
     /// </summary>
@@ -43,4 +30,60 @@ public static class NetUtils
         => $"?{items.Select(x => $"{x.key}={x.value}")
                     .Aggregate((x, y) => $"{x}&{y}")}";
     public static string ToQuery(params (string key, string value)[] items) => items.ToQuery();
-} 
+}
+public readonly struct ParsedQuery
+{
+    public readonly IReadOnlyCollection<(string key, string value)> Items { get; }
+    internal ParsedQuery(IEnumerable<(string key, string value)> items)
+    {
+        Items = items.ToImmutableList();
+    }
+    public IEnumerable<string> this[string key] => Items.Where(x => x.key == key).Select(x => x.value);
+    public string? this[string key, int index]
+    {
+        get
+        {
+            if (index < 0)
+                throw new ArgumentOutOfRangeException(nameof(index));
+            IEnumerable<string> items = this[key];
+            if (index >= items.Count())
+                return null;
+            return items.ElementAt(index);
+        }
+    }
+    public ParsedQuery Set(string key, Func<string, string> func)
+    {
+        List<(string key, string value)> items = new();
+        foreach((string key, string value) item in Items)
+        {
+            if(item.key == key)
+            {
+                items.Add((key, func(item.value)));
+            }
+            else
+            {
+                items.Add(item);
+            } 
+        }
+        return new(items);
+    }
+    private ParsedQuery KeepOrDrop(string[] tags, bool drop)
+    {
+        List<(string key, string value)> items = new();
+        foreach ((string key, string value) item in Items)
+        {
+            if (tags.Contains(item.key) ^ drop)
+                items.Add(item);
+        }
+        return new(items);
+    }
+    public ParsedQuery Keep(params string[] tags) => KeepOrDrop(tags, drop: false);
+    public ParsedQuery Drop(params string[] tags) => KeepOrDrop(tags, drop: true);
+    public IEnumerable<T> Get<T>(string key) where T : class
+        => this[key].OfType<T>();
+    public string? First(string key) => this[key, 0];
+    public T? First<T>(string key) where T : class
+        => First(key) as T;
+    public override string ToString() => $"?{Items.Select(x => $"{x.key}={x.value}").Aggregate((x, y) => $"{x}&{y}")}";
+    public static implicit operator string(ParsedQuery query) => query.ToString();
+}

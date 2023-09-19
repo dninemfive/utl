@@ -128,6 +128,12 @@ namespace d9.utl
             foreach (char c in chars) s = s.Replace("" + c, "");
             return s;
         }
+        public static string Remove(this string s, params string[] strs)
+        {
+            string result = s;
+            foreach (string s2 in strs.Where(x => !x.NullOrEmpty())) result = result.Replace(s2, "");
+            return result;
+        }
         /// <summary>
         /// Converts a single <see langword="byte"/> to its hexadecimal equivalent.
         /// </summary>
