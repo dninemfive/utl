@@ -41,7 +41,7 @@ public static class Linq2
     /// <returns>The elements of <c>original</c>, in a random order.</returns>
     public static IEnumerable<T> Shuffled<T>(this IEnumerable<T> original, Random? random = null)
     {
-        random ??= new();
+        random ??= _cachedRandom;
         List<T> items = original.ToList();
         while(items.Any())
         {
@@ -63,7 +63,39 @@ public static class Linq2
     /// <returns>A random element from <paramref name="enumerable"/>.</returns>
     public static T RandomElement<T>(this IEnumerable<T> enumerable, Random? random = null)
     {
-        random ??= new();
+        random ??= _cachedRandom;
         return enumerable.ElementAt(random.Next(enumerable.Count()));
+    }
+    private static readonly Random _cachedRandom = new();
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="enumerable"></param>
+    /// <param name="weight"></param>
+    /// <param name="targetWeight"></param>
+    /// <param name="random"></param>
+    /// <returns></returns>
+    /// <remarks>Implements <see href="https://xlinux.nist.gov/dads//HTML/reservoirSampling.html">this algorithm</see>.</remarks>
+    public static T WeightedRandomElement<T>(this IEnumerable<T> enumerable, 
+                                                            Func<T, double> weight, 
+                                                            double targetWeight = -1, 
+                                                            Random? random = null)
+    {
+        if (!enumerable.Any())
+            throw new ArgumentException("WeightedRandomElement must be called with a collection containing at least one item.");
+        random ??= new();
+        if (targetWeight < 0)
+        {            
+            double totalWeight = enumerable.Select(x => weight(x)).Sum();
+            targetWeight = random.NextDouble() * totalWeight;
+        }
+        foreach (T item in enumerable)
+        {
+            targetWeight -= weight(item);
+            if (targetWeight <= 0)
+                return item;
+        }
+        return enumerable.Last();
     }
 }
