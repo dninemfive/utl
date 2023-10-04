@@ -70,4 +70,12 @@ public class CountingDictionary<K, V> : IEnumerable<KeyValuePair<K,V>>
     /// The number of keys in this dictionary.
     /// </summary>
     public int Count => _dict.Count;
+    /// <summary>
+    /// Enumerates over the keys in this dictionary.
+    /// </summary>
+    public IEnumerable<K> Keys => _dict.Keys;
+    /// <summary>
+    /// Enumerates over the values in this dictionary.
+    /// </summary>
+    public IEnumerable<V> Values => _dict.Values;
 }
