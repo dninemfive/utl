@@ -41,7 +41,6 @@ public static class Linq2
     /// <returns>The elements of <c>original</c>, in a random order.</returns>
     public static IEnumerable<T> Shuffled<T>(this IEnumerable<T> original, Random? random = null)
     {
-        random ??= _cachedRandom;
         List<T> items = original.ToList();
         while(items.Any())
         {
@@ -78,9 +77,9 @@ public static class Linq2
     /// <returns></returns>
     /// <remarks>Implements <see href="https://xlinux.nist.gov/dads//HTML/reservoirSampling.html">this algorithm</see>.</remarks>
     public static T WeightedRandomElement<T>(this IEnumerable<T> enumerable, 
-                                                            Func<T, double> weight, 
-                                                            double targetWeight = -1, 
-                                                            Random? random = null)
+                                                  Func<T, double> weight, 
+                                                  double targetWeight = -1, 
+                                                  Random? random = null)
     {
         if (!enumerable.Any())
             throw new ArgumentException("WeightedRandomElement must be called with a collection containing at least one item.");
@@ -97,5 +96,15 @@ public static class Linq2
                 return item;
         }
         return enumerable.Last();
+    }
+    public static IEnumerable<T> WeightedShuffled<T>(this IEnumerable<T> original, Func<T, double> weight, Random? random = null)
+    {
+        List<T> items = original.ToList();
+        while (items.Any())
+        {
+            T item = items.WeightedRandomElement(weight, random: random);
+            _ = items.Remove(item);
+            yield return item;
+        }
     }
 }
