@@ -33,7 +33,7 @@ public class GenericEnumerator<T> : IEnumerator<T>, IDisposable
     public bool MoveNext()
     {
         _index++;
-        return _index > 0 && _index < _items.Length;
+        return _index >= 0 && _index < _items.Length;
     }
     public void Reset() => _index = -1;
     /// <summary>

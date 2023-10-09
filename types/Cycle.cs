@@ -17,24 +17,42 @@ public class Cycle<T> : IEnumerable<T>
     private int Index
     {
         get => _index;
-        set => _index = offsetIndex(value);
+        set => _index = Clamp(value);
     }
-    private int offsetIndex(int i) => (_index + i) % _list.Count;
+    private int Clamp(int index) => (index < 0, index >= _list.Count) switch
+    {
+        (true, false) => _list.Count - 1,
+        (false, true) => 0,
+        _ => index
+    };
+    private int Offset(int i) => Clamp(Index + i);
     public Cycle(params T[] items) : this(items.ToList()) { }
     public Cycle(IEnumerable<T> items)
     {
         _list = items.ToList();
     }
     public T CurrentItem => _list[Index];
-    public T NextItem() => _list[++Index];
-    public T PreviousItem() => _list[--Index];
+    public T NextItem()
+    {
+        Utils.Log($"NextItem({Index})");
+        Index++;
+        Utils.Log($"\t-> {Index}");
+        return CurrentItem;
+    }
+    public T PreviousItem()
+    {
+        Utils.Log($"PrevItem({Index})");
+        Index--;
+        Utils.Log($"\t-> {Index}");
+        return CurrentItem;
+    }
     /// <summary>
     /// Inserts the specified <paramref name="item"/> before the <see cref="CurrentItem"/>.
     /// </summary>
     /// <param name="item">The item to insert.</param>
     public void Prepend(T item)
     {
-        _list.Insert(offsetIndex(-1), item);
+        _list.Insert(Offset(-1), item);
     }
     /// <summary>
     /// Gets the enumerator for this cycle, starting at the <see cref="CurrentItem">current item</see>
@@ -46,7 +64,7 @@ public class Cycle<T> : IEnumerable<T>
         T[] array = new T[_list.Count];
         for(int i = 0; i < _list.Count; i++)
         {
-            array[i] = _list[offsetIndex(i)];
+            array[i] = _list[Offset(i)];
         }
         return new GenericEnumerator<T>(array);
     }
@@ -56,7 +74,7 @@ public class Cycle<T> : IEnumerable<T>
         T[] array = new T[_list.Count];
         for (int i = 0; i < _list.Count; i++)
         {
-            array[i] = _list[offsetIndex(i)];
+            array[i] = _list[Offset(i)];
         }
         return new GenericEnumerator<T>(array);
     }
@@ -65,6 +83,6 @@ public class Cycle<T> : IEnumerable<T>
     /// </summary>
     /// <param name="offset">The index of the item to select, relative to the current item.</param>
     /// <returns>The item at the specified position.</returns>
-    public T this[int offset] => _list[offsetIndex(offset)];
+    public T this[int offset] => _list[Offset(offset)];
     public void Clear() => _list.Clear();
 }
