@@ -1,12 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections;
 using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
-using System.Collections;
-using System.Runtime.InteropServices;
-
 namespace d9.utl;
 /// <summary>
 /// Unnecessarily generalized class which lets you count arbitrary objects.

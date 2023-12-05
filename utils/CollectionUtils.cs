@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace d9.utl;
+﻿namespace d9.utl;
 /// <summary>
 /// If Linq is so good, why isn't there a-
 /// </summary>
@@ -20,6 +14,7 @@ public static class Linq2
     /// <param name="original">The enumerable to be broken up.</param>
     /// <param name="n">The number of parts to break the enumerable into.</param>
     /// <returns>An enumerable of enumerables, broken up as described above.</returns>
+    [Obsolete("This is literally the same as Linq's .Chunk() i think. Will remove pending testing")]
     public static IEnumerable<IEnumerable<T>> BreakInto<T>(this IEnumerable<T> original, int n)
     {
         int partSize = original.Count() / n;
@@ -96,15 +91,5 @@ public static class Linq2
                 return item;
         }
         return enumerable.Last();
-    }
-    public static IEnumerable<T> WeightedShuffled<T>(this IEnumerable<T> original, Func<T, double> weight, Random? random = null)
-    {
-        List<T> items = original.ToList();
-        while (items.Any())
-        {
-            T item = items.WeightedRandomElement(weight, random: random);
-            _ = items.Remove(item);
-            yield return item;
-        }
     }
 }
