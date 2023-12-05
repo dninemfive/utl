@@ -21,15 +21,27 @@ public static class MathUtils
     /// <summary>
     /// Gets the mean of an arbitrary set of numbers.
     /// </summary>
-    /// <typeparam name="T">A type which implements 
-    /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.numerics.iadditionoperators-3">addition operators</see> with itself
-    /// and <see href="https://learn.microsoft.com/en-us/dotnet/api/system.numerics.idivisionoperators-3">division operators</see>
-    /// with itself as the dividend and <see langword="int"/> as the divisor.
+    /// <typeparam name="T">A type which 
+    /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.numerics.iadditionoperators-3">can be added</see> to itself
+    /// and <see href="https://learn.microsoft.com/en-us/dotnet/api/system.numerics.idivisionoperators-3">can be divided</see>
+    /// by an <see langword="int"/>.
     /// </typeparam>
     /// <param name="numbers">An array of numbers to be averaged.</param>
     /// <returns>The <see href="https://en.wikipedia.org/wiki/Arithmetic_mean">arithmetic mean</see> of the given numbers.</returns>
     public static T Mean<T>(params T[] numbers) where T : IAdditionOperators<T,T,T>, IDivisionOperators<T,int,T>
         => numbers.Aggregate((x, y) => x + y) / numbers.Length;
+    /// <summary>
+    /// Gets the mean of an arbitrary set of numbers.
+    /// </summary>
+    /// <typeparam name="T">A type which 
+    /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.numerics.iadditionoperators-3">can be added</see> to itself
+    /// and <see href="https://learn.microsoft.com/en-us/dotnet/api/system.numerics.idivisionoperators-3">can be divided</see>
+    /// by an <see langword="int"/>.
+    /// </typeparam>
+    /// <param name="numbers">An array of numbers to be averaged.</param>
+    /// <returns>The <see href="https://en.wikipedia.org/wiki/Arithmetic_mean">arithmetic mean</see> of the given numbers.</returns>
+    public static T Mean<T>(this IEnumerable<T> numbers) where T : IAdditionOperators<T,T,T>, IDivisionOperators<T,int,T>
+        => numbers.Aggregate((x, y) => x + y) / numbers.Count();
     /// <summary>
     /// Gets the median, i.e. middle value when ordered, of an arbitrary set of orderable objects.
     /// </summary>
