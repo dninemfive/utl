@@ -36,7 +36,7 @@ public static class StringUtils
     /// </summary>
     /// <param name="chars">The characters to join.</param>
     /// <returns>The specified characters, joined to a string.</returns>
-    public static string Join(this IEnumerable<char> chars) => chars.Select(x => "" + x).Aggregate((x, y) => x + y);
+    public static string Join(this IEnumerable<char> chars) => chars.Select(x => $"{x}").Aggregate((x, y) => x + y);
     /// <summary>
     /// Concatenates a collection of strings.
     /// </summary>
