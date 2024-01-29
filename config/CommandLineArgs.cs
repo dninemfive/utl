@@ -47,16 +47,27 @@ public static class CommandLineArgs
         /// <remarks>Ignores the <c>flag</c> argument.</remarks>
         public static Parser<double?> Double
             => (values, _) => double.TryParse(FirstNonNullOrEmptyString(values, false), out double result) ? result : null;
-        public static Parser<T?> Parsable<T>(T? @default, IFormatProvider? formatProvider = null)
-            where T : IParsable<T>
+        public static Parser<T?> ParsableClass<T>(IFormatProvider? formatProvider = null)
+            where T : class, IParsable<T>
             => (values, _) =>
             {
                 if (values is null)
-                    return @default;
+                    return null;
                 foreach (string s in values)
                     if (T.TryParse(s, formatProvider ?? CultureInfo.InvariantCulture, out T? result))
                         return result;
-                return @default;
+                return null;
+            };
+        public static Parser<T?> ParsableStruct<T>(IFormatProvider? formatProvider = null)
+            where T : struct, IParsable<T>
+            => (values, _) =>
+            {
+                if (values is null)
+                    return null;
+                foreach (string s in values)
+                    if (T.TryParse(s, formatProvider ?? CultureInfo.InvariantCulture, out T result))
+                        return result;
+                return null;
             };
         /// <summary>
         /// Returns <inheritdoc cref="GetFlag(string, char?)" path="/returns"/>
@@ -167,9 +178,12 @@ public static class CommandLineArgs
     /// <returns>An object of type <typeparamref name="T"/> if parsing was successful, or <see langword="null"/> otherwise.</returns>
     public static T? TryGet<T>(string argName, Parser<T> parser)
         => parser(_intermediateArgs[argName], false);
-    public static T? TryGet<T>(string argName, T? @default = default, IFormatProvider? formatProvider = null)
-        where T : IParsable<T>
-        => Parsers.Parsable(@default, formatProvider)(_intermediateArgs[argName], false);
+    public static T? TryParseValue<T>(string argName, IFormatProvider? formatProvider = null)
+        where T : struct, IParsable<T>
+        => Parsers.ParsableStruct<T>(formatProvider)(_intermediateArgs[argName], false);
+    public static T? TryParseClass<T>(string argName, IFormatProvider? formatProvider = null)
+        where T : class, IParsable<T>
+        => Parsers.ParsableClass<T>(formatProvider)(_intermediateArgs[argName], false);
     /// <summary>
     /// Gets the specified <see cref="GetFlag(string, char?)">command-line flag</see>.
     /// </summary>
