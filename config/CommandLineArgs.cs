@@ -1,4 +1,6 @@
-﻿namespace d9.utl;
+﻿using System.Globalization;
+
+namespace d9.utl;
 
 /// <summary>
 /// Handles automatically loading command-line arguments into variables.
@@ -44,7 +46,18 @@ public static class CommandLineArgs
         /// </summary>
         /// <remarks>Ignores the <c>flag</c> argument.</remarks>
         public static Parser<double?> Double
-            => (values, _) => double.TryParse(FirstNonNullOrEmptyString(values, false), out double result) ? result : null;            
+            => (values, _) => double.TryParse(FirstNonNullOrEmptyString(values, false), out double result) ? result : null;
+        public static Parser<T?> Parsable<T>(T? @default, IFormatProvider? formatProvider = null)
+            where T : IParsable<T>
+            => (values, _) =>
+            {
+                if (values is null)
+                    return @default;
+                foreach (string s in values)
+                    if (T.TryParse(s, formatProvider ?? CultureInfo.InvariantCulture, out T? result))
+                        return result;
+                return @default;
+            };
         /// <summary>
         /// Returns <inheritdoc cref="GetFlag(string, char?)" path="/returns"/>
         /// </summary>
@@ -154,6 +167,9 @@ public static class CommandLineArgs
     /// <returns>An object of type <typeparamref name="T"/> if parsing was successful, or <see langword="null"/> otherwise.</returns>
     public static T? TryGet<T>(string argName, Parser<T> parser)
         => parser(_intermediateArgs[argName], false);
+    public static T? TryGet<T>(string argName, T? @default = default, IFormatProvider? formatProvider = null)
+        where T : IParsable<T>
+        => Parsers.Parsable(@default, formatProvider)(_intermediateArgs[argName], false);
     /// <summary>
     /// Gets the specified <see cref="GetFlag(string, char?)">command-line flag</see>.
     /// </summary>
