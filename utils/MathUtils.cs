@@ -50,7 +50,7 @@ public static class MathUtils
     /// <param name="ifEven">A function which breaks a tie when the collection is even. For example, the median of an even set of numbers
     /// is the mean of the two middle numbers.</param>
     /// <returns>The median as described above.</returns>
-    public static T Median<T>(IEnumerable<T> orderables, Func<T, T, T> ifEven) where T : IComparable
+    public static T Median<T>(this IEnumerable<T> orderables, Func<T, T, T> ifEven) where T : IComparable
     {
         List<T> ordered = orderables.OrderBy(x => x).ToList();
         if (ordered.Count.IsOdd()) return ordered[ordered.Count / 2];
@@ -68,6 +68,8 @@ public static class MathUtils
     /// <returns>The mathematical median, i.e. the middle number of the ordered collection if the collection has an odd number of elements, or the average
     /// of the two middle numbers if it has an even number of elements.</returns>
     public static T Median<T>(params T[] numbers) where T : IComparable, IAdditionOperators<T, T, T>, IDivisionOperators<T, int, T>
+        => numbers.Median();
+    public static T Median<T>(this IEnumerable<T> numbers) where T : IComparable, IAdditionOperators<T, T, T>, IDivisionOperators<T, int, T>
         => Median(numbers, (x, y) => Mean(x, y));
     /// <typeparam name="T">A <see href="https://learn.microsoft.com/en-us/dotnet/api/system.numerics.inumberbase-1">numeric</see> type.</typeparam>
     /// <param name="t">The number whose oddness to check.</param>

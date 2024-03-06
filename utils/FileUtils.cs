@@ -1,4 +1,6 @@
-﻿namespace d9.utl;
+﻿using System.Security.Cryptography;
+
+namespace d9.utl;
 /// <summary>
 /// Utilities for file, path, and directory manipulation.
 /// </summary>
@@ -57,9 +59,31 @@ public static class FileUtils
     {
         foreach (string path in Directory.EnumerateDirectories(folder))
         {
-            if (pathsToIgnore.Select(x => folder.AbsolutePath().IsSubfolderOf(x.AbsolutePath())).Any())
+            if (pathsToIgnore.Any(x => folder.AbsolutePath().IsSubfolderOf(x.AbsolutePath())))
                 DeleteFolderRecursive(folder, true);
         }
+    }
+    /// <summary>
+    /// Generates a unique hash of the given file for fast comparison purposes.
+    /// </summary>
+    /// <param name="stream">A stream of the file to hash.</param>
+    /// <returns>A SHA512 hash of the file's bytes.</returns>
+    /// <remarks>Based on <see href="https://stackoverflow.com/a/51966515">this StackOverflow answer</see>.</remarks>
+    public static string FileHash(this Stream stream)
+    {
+        using SHA512 sha512 = SHA512.Create();
+        return BitConverter.ToString(sha512.ComputeHash(stream)).Replace("-", "");
+    }
+    /// <summary>
+    /// Generates a unique hash of the given file for fast comparison purposes.
+    /// </summary>
+    /// <param name="path">The path to the file to hash.</param>
+    /// <returns>A SHA512 hash of the file's bytes.</returns>
+    /// <remarks>Based on <see href="https://stackoverflow.com/a/51966515">this StackOverflow answer</see>.</remarks>
+    public static string FileHash(this string path)
+    {
+        using FileStream fs = File.OpenRead(path);
+        return fs.FileHash();
     }
     /// <summary>
     /// Whether the specified <c><paramref name="folder"/></c> is empty.
@@ -105,10 +129,7 @@ public static class FileUtils
     /// <param name="newPath"><inheritdoc cref="CopyFileTo(string, string, bool)" path="/param[@name='newPath']"/></param>
     /// <param name="overwrite"><inheritdoc cref="CopyFileTo(string, string, bool)" path="/param[@name='overwrite']"/></param>
     public static void MoveFileTo(this string oldPath, string newPath, bool overwrite = false)
-    {
-        oldPath.CopyFileTo(newPath, overwrite);
-        File.Delete(oldPath);
-    }
+        => File.Move(oldPath, newPath);
     // https://stackoverflow.com/a/23182807
     /// <summary>
     /// Replaces any characters in <c><paramref name="s"/></c> which are not permitted in valid folder or file names with the specified 

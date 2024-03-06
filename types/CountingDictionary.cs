@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
+using System.Linq;
 namespace d9.utl;
 /// <summary>
 /// Unnecessarily generalized class which lets you count arbitrary objects.
@@ -24,6 +25,7 @@ public class CountingDictionary<K, V> : IEnumerable<KeyValuePair<K,V>>, IDiction
     {
         _dict = dict;
     }
+    public CountingDictionary(IEnumerable<KeyValuePair<K, V>> data) : this(data.ToDictionary(x => x.Key, x => x.Value)) { }
     /// <summary>
     /// Adds to a specific key.
     /// </summary>
@@ -103,4 +105,19 @@ public class CountingDictionary<K, V> : IEnumerable<KeyValuePair<K,V>>, IDiction
     ICollection<V> IDictionary<K, V>.Values => Values.ToList();
     public bool IsReadOnly => false;
     // todo: CountMany
+    public static CountingDictionary<K, V> operator *(CountingDictionary<K, V> dict, V factor)
+        => new(dict.Select(x => new KeyValuePair<K, V>(x.Key, x.Value * factor)));
+    public static CountingDictionary<K, V> operator *(V factor, CountingDictionary<K, V> dict)
+        => dict * factor;
+    public static CountingDictionary<K, V> operator+(CountingDictionary<K, V> a, CountingDictionary<K, V> b)
+    {
+        Dictionary<K, V> result = new();
+        foreach(K key in a.Keys.Union(b.Keys))
+        {
+            a.TryGetValue(key, out V? aValue);
+            b.TryGetValue(key, out V? bValue);
+            result[key] = (aValue ?? V.Zero) + (bValue ?? V.Zero);
+        }
+        return new(result);
+    }
 }

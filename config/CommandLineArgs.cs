@@ -10,7 +10,8 @@ namespace d9.utl;
 /// </example>
 public static class CommandLineArgs
 {
-    private readonly static IntermediateArgs _intermediateArgs;
+    private static readonly IntermediateArgs _intermediateArgs;
+    public static IntermediateArgs IntermediateArgs => _intermediateArgs;
     /// <summary>
     /// Defines a parser which operates on the values recorded for a given variable by an <see cref="IntermediateArgs"/> instance and returns
     /// an object of the specified type.
@@ -32,7 +33,17 @@ public static class CommandLineArgs
         /// Selects the first <see langword="string"/> among the values which is not <see langword="null"/> and whose length is greater than 0.
         /// </summary>
         /// <remarks>Ignores the <c>flag</c> argument.</remarks>
-        public static Parser<string> FirstNonNullOrEmptyString => (values, _) => values?.SkipWhile(x => string.IsNullOrEmpty(x)).First();
+        public static Parser<string> FirstNonNullOrEmptyString => (values, _) =>
+        {
+            try
+            {
+                return values?.SkipWhile(x => string.IsNullOrEmpty(x)).First();
+            } 
+            catch
+            {
+                return null;
+            }
+        };
         /// <summary>
         /// Returns the potentially <see langword="null"/> <see cref="IEnumerable{T}">IEnumerable</see>&lt;<see langword="string"/>&gt; corresponding
         /// to the actual values passed when specifying the given variable.
