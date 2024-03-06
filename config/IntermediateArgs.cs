@@ -65,6 +65,7 @@ public partial record IntermediateArgs
         int pos = 1;
         foreach(string arg in args)
         {
+            Console.WriteLine($"{arg} {getCase(arg)}");
             switch(getCase(arg))
             {
                 case ArgCase.Terminator:
@@ -112,9 +113,9 @@ public partial record IntermediateArgs
     /// <returns>A <see langword="string"/> listing the args and flags specified when the program was executed.</returns>
     public override string ToString() => $"IntermediateArgs {_args.Select(x => $"<{x.Key}: {x.Value.ListNotation()}>").ListNotation()} {_flags.ListNotation()}";
     // gets error CS8795, but this is a bug: see 
-    [GeneratedRegex("-.")]
+    [GeneratedRegex("^-.$")]
     private static partial Regex FlagMatcher();
     // see above comment
-    [GeneratedRegex("--.+")]
+    [GeneratedRegex("^--.+$")]
     private static partial Regex ArgMatcher();
 }
