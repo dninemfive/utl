@@ -36,5 +36,6 @@ public static class Constants
         // https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types
         // > An unknown file type should use this type.
         _ => "application/octet-stream"
-    };        
+    };
+    public const string NullString = "(null)";
 }

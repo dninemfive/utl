@@ -49,13 +49,21 @@ public static class StringUtils
     /// <typeparam name="T">The type the <c>enumerable</c> contains.</typeparam>
     /// <param name="enumerable">The enumerable to print.</param>
     /// <returns>A string of the format <c>[item1, item2, ... itemN]</c> representing the items in <c>enumerable</c>.</returns>
-    public static string ListNotation<T>(this IEnumerable<T> enumerable)
+    public static string ListNotation<T>(this IEnumerable<T> enumerable,
+                                              string nullString = Constants.NullString,
+                                              string leftBracket = "[",
+                                              string rightBracket = "]")
     {
-        if (enumerable is null) return "(null)";
-        if (!enumerable.Any()) return "[]";
-        if (enumerable.Count() == 1) return $"[{enumerable.First()}]";
-        return $"[{enumerable.Select(x => x.PrintNull()).Aggregate((a, b) => $"{a}, {b}")}]";
+        if (enumerable is null) return nullString;
+        return $"{leftBracket}{enumerable.Count() switch
+        {
+            0 => string.Empty,
+            1 => $"{enumerable.First()}",
+            _ => enumerable.Select(x => x.PrintNull(nullString)).Aggregate((a, b) => $"{a}, {b}")
+        }}{rightBracket}";
     }
+    public static string ListNotation<T>(this IEnumerable<T> enumerable, (string left, string right) brackets)
+        => enumerable.ListNotation(brackets.left, brackets.right);
     /// <summary>
     /// Changes the first character of the specified string, if applicable, to lowercase.
     /// </summary>
@@ -91,9 +99,10 @@ public static class StringUtils
     /// Represents an object in human-readable format, even if it's <see langword="null"/>.
     /// </summary>
     /// <param name="obj">The object or <see langword="null"/> value to represent.</param>
-    /// <param name="ifNull">The string to print if <c>obj</c> is null.</param>
+    /// <param name="resultIfNull">The string to print if <c>obj</c> is null.</param>
     /// <returns>A string which is either <c>obj.ToString()</c>, if <c>obj</c> is not <see langword="null"/>, or <c>ifNull</c> otherwise.</returns>
-    public static string PrintNull(this object? obj, string ifNull = "(null)") => obj?.ToString() ?? ifNull;
+    public static string PrintNull(this object? obj, string resultIfNull = Constants.NullString)
+        => obj?.ToString() ?? resultIfNull;
     /// <summary>
     /// Repeats a character a specified number of times.
     /// </summary>
