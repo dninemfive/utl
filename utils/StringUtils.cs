@@ -50,9 +50,9 @@ public static class StringUtils
     /// <param name="enumerable">The enumerable to print.</param>
     /// <returns>A string of the format <c>[item1, item2, ... itemN]</c> representing the items in <c>enumerable</c>.</returns>
     public static string ListNotation<T>(this IEnumerable<T> enumerable,
-                                              string nullString = Constants.NullString,
                                               string leftBracket = "[",
-                                              string rightBracket = "]")
+                                              string rightBracket = "]",
+                                              string nullString = Constants.NullString)
     {
         if (enumerable is null) return nullString;
         return $"{leftBracket}{enumerable.Count() switch
