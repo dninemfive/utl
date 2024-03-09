@@ -62,8 +62,8 @@ public static class StringUtils
             _ => enumerable.Select(x => x.PrintNull(nullString)).Aggregate((a, b) => $"{a}, {b}")
         }}{rightBracket}";
     }
-    public static string ListNotation<T>(this IEnumerable<T> enumerable, (string left, string right) brackets)
-        => enumerable.ListNotation(brackets.left, brackets.right);
+    public static string ListNotation<T>(this IEnumerable<T> enumerable, (string left, string right)? brackets)
+        => enumerable.ListNotation(brackets?.left ?? "", brackets?.right ?? "");
     /// <summary>
     /// Changes the first character of the specified string, if applicable, to lowercase.
     /// </summary>
