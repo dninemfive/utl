@@ -65,7 +65,6 @@ public partial record IntermediateArgs
         int pos = 1;
         foreach(string arg in args)
         {
-            Console.WriteLine($"{arg} {getCase(arg)}");
             switch(getCase(arg))
             {
                 case ArgCase.Terminator:
