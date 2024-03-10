@@ -52,6 +52,7 @@ public static class StringUtils
     public static string ListNotation<T>(this IEnumerable<T> enumerable,
                                               string leftBracket = "[",
                                               string rightBracket = "]",
+                                              string delimiter = ", ",
                                               string nullString = Constants.NullString)
     {
         if (enumerable is null) return nullString;
@@ -59,11 +60,14 @@ public static class StringUtils
         {
             0 => string.Empty,
             1 => $"{enumerable.First()}",
-            _ => enumerable.Select(x => x.PrintNull(nullString)).Aggregate((a, b) => $"{a}, {b}")
+            _ => enumerable.Select(x => x.PrintNull(nullString)).Aggregate((a, b) => $"{a}{delimiter}{b}")
         }}{rightBracket}";
     }
-    public static string ListNotation<T>(this IEnumerable<T> enumerable, (string left, string right)? brackets)
-        => enumerable.ListNotation(brackets?.left ?? "", brackets?.right ?? "");
+    public static string ListNotation<T>(this IEnumerable<T> enumerable,
+                                              (string left, string right)? brackets,
+                                               string delimiter = ", ",
+                                               string nullString = Constants.NullString)
+        => enumerable.ListNotation(brackets?.left ?? "", brackets?.right ?? "", delimiter, nullString);
     /// <summary>
     /// Changes the first character of the specified string, if applicable, to lowercase.
     /// </summary>
