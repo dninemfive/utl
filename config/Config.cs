@@ -19,6 +19,7 @@ public static class Config
     {
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
         WriteIndented = true,
+        IncludeFields = true,
         Converters =
         {
             new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)
