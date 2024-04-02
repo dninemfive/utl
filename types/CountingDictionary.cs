@@ -8,7 +8,7 @@ namespace d9.utl;
 /// </summary>
 /// <typeparam name="K">The object to count.</typeparam>
 /// <typeparam name="V">A <see href="">number</see> type to use to count.</typeparam>
-public class CountingDictionary<K, V> : IEnumerable<KeyValuePair<K,V>>, IDictionary<K, V>
+public class CountingDictionary<K, V> : IEnumerable<KeyValuePair<K,V>>, IDictionary<K, V>, IReadOnlyDictionary<K, V>
     where K : notnull
     where V : INumberBase<V>
 {
