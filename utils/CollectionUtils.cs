@@ -1,4 +1,6 @@
-﻿namespace d9.utl;
+﻿using System.Numerics;
+
+namespace d9.utl;
 /// <summary>
 /// If Linq is so good, why isn't there a-
 /// </summary>
@@ -92,4 +94,7 @@ public static class Linq2
         }
         return enumerable.Last();
     }
+    public static K WeightedRandomElement<K>(this IReadOnlyDictionary<K, double> dict, double targetWeight = -1, Random? random = null)
+        where K : notnull
+        => dict.WeightedRandomElement(x => x.Value, targetWeight, random).Key;
 }
