@@ -109,7 +109,7 @@ public class CountingDictionary<K, V> : IEnumerable<KeyValuePair<K,V>>, IDiction
         => new(dict.Select(x => new KeyValuePair<K, V>(x.Key, x.Value * factor)));
     public static CountingDictionary<K, V> operator *(V factor, CountingDictionary<K, V> dict)
         => dict * factor;
-    public static CountingDictionary<K, V> operator+(CountingDictionary<K, V> a, CountingDictionary<K, V> b)
+    public static CountingDictionary<K, V> operator+(CountingDictionary<K, V> a, IReadOnlyDictionary<K, V> b)
     {
         Dictionary<K, V> result = new();
         foreach(K key in a.Keys.Union(b.Keys))
