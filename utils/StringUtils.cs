@@ -119,6 +119,13 @@ public static class StringUtils
         for (int i = 0; i < times; i++) result += c;
         return result;
     }
+    public static string Repeated(this string s, int times)
+    {
+        string result = "";
+        for (int i = 0; i < times; i++)
+            result += s;
+        return result;
+    }
     /// <summary>
     /// Converts a character to lowercase. Wrapper for <see cref="char.ToLower(char)"/>, because it reads better to me as an extension method.
     /// </summary>
