@@ -25,6 +25,8 @@ public static class Config
             new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)
         }
     };
+    public static T Load<T>(string path)
+        => JsonSerializer.Deserialize<T>(File.ReadAllText(path.AbsolutePath()), DefaultSerializerOptions)!;
     /// <summary>
     /// Tries to load a json file at the specified <c><paramref name="path"/></c>, catching any errors in case
     /// the file does not exist or is malformed.
