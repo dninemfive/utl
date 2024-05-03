@@ -59,7 +59,7 @@ public static class FileUtils
     {
         foreach (string path in Directory.EnumerateDirectories(folder))
         {
-            if (pathsToIgnore.Any(x => folder.AbsolutePath().IsSubfolderOf(x.AbsolutePath())))
+            if (!pathsToIgnore.Any(folder.IsSubfolderOf))
                 DeleteFolderRecursive(folder, true);
         }
     }
@@ -116,8 +116,8 @@ public static class FileUtils
     /// <exception cref="Exception"></exception>
     public static bool IsSubfolderOf(this string folder, string possibleParent)
     {
-        if (!Directory.Exists(folder)) throw new Exception($"{folder.PrintNull()} can't be a subfolder because it does not exist!");
-        if (!Directory.Exists(possibleParent)) throw new Exception($"{possibleParent.PrintNull()} can't be a parent to {folder.PrintNull()} because it does not exist!");
+        if (!Directory.Exists(folder) || !Directory.Exists(possibleParent))
+            return false;
         string relPath = Path.GetRelativePath(possibleParent, folder);
         return relPath.Length < 2 || !(Path.GetRelativePath(possibleParent, folder)[0..2] == "..");
     }
