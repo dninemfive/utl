@@ -1,4 +1,5 @@
-﻿using System.Security.Cryptography;
+﻿using System.IO;
+using System.Security.Cryptography;
 
 namespace d9.utl;
 /// <summary>
@@ -122,14 +123,16 @@ public static class FileUtils
         return relPath.Length < 2 || !(Path.GetRelativePath(possibleParent, folder)[0..2] == "..");
     }
     /// <summary>
-    /// <see cref="CopyFileTo(string, string, bool)">Copies</see> a file from <c><paramref name="oldPath"/></c> to 
-    /// <c><paramref name="newPath"/></c>, then deletes the original, as an atomic operation.
+    /// Moves a file from <paramref name="oldPath"/> to <paramref name="newPath"/>, creating any missing directories as appropriate.
     /// </summary>
     /// <param name="oldPath"><inheritdoc cref="CopyFileTo(string, string, bool)" path="/param[@name='oldPath']"/></param>
     /// <param name="newPath"><inheritdoc cref="CopyFileTo(string, string, bool)" path="/param[@name='newPath']"/></param>
     /// <param name="overwrite"><inheritdoc cref="CopyFileTo(string, string, bool)" path="/param[@name='overwrite']"/></param>
     public static void MoveFileTo(this string oldPath, string newPath, bool overwrite = false)
-        => File.Move(oldPath, newPath);
+    {
+        Directory.CreateDirectory(Path.GetDirectoryName(newPath));
+        File.Move(oldPath, newPath);
+    }
     // https://stackoverflow.com/a/23182807
     /// <summary>
     /// Replaces any characters in <c><paramref name="s"/></c> which are not permitted in valid folder or file names with the specified 
