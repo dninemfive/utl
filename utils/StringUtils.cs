@@ -182,4 +182,21 @@ public static class StringUtils
             ct++;
         }
     }
+    /// <summary>
+    /// Prints the specified items as a list in natural English, with the specified conjunction.
+    /// </summary>
+    /// <param name="items">The items to print.</param>
+    /// <param name="conjunction">The conjunction at the end of the string, just before the last
+    /// item.</param>
+    /// <returns>The items in the list separated by commas as appropriate, with a conjunction
+    ///          between the last two items.</returns>
+    /// <remarks>Uses the Oxford comma, which is the correct way to write such lists.</remarks>
+    public static string NaturalLanguageList<T>(this IEnumerable<T> items, string conjunction = "or")
+        => items.Count() switch
+        {
+            0 => "",
+            1 => $"{items.First()}",
+            2 => $"{items.First()} {conjunction} {items.Last()}",
+            _ => $"{items.SkipLast(1).ListNotation(brackets: null)}, {conjunction} {items.Last()}"
+        };
 }
