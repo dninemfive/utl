@@ -131,8 +131,7 @@ public static class FileUtils
     public static void MoveFileTo(this string oldPath, string newPath, bool overwrite = false)
     {
         // todo: safety checks for Path.GetDirectoryName
-        // the trailing / fixes an issue where it would fail to write directories ending in period(s)
-        Directory.CreateDirectory($"{Path.GetDirectoryName(newPath)}/");
+        Directory.CreateDirectory($"{Path.GetDirectoryName(newPath)}");
         File.Move(oldPath, newPath, overwrite);
     }
     // https://stackoverflow.com/a/23182807
