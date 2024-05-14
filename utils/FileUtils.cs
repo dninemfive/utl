@@ -130,8 +130,10 @@ public static class FileUtils
     /// <param name="overwrite"><inheritdoc cref="CopyFileTo(string, string, bool)" path="/param[@name='overwrite']"/></param>
     public static void MoveFileTo(this string oldPath, string newPath, bool overwrite = false)
     {
-        Directory.CreateDirectory(Path.GetDirectoryName(newPath));
-        File.Move(oldPath, newPath);
+        // todo: safety checks for Path.GetDirectoryName
+        // the trailing / fixes an issue where it would fail to write directories ending in period(s)
+        Directory.CreateDirectory($"{Path.GetDirectoryName(newPath)}/");
+        File.Move(oldPath, newPath, overwrite);
     }
     // https://stackoverflow.com/a/23182807
     /// <summary>
