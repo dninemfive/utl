@@ -26,7 +26,7 @@ public static class Config
         }
     };
     public static T Load<T>(string path)
-        => JsonSerializer.Deserialize<T>(File.ReadAllText(path.AbsolutePath()), DefaultSerializerOptions)!;
+        => JsonSerializer.Deserialize<T>(File.ReadAllText(path.AbsoluteOrInBaseFolder()), DefaultSerializerOptions)!;
     /// <summary>
     /// Tries to load a json file at the specified <c><paramref name="path"/></c>, catching any errors in case
     /// the file does not exist or is malformed.
@@ -43,7 +43,7 @@ public static class Config
             if (!suppressWarnings) Utils.DebugLog($"Failed to load config at path `{path}`: {msg}!");
             return default;
         }
-        path = path?.AbsolutePath();
+        path = path?.AbsoluteOrInBaseFolder();
         if (path is null || !File.Exists(path)) return failWithMessage("path does not point to an existing file");
         try
         {

@@ -5,7 +5,7 @@ namespace d9.utl;
 /// <summary>
 /// Utilities for file, path, and directory manipulation.
 /// </summary>
-/// <remarks>Ensure that <see cref="AbsolutePath(string)"/> is deterministic (and therefore can be used for comparisons)</remarks>
+/// <remarks>Ensure that <see cref="AbsoluteOrInBaseFolder(string)"/> is deterministic (and therefore can be used for comparisons)</remarks>
 public static class FileUtils
 {
     /// <summary>
@@ -14,7 +14,7 @@ public static class FileUtils
     /// </summary>
     /// <param name="path">The path to make into an absolute path.</param>
     /// <returns>A <see langword="string"/> containing an absolute path, as specified above.</returns>
-    public static string AbsolutePath(this string path) => Path.IsPathFullyQualified(path) ? path : Path.Join(Config.BaseFolderPath, path);
+    public static string AbsoluteOrInBaseFolder(this string path) => Path.IsPathFullyQualified(path) ? path : Path.Join(Config.BaseFolderPath, path);
     /// <summary>
     /// Copies a file from <c><paramref name="oldPath"/></c> to <c><paramref name="newPath"/></c>.
     /// </summary>

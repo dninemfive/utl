@@ -48,7 +48,8 @@ public static class GoogleUtils
     /// <summary>
     /// The path to the <see cref="GoogleAuthConfig">config file</see> for Google authentication, provided via command-line argument.
     /// </summary>
-    private static readonly string? ConfigPath = CommandLineArgs.TryGet("googleAuth", CommandLineArgs.Parsers.FilePath) ?? "google auth.json.secret";
+    private static readonly string? ConfigPath = CommandLineArgs.TryGet("googleAuth", CommandLineArgs.Parsers.FilePath)
+                                              ?? "google auth.json.secret".AbsoluteOrInBaseFolder();
     /// <summary>
     /// The <see cref="GoogleAuthConfig"/> loaded from the file, or <see langword="null"/> if it could not be loaded.
     /// </summary>
@@ -228,7 +229,7 @@ public static class GoogleUtils
     public static string? Download(string fileId, string filePath, string mimeType)
     {
         FilesResource.ExportRequest request = new(DriveService, fileId, mimeType);
-        filePath = filePath.AbsolutePath();
+        filePath = filePath.AbsoluteOrInBaseFolder();
         using FileStream fs = new(filePath, FileMode.Create);
         IDownloadProgress progress = request.DownloadWithStatus(fs);
         try
