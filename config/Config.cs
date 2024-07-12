@@ -60,14 +60,3 @@ public static class Config
     /// <returns><see langword="true"/> if the object is non-<see langword="null"/> and valid, or <see langword="false"/> otherwise.</returns>
     public static bool IsValid(this IValidityCheck? ivc) => ivc is not null && ivc.IsValid;
 }
-/// <summary>
-/// Provides a way to check whether an object which may not have been initialized correctly, e.g. a 
-/// <see cref="Config.TryLoad{T}(string?, bool)">config file loaded from json</see>, was in fact loaded correctly.
-/// </summary>
-public interface IValidityCheck
-{
-    /// <summary>
-    /// <see langword="true"/> if this object is fully and properly initialized, or <see langword="false"/> otherwise.
-    /// </summary>
-    public abstract bool IsValid { get; }
-}

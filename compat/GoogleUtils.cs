@@ -24,7 +24,7 @@ public static class GoogleUtils
         /// Whether or not the <see cref="GoogleAuthConfig"/> has been fully and correctly loaded. Implements <see cref="IValidityCheck"/>.
         /// </summary>
         [JsonIgnore]
-        public bool IsValid => !(new string?[] { KeyPath, Email, AppName }.Any(x => x is null));
+        public bool IsValid => new string?[] { KeyPath, Email, AppName }.All(x => x is not null);
         // initialized by JsonSerializer
 #pragma warning disable CS0649
         /// <summary>
