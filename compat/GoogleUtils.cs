@@ -131,7 +131,7 @@ public static class GoogleUtils
     /// <summary>
     /// Gets a <see
     /// href="https://googleapis.dev/dotnet/Google.Apis.Calendar.v3/latest/api/Google.Apis.Calendar.v3.CalendarService.html">
-    /// calendar service </see> using a <see cref="Credential">Credential</see> scoped to allow all
+    /// calendar service</see> using a <see cref="Credential">Credential</see> scoped to allow all
     /// Calendar operations.
     /// </summary>
     public static CalendarService CalendarService
@@ -241,7 +241,7 @@ public static class GoogleUtils
     /// <summary>
     /// Gets a <see
     /// href="https://developers.google.com/resources/api-libraries/documentation/drive/v3/csharp/latest/classGoogle_1_1Apis_1_1Drive_1_1v3_1_1DriveService.html">
-    /// drive service </see> using a <see cref="Credential">Credential</see> scoped to allow all
+    /// drive service</see> using a <see cref="Credential">Credential</see> scoped to allow all
     /// Drive operations.
     /// </summary>
     public static DriveService DriveService

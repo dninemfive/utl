@@ -7,11 +7,10 @@ public static partial class CommandLineArgs
     public static partial class Parsers
     {
         /// <summary>
-        /// Selects the first <see langword="string"/> among the values which is not <see
-        /// langword="null"/> and whose length is greater than 0.
+        /// Selects the first <see langword="string"/> among the values whose length is greater than 0.
         /// </summary>
-        /// <remarks>Ignores the <c>flag</c> argument.</remarks>
-        public static Parser<string> FirstNonNullOrEmptyString => (values, _) =>
+        /// <remarks>Ignores the <c>flag</c> argument. Previously NonNullOrEmpty, but i realized that parsers will never get passed null values.</remarks>
+        public static Parser<string?> FirstNonEmptyString => (values, _) =>
         {
             try
             {

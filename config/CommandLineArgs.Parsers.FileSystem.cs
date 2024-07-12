@@ -8,7 +8,7 @@ public static partial class CommandLineArgs
     {
         /// <summary>
         /// <para>
-        /// Checks that the <see cref="FirstNonNullOrEmptyString">first non-null-or-empty <see
+        /// Checks that the <see cref="FirstNonEmptyString">first non-null-or-empty <see
         /// langword="string"/></see> is a path to a folder.
         /// </para>
         /// <list type="bullet">
@@ -25,7 +25,7 @@ public static partial class CommandLineArgs
         /// </summary>
         public static Parser<string?> FolderPath => delegate (IEnumerable<string>? enumerable, bool _)
         {
-            string? possiblePath = FirstNonNullOrEmptyString(enumerable, false);
+            string? possiblePath = FirstNonEmptyString(enumerable, false);
             if (possiblePath is null)
                 return null;
             string path;
@@ -45,7 +45,7 @@ public static partial class CommandLineArgs
         };
         /// <summary>
         /// <para>
-        /// Checks that the <see cref="FirstNonNullOrEmptyString">first non-null-or-empty <see
+        /// Checks that the <see cref="FirstNonEmptyString">first non-null-or-empty <see
         /// langword="string"/></see> is a path to an existing file. If the file exists, returns the
         /// path; returns <see langword="null"/> otherwise.
         /// </para>
@@ -56,7 +56,7 @@ public static partial class CommandLineArgs
         /// </summary>
         public static Parser<string?> FilePath => delegate (IEnumerable<string>? enumerable, bool _)
         {
-            string? possiblePath = FirstNonNullOrEmptyString(enumerable, false);
+            string? possiblePath = FirstNonEmptyString(enumerable, false);
             if (possiblePath is null)
                 return null;
             string path;
