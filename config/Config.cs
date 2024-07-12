@@ -53,10 +53,4 @@ public static class Config
             return failWithMessage(e.Message);
         }
     }
-    /// <summary>
-    /// Checks that the specified object is not <see langword="null"/> and that it is <see cref="IValidityCheck">valid</see>.
-    /// </summary>
-    /// <param name="ivc">The object whose validity to check.</param>
-    /// <returns><see langword="true"/> if the object is non-<see langword="null"/> and valid, or <see langword="false"/> otherwise.</returns>
-    public static bool IsValid(this IValidityCheck? ivc) => ivc is not null && ivc.IsValid;
 }
