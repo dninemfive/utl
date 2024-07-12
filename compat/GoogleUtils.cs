@@ -4,8 +4,11 @@ using Google.Apis.Calendar.v3.Data;
 using Google.Apis.Download;
 using Google.Apis.Drive.v3;
 using Google.Apis.Services;
+using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
 using System.Text.Json.Serialization;
+using d9.utl;
 
 namespace d9.utl.compat;
 
@@ -22,9 +25,25 @@ public static class GoogleUtils
     {
         /// <summary>
         /// Whether or not the <see cref="GoogleAuthConfig"/> has been fully and correctly loaded. Implements <see cref="IValidityCheck"/>.
+        /// <br/><br/>Specifically, all fields (<see cref="KeyPath">KeyPath</see>, <see cref="Email">Email</see>, and <see cref="AppName">AppName</see>) must be non-<see langword="null"/>,
+        /// and <c>KeyPath</c> must point to an existing file.
         /// </summary>
-        [JsonIgnore]
-        public bool IsValid => new string?[] { KeyPath, Email, AppName }.All(x => x is not null);
+        /// <param name="reason"><inheritdoc cref="IValidityCheck.IsValid(out string?)" path="/param[@name='reason']"/></param>
+        /// <returns><inheritdoc cref="IValidityCheck.IsValid(out string?)" path="/returns"/></returns>
+        /// <remarks><b>NOTE:</b> does not check whether <c>KeyPath</c> is a valid key, <c>Email</c> is a valid email, or <c>AppName</c> is a valid app name.</remarks>
+        public bool IsValid([NotNullWhen(false)] out string? reason)
+        {
+            reason = null;
+            if (this.AnyFieldsAreNull(out IEnumerable<FieldInfo> nullFields))
+            {
+                reason = $"{nullFields.Names().NaturalLanguageList("and")} are null";
+                return false;
+            }
+            string? absoluteKeyPath = KeyPath?.AbsoluteOrInBaseFolder();
+            if (!File.Exists(absoluteKeyPath))
+                reason = $"Could not find authentication key at {absoluteKeyPath}";
+            return reason is null;
+        }
         // initialized by JsonSerializer
 #pragma warning disable CS0649
         /// <summary>
@@ -57,12 +76,12 @@ public static class GoogleUtils
     /// <summary>
     /// <see langword="true"/> if the auth config is usable or <see langword="false"/> otherwise.
     /// </summary>
-    public static bool HasValidAuthConfig => AuthConfig?.IsValid ?? false;
+    public static bool HasValidAuthConfig => AuthConfig?.IsValid(out string? _) ?? false;
     /// <summary>
     /// The exception thrown when the <see cref="GoogleAuthConfig"/> is not <see cref="IValidityCheck">valid</see>.
     /// </summary>
-    private static Exception NoValidAuthConfig(string methodName) =>
-        new($"{methodName}: Cannot authenticate with Google because no AuthConfig at path {ConfigPath} could be successfully loaded!");
+    private static Exception NoValidAuthConfig(string methodName, string reason) =>
+        new($"{methodName}: Cannot authenticate with Google because {ConfigPath} is not a valid AuthConfig: {reason}!");
     /// <summary>
     /// Gets the Google Auth certificate from the (privately-stored) key and password files.
     /// </summary>
@@ -72,7 +91,8 @@ public static class GoogleUtils
     {
         get
         {
-            if (!AuthConfig.IsValid()) throw NoValidAuthConfig(nameof(Certificate));
+            if (!AuthConfig.IsNonNullAndValid(out string? invalidReason)) 
+                throw NoValidAuthConfig(nameof(Certificate), invalidReason);
             // AuthConfig and KeyPath are certainly non-null because they're checked by IsValid
             return new(AuthConfig!.KeyPath!, "notasecret", X509KeyStorageFlags.Exportable);
         }
@@ -85,9 +105,10 @@ public static class GoogleUtils
     /// is permitted to use.</param>
     private static ServiceAccountCredential Credential(params string[] scopes)
     {
-        if (!AuthConfig.IsValid()) throw NoValidAuthConfig(nameof(Credential));
+        if (!AuthConfig.IsNonNullAndValid(out string? invalidReason)) 
+            throw NoValidAuthConfig(nameof(Credential), invalidReason);
         return new(new ServiceAccountCredential.Initializer(AuthConfig!.Email) { Scopes = scopes }
-                .FromCertificate(Certificate));
+                                               .FromCertificate(Certificate));
     }
     #region calendar
     /// <summary>
@@ -101,7 +122,8 @@ public static class GoogleUtils
     {
         get
         {
-            if (!AuthConfig.IsValid()) throw NoValidAuthConfig(nameof(CalendarService));
+            if (!AuthConfig.IsNonNullAndValid(out string? invalidReason))
+                throw NoValidAuthConfig(nameof(CalendarService), invalidReason);
             return new(new BaseClientService.Initializer()
             {
                 HttpClientInitializer = Credential(CalendarService.Scope.Calendar),
@@ -208,7 +230,8 @@ public static class GoogleUtils
     {
         get
         {
-            if (!AuthConfig.IsValid()) throw NoValidAuthConfig(nameof(DriveService));
+            if (!AuthConfig.IsNonNullAndValid(out string? invalidReason))
+                throw NoValidAuthConfig(nameof(DriveService), invalidReason);
             return new(new BaseClientService.Initializer()
             {
                 HttpClientInitializer = Credential(DriveService.Scope.Drive),
