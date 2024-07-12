@@ -1,15 +1,14 @@
-﻿using System.Globalization;
-
-namespace d9.utl;
+﻿namespace d9.utl;
 public static partial class CommandLineArgs
 {
     /// <summary>
-     /// Predefined <see cref="Parser{T}">parsers</see> for command-line args.
-     /// </summary>
+    /// Predefined <see cref="Parser{T}">parsers</see> for command-line args.
+    /// </summary>
     public static partial class Parsers
     {
         /// <summary>
-        /// Selects the first <see langword="string"/> among the values which is not <see langword="null"/> and whose length is greater than 0.
+        /// Selects the first <see langword="string"/> among the values which is not <see
+        /// langword="null"/> and whose length is greater than 0.
         /// </summary>
         /// <remarks>Ignores the <c>flag</c> argument.</remarks>
         public static Parser<string> FirstNonNullOrEmptyString => (values, _) =>
@@ -24,7 +23,8 @@ public static partial class CommandLineArgs
             }
         };
         /// <summary>
-        /// Returns the potentially <see langword="null"/> <see cref="IEnumerable{T}">IEnumerable</see>&lt;<see langword="string"/>&gt; corresponding
+        /// Returns the potentially <see langword="null"/><see
+        /// cref="IEnumerable{T}">IEnumerable</see>&lt; <see langword="string"/>&gt; corresponding
         /// to the actual values passed when specifying the given variable.
         /// </summary>
         /// <remarks>Ignores the <c>flag</c> argument.</remarks>
@@ -33,12 +33,5 @@ public static partial class CommandLineArgs
         /// Returns <inheritdoc cref="GetFlag(string, char?)" path="/returns"/>
         /// </summary>
         public static Parser<bool> Flag => (enumerable, flag) => enumerable is not null || flag;
-        /// <summary>
-        /// Parses the <see cref="FirstNonNullOrEmptyString">first non-null-or-empty <see langword="string"/></see> to a <see langword="double"/>.
-        /// </summary>
-        /// <remarks>Ignores the <c>flag</c> argument.</remarks>
-        [Obsolete("Use CommandLineArgs.Parsers.Struct instead")]
-        public static Parser<double?> Double
-            => (values, _) => double.TryParse(FirstNonNullOrEmptyString(values, false), out double result) ? result : null;
     }
 }
