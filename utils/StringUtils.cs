@@ -113,12 +113,9 @@ public static class StringUtils
     /// <param name="c">The character to repeat.</param>
     /// <param name="times">How many of the character should be produced.</param>
     /// <returns>A string which is <c>times</c> instances of <c>c</c>.</returns>
+    [Obsolete("Use `string.new(char, int)` instead")]
     public static string Repeated(this char c, int times)
-    {
-        string result = "";
-        for (int i = 0; i < times; i++) result += c;
-        return result;
-    }
+        => new(c, times);
     public static string Repeated(this string s, int times)
     {
         string result = "";

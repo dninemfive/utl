@@ -10,8 +10,10 @@ namespace d9.utl;
 /// </example>
 public static class CommandLineArgs
 {
-    private static readonly IntermediateArgs _intermediateArgs;
-    public static IntermediateArgs IntermediateArgs => _intermediateArgs;
+    /// <summary>
+    /// The IntermediateArgs instance for this run of the application.
+    /// </summary>
+    public static IntermediateArgs IntermediateArgs { get; private set; }
     /// <summary>
     /// Defines a parser which operates on the values recorded for a given variable by an <see cref="IntermediateArgs"/> instance and returns
     /// an object of the specified type.
@@ -58,6 +60,12 @@ public static class CommandLineArgs
         /// <remarks>Ignores the <c>flag</c> argument.</remarks>
         public static Parser<double?> Double
             => (values, _) => double.TryParse(FirstNonNullOrEmptyString(values, false), out double result) ? result : null;
+        /// <summary>
+        /// Parses a reference type which implements <see cref="IParsable{TSelf}"/> from the first parsable string in the given values.
+        /// </summary>
+        /// <typeparam name="T">The type to return.</typeparam>
+        /// <param name="formatProvider">An <see cref="IFormatProvider"/> which is passed to <see cref="IParsable{TSelf}.TryParse(string?, IFormatProvider?, out TSelf)"/> in order to try to parse each string.</param>
+        /// <returns>An instance of <typeparamref name="T"/>, if any of the <c>values</c> can be successfully parsed, or <see langword="null"/> otherwise.</returns>
         public static Parser<T?> ParsableClass<T>(IFormatProvider? formatProvider = null)
             where T : class, IParsable<T>
             => (values, _) =>
@@ -173,8 +181,8 @@ public static class CommandLineArgs
     /// </summary>
     static CommandLineArgs()
     {
-        _intermediateArgs = new(Environment.GetCommandLineArgs()[1..]);
-        foreach((int pos, string warning) in _intermediateArgs.Warnings)
+        IntermediateArgs = new(Environment.GetCommandLineArgs()[1..]);
+        foreach((int pos, string warning) in IntermediateArgs.Warnings)
         {
             Utils.DebugLog($"Error in command-line args at position {pos}: {warning}");
         }
@@ -188,13 +196,13 @@ public static class CommandLineArgs
     /// <param name="parser">The <see cref="Parser{T}"/> used to get the variable's value.</param>
     /// <returns>An object of type <typeparamref name="T"/> if parsing was successful, or <see langword="null"/> otherwise.</returns>
     public static T? TryGet<T>(string argName, Parser<T> parser)
-        => parser(_intermediateArgs[argName], false);
+        => parser(IntermediateArgs[argName], false);
     public static T? TryParseValue<T>(string argName, IFormatProvider? formatProvider = null)
         where T : struct, IParsable<T>
-        => Parsers.ParsableStruct<T>(formatProvider)(_intermediateArgs[argName], false);
+        => Parsers.ParsableStruct<T>(formatProvider)(IntermediateArgs[argName], false);
     public static T? TryParseClass<T>(string argName, IFormatProvider? formatProvider = null)
         where T : class, IParsable<T>
-        => Parsers.ParsableClass<T>(formatProvider)(_intermediateArgs[argName], false);
+        => Parsers.ParsableClass<T>(formatProvider)(IntermediateArgs[argName], false);
     /// <summary>
     /// Gets the specified <see cref="GetFlag(string, char?)">command-line flag</see>.
     /// </summary>
@@ -206,7 +214,7 @@ public static class CommandLineArgs
     /// <returns><see langword="true"/> if the variable was defined at least once or its corresponding <see cref="IntermediateArgs.this[char]">flag</see>
     /// is present in the arguments, or <see langword="false"/> otherwise.</returns>
     public static bool GetFlag(string argName, char? flag = null)
-        => Parsers.Flag(_intermediateArgs[argName], _intermediateArgs[flag ?? argName.First().ToLower()]);
+        => Parsers.Flag(IntermediateArgs[argName], IntermediateArgs[flag ?? argName.First().ToLower()]);
     /// <summary>
     /// Gets the value of the argument named <c><paramref name="argName"/></c>, if present, and <b>throws an exception</b> if the argument is not found.
     /// </summary>
