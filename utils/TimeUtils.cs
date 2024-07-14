@@ -63,15 +63,13 @@ public static class TimeUtils
             1 => $"{amt} {name}",
             _ => $"{amt} {name}s"
         };
-        List<string?> portions = new()
+        IEnumerable<string?> portions = new List<string?>()
         {
             portion(ts.Days, "day"),
             portion(ts.Hours, "hour"),
             portion(ts.Minutes, "minute"),
             portion(ts.Seconds, "second")
-        };
-        return portions.Where(x => x is not null)
-                       .Aggregate((x, y) => $"{x}, {y}")
-               ?? "";
+        }.Where(x => x is not null);
+        return portions.Any() ? portions.Aggregate((x, y) => $"{x}, {y}") : "0 seconds";
     }
 }
