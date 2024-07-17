@@ -3,7 +3,7 @@
 /// <summary>
 /// Wrapper for writing to multiple locations simultaneously, for example a file and stdout.
 /// </summary>
-public partial class Log(params ILogComponent[] components) : IDisposable
+public partial class Log(params ILogComponent[] components) : IDisposable, IAsyncDisposable
 {
     private readonly IEnumerable<ILogComponent> _components = components;
     private bool _disposed = false;
@@ -36,26 +36,33 @@ public partial class Log(params ILogComponent[] components) : IDisposable
             await component.WriteLine(obj);
     }
     /// <summary>
-    /// Implements <see cref="IDisposable"/> via the Disposing pattern.
-    /// </summary>
-    /// <param name="disposing">Whether the components should also be disposed.</param>
-    protected virtual void Dispose(bool disposing)
-    {
-        if (!_disposed)
-        {
-            if (disposing)
-                foreach (ILogComponent component in _components)
-                    if (component is IDisposable disposable)
-                        disposable.Dispose();
-            _disposed = true;
-        }
-    }
-    /// <summary>
     /// Implements <see cref="IDisposable"/>.
     /// </summary>
     public void Dispose()
     {
-        Dispose(disposing: true);
+        if(!_disposed)
+            foreach (ILogComponent component in _components)
+                if (component is IDisposable disposable)
+                    disposable.Dispose();
+        GC.SuppressFinalize(this);
+    }
+    /// <summary>
+    /// Implements <see cref="IAsyncDisposable"/>.
+    /// </summary>
+    public async ValueTask DisposeAsync()
+    {
+        if(!_disposed)
+            foreach(ILogComponent component in _components)
+            {
+                if (component is IAsyncDisposable asyncDisposable)
+                {
+                    await asyncDisposable.DisposeAsync();
+                } 
+                else if(component is IDisposable disposable)
+                {
+                    disposable.Dispose();
+                }
+            }
         GC.SuppressFinalize(this);
     }
 }
