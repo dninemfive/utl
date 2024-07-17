@@ -48,6 +48,10 @@ public static class StringUtils
     /// </summary>
     /// <typeparam name="T">The type the <c>enumerable</c> contains.</typeparam>
     /// <param name="enumerable">The enumerable to print.</param>
+    /// <param name="leftBracket">The string to prepend to the beginning of the result.</param>
+    /// <param name="rightBracket">The string to append to the end of the result.</param>
+    /// <param name="delimiter">The string to place in between each item.</param>
+    /// <param name="nullString">The value to return if the enumerable is <see langword="null"/>.</param>
     /// <returns>A string of the format <c>[item1, item2, ... itemN]</c> representing the items in <c>enumerable</c>.</returns>
     public static string ListNotation<T>(this IEnumerable<T> enumerable,
                                               string leftBracket = "[",
@@ -55,7 +59,8 @@ public static class StringUtils
                                               string delimiter = ", ",
                                               string nullString = Constants.NullString)
     {
-        if (enumerable is null) return nullString;
+        if (enumerable is null)
+            return nullString;
         return $"{leftBracket}{enumerable.Count() switch
         {
             0 => string.Empty,
@@ -63,6 +68,13 @@ public static class StringUtils
             _ => enumerable.Select(x => x.PrintNull(nullString)).Aggregate((a, b) => $"{a}{delimiter}{b}")
         }}{rightBracket}";
     }
+    /// <summary><inheritdoc cref="ListNotation{T}(IEnumerable{T}, string, string, string, string)" path="/summary"/></summary>
+    /// <typeparam name="T"><inheritdoc cref="ListNotation{T}(IEnumerable{T}, string, string, string, string)" path="/typeparam[@name='T']"/></typeparam>
+    /// <param name="enumerable"><inheritdoc cref="ListNotation{T}(IEnumerable{T}, string, string, string, string)" path="/param[@name='enumerable']"/></param>
+    /// <param name="brackets">A tuple of the left and right brackets to print. If <see langword="null"/>, no brackets are printed.</param>
+    /// <param name="delimiter"><inheritdoc cref="ListNotation{T}(IEnumerable{T}, string, string, string, string)" path="/param[@name='delimiter']"/></param>
+    /// <param name="nullString"><inheritdoc cref="ListNotation{T}(IEnumerable{T}, string, string, string, string)" path="/param[@name='nullString']"/></param>
+    /// <returns><inheritdoc cref="ListNotation{T}(IEnumerable{T}, string, string, string, string)" path="/returns"/></returns>
     public static string ListNotation<T>(this IEnumerable<T> enumerable,
                                               (string left, string right)? brackets,
                                                string delimiter = ", ",
@@ -111,11 +123,17 @@ public static class StringUtils
     /// Repeats a character a specified number of times.
     /// </summary>
     /// <param name="c">The character to repeat.</param>
-    /// <param name="times">How many of the character should be produced.</param>
-    /// <returns>A string which is <c>times</c> instances of <c>c</c>.</returns>
-    [Obsolete("Use `string.new(char, int)` instead")]
+    /// <param name="times">How many times <paramref name="c"/> should be repeated..</param>
+    /// <returns>A string consisting of <c>times</c> instances of <c>c</c>.</returns>
+    /// <remarks>Would be <c>Obsolete</c> because of <see langword="string"/>.<see langword="new"/>(<see langword="char"/>, <see langword="int"/>), but i'm keeping it for consistency since there's no equivalent for strings.</remarks>
     public static string Repeated(this char c, int times)
         => new(c, times);
+    /// <summary>
+    /// Repeats a string a specified number of times.
+    /// </summary>
+    /// <param name="s">The string to repeat.</param>
+    /// <param name="times">How many times <paramref name="s"/> should be repeated.</param>
+    /// <returns>A string consisting of <c>times</c> instances of <c>s</c>.</returns>
     public static string Repeated(this string s, int times)
     {
         string result = "";
@@ -132,17 +150,18 @@ public static class StringUtils
     /// <summary>Removes a set of characters from a string.</summary>
     /// <param name="s">The string from which the characters will be removed.</param>
     /// <param name="chars">The characters to be removed.</param>
-    /// <returns>A copy of <c>s</c> without any instances of the specified characters..</returns>
+    /// <returns>A copy of <c>s</c> without any instances of the specified characters.</returns>
     public static string Without(this string s, IEnumerable<char> chars)
+        => s.Remove(chars.Select(c => $"{c}"));
+    /// <summary>Removes a set of substrings from a string.</summary>
+    /// <param name="s">The string from which the substrings will be removed.</param>
+    /// <param name="strs">The substrings to be removed.</param>
+    /// <returns>A copy of <c>s</c> without any instances of the specified substrings.</returns>
+    public static string Remove(this string s, IEnumerable<string> strs)
     {
-        foreach (char c in chars) s = s.Replace("" + c, "");
+        foreach (string s2 in strs.Where(x => !x.NullOrEmpty()))
+            s = s.Replace(s2, "");
         return s;
-    }
-    public static string Remove(this string s, params string[] strs)
-    {
-        string result = s;
-        foreach (string s2 in strs.Where(x => !x.NullOrEmpty())) result = result.Replace(s2, "");
-        return result;
     }
     /// <summary>
     /// Converts a single <see langword="byte"/> to its hexadecimal equivalent.
@@ -172,7 +191,8 @@ public static class StringUtils
             if (ct % interval == 0)
             {
                 string msg = $"{ct,8}/{total,-8} ({ct / (float)total:P0})";
-                if (log is not null) log.WriteLine(msg);
+                if (log is not null)
+                    log.WriteLine(msg);
                 else Utils.Log(msg);
             }
             yield return (t, ct);
