@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace d9.utl;
+﻿namespace d9.utl;
 public partial class Log
 {
     /// <summary>
-    /// Commonly-used <see cref="ILogComponent"/>s.
+    /// Commonly-used <see cref="ILogComponent"/> s.
     /// </summary>
     public static class Components
     {
@@ -26,7 +20,9 @@ public partial class Log
         /// <summary>
         /// An <see cref="ILogComponent"/> which uses the specified <see cref="StreamWriter"/>.
         /// </summary>
-        /// <param name="streamWriter">The <see cref="StreamWriter"/> which will handle writing for this log component.</param>
+        /// <param name="streamWriter">
+        /// The <see cref="StreamWriter"/> which will handle writing for this log component.
+        /// </param>
         public static ILogComponent FromStreamWriter(StreamWriter streamWriter)
             => new StreamLogComponent(streamWriter);
         /// <summary>
@@ -34,9 +30,15 @@ public partial class Log
         /// </summary>
         /// <param name="path">The path to the file which will be created.</param>
         /// <param name="mode">The <see cref="FileMode"/> the file stream will use.</param>
-        /// <param name="access">The <see cref="FileAccess"/> type the file stream will have. MUST have the <c>Write</c> bit set, i.e. be either <c>Write</c> or <c>ReadWrite</c>.</param>
+        /// <param name="access">
+        /// The <see cref="FileAccess"/> type the file stream will have. MUST have the <c>Write</c>
+        /// bit set, i.e. be either <c>Write</c> or <c>ReadWrite</c>.
+        /// </param>
         /// <param name="share">The access other threads will have to the file in question.</param>
-        /// <remarks><b>NOTE:</b> by default, this will <b>overwrite</b> the file at the specified <paramref name="path"/>! You can change this by setting a different <paramref name="mode"/>.</remarks>
+        /// <remarks>
+        /// <b>NOTE:</b> by default, this will <b>overwrite</b> the file at the specified <paramref
+        /// name="path"/>! You can change this by setting a different <paramref name="mode"/>.
+        /// </remarks>
         public static ILogComponent OpenFile(string path,
             FileMode mode = FileMode.Create,
             FileAccess access = FileAccess.ReadWrite,

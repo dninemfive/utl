@@ -38,7 +38,7 @@ public class StreamLogComponent
     /// </summary>
     public void Dispose()
     {
-        if(!_disposed)
+        if (!_disposed)
         {
             _streamWriter.Dispose();
             _stream.Dispose();
@@ -50,7 +50,7 @@ public class StreamLogComponent
     /// </summary>
     public async ValueTask DisposeAsync()
     {
-        if(!_disposed)
+        if (!_disposed)
         {
             await _streamWriter.DisposeAsync();
             await _stream.DisposeAsync();
