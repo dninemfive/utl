@@ -12,6 +12,13 @@ public partial class Log
         public static ILogComponent Console
             => new DelegateLogComponent(System.Console.Write, System.Console.WriteLine);
         /// <summary>
+        /// An <see cref="ILogComponent"/> which opens, writes to, and saves a given file on each call.
+        /// </summary>
+        /// <param name="filePath">The path of the file to write to.</param>
+        public static ILogComponent WriteTextTo(string filePath)
+            => new DelegateLogComponent((obj) => File.WriteAllText(filePath, $"{obj}"),
+                                        (obj) => File.WriteAllText(filePath, $"{obj}\n"));
+        /// <summary>
         /// An <see cref="ILogComponent"/> which writes to the specified stream.
         /// </summary>
         /// <param name="stream">The stream to write to.</param>
