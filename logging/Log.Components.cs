@@ -16,8 +16,8 @@ public partial class Log
         /// </summary>
         /// <param name="filePath">The path of the file to write to.</param>
         public static ILogComponent WriteTextTo(string filePath)
-            => new DelegateLogComponent((obj) => File.WriteAllText(filePath, $"{obj}"),
-                                        (obj) => File.WriteAllText(filePath, $"{obj}\n"));
+            => new DelegateLogComponent((obj) => File.AppendAllText(filePath, $"{obj}"),
+                                        (obj) => File.AppendAllText(filePath, $"{obj}\n"));
         /// <summary>
         /// An <see cref="ILogComponent"/> which writes to the specified stream.
         /// </summary>
