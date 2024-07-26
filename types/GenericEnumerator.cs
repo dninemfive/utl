@@ -1,13 +1,26 @@
 ﻿using System.Collections;
 namespace d9.utl;
+/// <summary>
+/// A generic but instatiatable implementation of <see cref="IEnumerator{T}"/>.
+/// </summary>
+/// <typeparam name="T">The type of the items to enumerate.</typeparam>
 public class GenericEnumerator<T> : IEnumerator<T>, IDisposable
 {
     private int _index = -1;
-    private T[] _items;
+    private readonly T[] _items;
+    /// <summary>
+    /// Creates a GenericEnumerator from the specified <paramref name="items"/>.
+    /// </summary>
+    /// <param name="items">The items with which to create the enumerator.</param>
     public GenericEnumerator(params T[] items)
     {
         _items = items;
     }
+    /// <inheritdoc cref="GenericEnumerator{T}.GenericEnumerator(T[])"/>
+    public GenericEnumerator(IEnumerable<T> items) : this(items.ToArray()) { }
+    /// <summary>
+    /// The current item in the enumerator.
+    /// </summary>
     public T Current
     {
         get
@@ -22,13 +35,19 @@ public class GenericEnumerator<T> : IEnumerator<T>, IDisposable
             }
         }
     }
-    object IEnumerator.Current => throw new NotImplementedException();
-
+    object IEnumerator.Current => Current!;
+    /// <summary>
+    /// Moves the current index of the enumerator to the next location.
+    /// </summary>
+    /// <returns>Whether the new location is within the bounds of the internal array.</returns>
     public bool MoveNext()
     {
         _index++;
         return _index >= 0 && _index < _items.Length;
     }
+    /// <summary>
+    /// Resets the index such that the enumerator will yield the first element in the sequence after <see cref="MoveNext"/> is called.
+    /// </summary>
     public void Reset() => _index = -1;
     /// <summary>
     /// Not implemented, as there are no additional resources to dispose. See 
