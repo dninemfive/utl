@@ -9,7 +9,10 @@ public static partial class CommandLineArgs
         /// <summary>
         /// Selects the first <see langword="string"/> among the values whose length is greater than 0.
         /// </summary>
-        /// <remarks>Ignores the <c>flag</c> argument. Previously <c>NonNullOrEmpty</c>, but i realized that parsers will never get passed null values.</remarks>
+        /// <remarks>
+        /// Ignores the <c>flag</c> argument. Previously <c>NonNullOrEmpty</c>, but i realized that
+        /// parsers will never get passed null values.
+        /// </remarks>
         public static Parser<string?> FirstNonEmptyString => (values, _) =>
         {
             try

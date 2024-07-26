@@ -15,8 +15,8 @@ public static partial class CommandLineArgs
                 yield break;
             foreach (string s in values)
             {
-                if(T.TryParse(s, formatProvider ?? CultureInfo.InvariantCulture, out T result) || includeNull)
-                yield return result;
+                if (T.TryParse(s, formatProvider ?? CultureInfo.InvariantCulture, out T result) || includeNull)
+                    yield return result;
             }
         }
         private static IEnumerable<T?> _classes<T>(IEnumerable<string>? values, IFormatProvider? formatProvider)
