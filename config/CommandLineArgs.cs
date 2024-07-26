@@ -57,7 +57,7 @@ public static partial class CommandLineArgs
         => Parsers.Struct<T>(formatProvider)(IntermediateArgs[argName], false);
     public static T? TryParseClass<T>(string argName, IFormatProvider? formatProvider = null)
         where T : class, IParsable<T>
-        => Parsers.Parsable<T>(formatProvider)(IntermediateArgs[argName], false);
+        => Parsers.Class<T>(formatProvider)(IntermediateArgs[argName], false);
     /// <summary>
     /// Gets the specified <see cref="GetFlag(string, char?)">command-line flag</see>.
     /// </summary>

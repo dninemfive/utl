@@ -85,7 +85,6 @@ public partial record IntermediateArgs
                     break;
             }
         }
-        // Console.WriteLine(this);
     }
     /// <summary>
     /// Gets the values corresponding to the specified key, if any.

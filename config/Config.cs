@@ -25,16 +25,22 @@ public static class Config
             new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)
         }
     };
+    /// <summary>
+    /// Loads a JSON config file at the specified <paramref name="path"/>, allowing any errors to be thrown.
+    /// </summary>
+    /// <typeparam name="T">The type defining the config to load.</typeparam>
+    /// <param name="path">The path to the file to load.</param>
+    /// <returns></returns>
     public static T Load<T>(string path)
         => JsonSerializer.Deserialize<T>(File.ReadAllText(path.AbsoluteOrInBaseFolder()), DefaultSerializerOptions)!;
     /// <summary>
-    /// Tries to load a json file at the specified <c><paramref name="path"/></c>, catching any errors in case
+    /// Tries to load a JSON config file at the specified <c><paramref name="path"/></c>, catching any errors in case
     /// the file does not exist or is malformed.
     /// </summary>
-    /// <typeparam name="T">The type to try to load the file as.</typeparam>
-    /// <param name="path">The path to the file to load.</param>
-    /// <param name="suppressWarnings">If <see langword="false"/>, warnings are printed, in debug mode only, if the file is not successfully loaded.</param>
-    /// <returns>A <typeparamref name="T"/> instance loaded from the specified path, if successful, or <see langword="null"/> otherwise.</returns>
+    /// <typeparam name="T"><inheritdoc cref="Load{T}(string)" path="/typeparam[@name='T']"/></typeparam>
+    /// <param name="path"><inheritdoc cref="Load{T}(string)" path="/param[@name='path']"/></param>
+    /// <param name="suppressWarnings">If <see langword="false"/> and the program has the Debug flag applied, any caught exceptions will be printed to the <see cref="Utils.DefaultLog"/>.</param>
+    /// <returns>A <typeparamref name="T"/> instance loaded from the specified path, if successful, or <see langword="default"/>(<typeparamref name="T"/>) otherwise.</returns>
     public static T? TryLoad<T>(string? path, bool suppressWarnings = false)
     {
         Utils.DebugLog($"TryLoad<{typeof(T).Name}>({path.PrintNull()}, {suppressWarnings})");
