@@ -15,7 +15,7 @@ public static class Linq2
     /// </summary>
     /// <remarks>
     /// Does not modify the original. Unlike <see
-    /// cref="System.Linq.Enumerable.Chunk{TSource}(IEnumerable{TSource}, int)"/>, this specifies a
+    /// cref="Enumerable.Chunk{TSource}(IEnumerable{TSource}, int)"/>, this specifies a
     /// number of chunks, rather than the size of each chunk.
     /// </remarks>
     /// <typeparam name="T">The type of the elements of the enumerable.</typeparam>

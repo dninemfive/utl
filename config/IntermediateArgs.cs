@@ -11,19 +11,18 @@ namespace d9.utl;
 /// For example, <br/><c>program.exe -- asdf -f --arg1 69 --exampleList a b c d --arg2 42</c><br/>
 /// is parsed to <br/>
 /// <code>
-///IntermediateArgs {
-///_args: {
-///// note that dictionaries are unordered; i sorted this for convenience
-///arg1: ["69"]
-///arg2: ["42"]
-///exampleList: ["a", "b", "c", "d"]
-///}
-///flags: ['f']
-///warnings: [
-///"position 1: Encountered "--" but no currentKey to close.",
-///"position 2: Encountered value "asdf" but no currentKey to add it to."
-///]
-///}
+/// IntermediateArgs {
+///   _args: {
+///     arg1: ["69"]
+///     arg2: ["42"]
+///     exampleList: ["a", "b", "c", "d"]
+///   },
+///   flags: ['f'],
+///   warnings: [
+///     "position 1: Encountered "--" but no currentKey to close.",
+///     "position 2: Encountered value "asdf" but no currentKey to add it to."
+///   ]
+/// }
 /// </code>
 /// </remarks>
 public partial record IntermediateArgs
