@@ -97,4 +97,27 @@ public static class Linq2
     public static K WeightedRandomElement<K>(this IReadOnlyDictionary<K, double> dict, double targetWeight = -1, Random? random = null)
         where K : notnull
         => dict.WeightedRandomElement(x => x.Value, targetWeight, random).Key;
+    /// <summary>
+    /// Adds an arbitrary set of <paramref name="dictionaries"/> with numerical values together.
+    /// </summary>
+    /// <typeparam name="K">The key type of the dictionary.</typeparam>
+    /// <typeparam name="V">The value type of the dictionary.</typeparam>
+    /// <param name="dictionaries">The dictionaries to add together.</param>
+    /// <returns>A new dictionary with all keys found in any of the <paramref name="dictionaries"/>, with their corresponding values being the sum of the corresponding values in any dictionaries which contain them.</returns>
+    public static IReadOnlyDictionary<K, V> Sum<K, V>(this IEnumerable<IReadOnlyDictionary<K, V>> dictionaries)
+        where K : notnull
+        where V : INumberBase<V>
+    {
+        Dictionary<K, V> result = new();
+        IEnumerable<K> allKeys = dictionaries.SelectMany(x => x.Keys);
+        foreach(K key in allKeys)
+        {
+            V sum = V.Zero;
+            foreach(IReadOnlyDictionary<K, V> dictionary in dictionaries)
+                if (dictionary.TryGetValue(key, out V? value))
+                    sum += value;
+            result[key] = sum;
+        }
+        return result;
+    }
 }
