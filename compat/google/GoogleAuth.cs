@@ -28,7 +28,7 @@ public partial class GoogleAuth
     /// </summary>
     /// <remarks>Largely a copy of code from <see href="https://www.daimto.com/google-drive-authentication-c/">this example</see>.<br/>
     /// <br/> Apparently the password is always <c>notasecret</c> and that can't be changed, which is strange.</remarks>
-    private X509Certificate2 Certificate
+    public X509Certificate2 Certificate
         => new(Config.KeyPath, "notasecret", X509KeyStorageFlags.Exportable);
     /// <summary>
     /// Constructs a credential with the specified scopes.
@@ -36,7 +36,13 @@ public partial class GoogleAuth
     /// <remarks>Largely a copy of code from <see href="https://www.daimto.com/google-drive-authentication-c/">this example</see>.</remarks>
     /// <param name="scopes">The <see href="https://developers.google.com/identity/protocols/oauth2/scopes">Google scopes</see> the credential 
     /// is permitted to use.</param>
-    private ServiceAccountCredential Credential(params string[] scopes)
+    public ServiceAccountCredential Credential(params string[] scopes)
         => new(new ServiceAccountCredential.Initializer(Config.Email) { Scopes = scopes }
                                            .FromCertificate(Certificate));
+    public BaseClientService.Initializer InitializerFor(params string[] scopes)
+        => new()
+        {
+            HttpClientInitializer = Credential(scopes),
+            ApplicationName = Config.AppName
+        };
 }

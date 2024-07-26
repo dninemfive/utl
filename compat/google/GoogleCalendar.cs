@@ -4,19 +4,16 @@ using Google.Apis.Services;
 
 namespace d9.utl.compat.google;
 public partial class GoogleCalendar
+    : GoogleServiceWrapper<CalendarService>
 {
     public string Id { get; private set; }
-    public CalendarService Service { get; private set; }
-    public GoogleCalendar(string id, CalendarService service)
+    public GoogleCalendar(string id, CalendarService service) 
+        : base(service)
     {
         Id = id;
-        Service = service;
     }
-    public GoogleCalendar(string id, GoogleAuth auth) : this(id, new(new BaseClientService.Initializer()
-    {
-        HttpClientInitializer = auth.Credential(CalendarService.Scope.Calendar),
-        ApplicationName = auth.AppName
-    }));
+    public GoogleCalendar(string id, GoogleAuth auth) 
+        : this(id, new CalendarService(auth.InitializerFor(CalendarService.Scope.Calendar))) { }
     /// <summary>
     /// Adds an event to the associated calendar.
     /// </summary>

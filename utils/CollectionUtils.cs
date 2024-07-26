@@ -16,7 +16,6 @@ public static class Linq2
     /// <param name="original">The enumerable to be broken up.</param>
     /// <param name="n">The number of parts to break the enumerable into.</param>
     /// <returns>An enumerable of enumerables, broken up as described above.</returns>
-    [Obsolete("This is literally the same as Linq's .Chunk() i think. Will remove pending testing")]
     public static IEnumerable<IEnumerable<T>> BreakInto<T>(this IEnumerable<T> original, int n)
     {
         int partSize = original.Count() / n;

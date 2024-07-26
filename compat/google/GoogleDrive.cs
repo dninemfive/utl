@@ -1,28 +1,15 @@
 ﻿using Google.Apis.Download;
 using Google.Apis.Drive.v3;
 using Google.Apis.Services;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace d9.utl.compat.google;
-public partial class GoogleAuth
+public class GoogleDrive
+    : GoogleServiceWrapper<DriveService>
 {
-    /// <summary>
-    /// Gets a 
-    /// <see href="https://developers.google.com/resources/api-libraries/documentation/drive/v3/csharp/latest/classGoogle_1_1Apis_1_1Drive_1_1v3_1_1DriveService.html">
-    ///     drive service
-    /// </see>
-    /// using a <see cref="Credential">Credential</see> scoped to allow all Drive operations.
-    /// </summary>
-    public DriveService DriveService
-        => new(new BaseClientService.Initializer()
-        {
-            HttpClientInitializer = Credential(DriveService.Scope.Drive),
-            ApplicationName = Config!.AppName
-        });
+    public GoogleDrive(DriveService service) 
+        : base(service) { }
+    public GoogleDrive(GoogleAuth auth) 
+        : this(new DriveService(auth.InitializerFor(DriveService.Scope.Drive))) { }
     /// <summary>
     /// Attempts to download a file from a Drive URL to the <paramref name="filePath">specified path</paramref>
     /// and prints whether or not it was successful, as well as the response code.
@@ -35,7 +22,7 @@ public partial class GoogleAuth
     /// <returns>The path to the downloaded file, if successfully downloaded, or <see langword="null"/> otherwise.</returns>
     public string? Download(string fileId, string filePath, string mimeType)
     {
-        FilesResource.ExportRequest request = new(DriveService, fileId, mimeType);
+        FilesResource.ExportRequest request = new(Service, fileId, mimeType);
         filePath = filePath.AbsoluteOrInBaseFolder();
         using FileStream fs = new(filePath, FileMode.Create);
         IDownloadProgress progress = request.DownloadWithStatus(fs);
