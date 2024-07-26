@@ -32,9 +32,9 @@ public class CountingDictionary<K, V> : IEnumerable<KeyValuePair<K, V>>, IDictio
     /// <param name="data">
     /// The data, in key-value pair format, to initialize the counting dictionary with.
     /// </param>
-    public CountingDictionary(IEnumerable<KeyValuePair<K, V>> data) : this(data.ToDictionary(x => x.Key, x => x.Value)) { }
+    public CountingDictionary(IEnumerable<KeyValuePair<K, V>> data) : this(new Dictionary<K, V>(data)) { }
     /// <inheritdoc cref="CountingDictionary{K, V}.CountingDictionary(IEnumerable{KeyValuePair{K, V}})"/>
-    public CountingDictionary(IEnumerable<(K key, V value)> data) : this(data.Select(x => new KeyValuePair<K, V>(x.key, x.value))) { }
+    public CountingDictionary(IEnumerable<(K key, V value)> data) : this(data.ToDictionary()) { }
     /// <summary>
     /// Adds to a specific key.
     /// </summary>

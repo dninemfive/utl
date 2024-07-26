@@ -15,8 +15,8 @@ public static class Linq2
     /// </summary>
     /// <remarks>
     /// Does not modify the original. Unlike <see
-    /// cref="Enumerable.Chunk{TSource}(IEnumerable{TSource}, int)"/>, this specifies a
-    /// number of chunks, rather than the size of each chunk.
+    /// cref="Enumerable.Chunk{TSource}(IEnumerable{TSource}, int)"/>, this specifies a number of
+    /// chunks, rather than the size of each chunk.
     /// </remarks>
     /// <typeparam name="T">The type of the elements of the enumerable.</typeparam>
     /// <param name="original">The enumerable to be broken up.</param>
@@ -155,4 +155,27 @@ public static class Linq2
         }
         return result;
     }
+    /// <summary>
+    /// Creates a new dictionary from the specified <paramref name="tuples"/>.
+    /// </summary>
+    /// <typeparam name="K">The key type of the specified <paramref name="tuples"/>.</typeparam>
+    /// <typeparam name="V">The value type of the specified <paramref name="tuples"/>.</typeparam>
+    /// <param name="tuples">The tuples from which to create a dictionary.</param>
+    /// <returns>
+    /// A new dictionary whose items are all the unique first items of the specified <paramref
+    /// name="tuples"/> and their values are the second item from each corresponding tuple.
+    /// </returns>
+    public static Dictionary<K, V> ToDictionary<K, V>(this IEnumerable<(K key, V value)> tuples)
+        where K : notnull
+        => new(tuples.Select(x => new KeyValuePair<K, V>(x.key, x.value)));
+    /// <summary>
+    /// Creates a new dictionary from the specified <paramref name="items"/>.
+    /// </summary>
+    /// <typeparam name="K">The key type of the specified <paramref name="items"/>.</typeparam>
+    /// <typeparam name="V">The value type of the specified <paramref name="items"/>.</typeparam>
+    /// <param name="items">The items from which to create a dictionary.</param>
+    /// <returns>A new dictionary containing the specified key-value pairs.</returns>
+    public static Dictionary<K, V> ToDictionary<K, V>(this IEnumerable<KeyValuePair<K, V>> items)
+        where K : notnull
+        => new(items);
 }

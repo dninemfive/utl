@@ -6,18 +6,30 @@ public static class NetUtils
     /// Parses the query portion of a <see cref="Uri"/> and returns each item and its corresponding value.
     /// </summary>
     /// <remarks>Currently, if a query has duplicates of the same key, only the first one will be returned.</remarks>
-    /// <returns>A dictionary</returns>
     public static ParsedQuery ParseQuery(this Uri uri)
     {
         string query = uri.Query[1..^0]; // slice the question mark away
-        List<(string key, string value)> items = new();
+        Dictionary<string, List<string>> result = new();
         foreach(string item in query.Split("&"))
         {
             string[] split = item.Split("=");
-            if (split.Length < 2) continue;
-            items.Add((split[0], split[1..].Aggregate((x, y) => $"{x}{y}")));
+            string key = split[0];
+            List<string> values = new();
+            if (split.Length >= 2)
+            {
+                values = split.Skip(1).ToList();
+            }
+            if (result.TryGetValue(key, out List<string>? list))
+            {
+                foreach (string value in values)
+                    list.Add(value);
+            }
+            else
+            {
+                result[key] = values;
+            }
         }
-        return new(items);
+        return new(result);
     }
     public static ParsedQuery ParseQuery(this string url) => new Uri(url).ParseQuery();
     public static string ToQuery(this IEnumerable<(string key, string value)> items)
@@ -27,11 +39,12 @@ public static class NetUtils
 }
 public readonly struct ParsedQuery
 {
-    public readonly IReadOnlyCollection<(string key, string value)> Items { get; }
-    internal ParsedQuery(IEnumerable<(string key, string value)> items)
+    public readonly IReadOnlyDictionary<string, IEnumerable<string>> _items { get; }
+    public ParsedQuery(IReadOnlyDictionary<string, IEnumerable<string>> items)
     {
-        Items = items.ToImmutableList();
+        _items = items;
     }
+    internal ParsedQuery(IEnumerable<(string key, IEnumerable<string> values)> items) : this(items.ToDictionary()) { }
     public IEnumerable<string> this[string key] => Items.Where(x => x.key == key).Select(x => x.value);
     public string? this[string key, int index]
     {
