@@ -70,6 +70,6 @@ public static class TimeUtils
             portion(ts.Minutes, "minute"),
             portion(ts.Seconds, "second")
         }.Where(x => x is not null);
-        return portions.Any() ? portions.Aggregate((x, y) => $"{x}, {y}") : "0 seconds";
+        return portions.Any() ? portions.NaturalLanguageList() : "0 seconds";
     }
 }
