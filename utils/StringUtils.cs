@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System.Reflection;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 namespace d9.utl;
 /// <summary>
@@ -20,9 +21,7 @@ public static class StringUtils
     {
         string result = "";
         foreach ((T t, int width) in values)
-        {
             result += t.PrintNull().PadRight(width);
-        }
         return result;
     }
     /// <summary>Prints the specified objects in columns with specified widths.</summary>
@@ -98,19 +97,34 @@ public static class StringUtils
     /// <returns><inheritdoc cref="string.IsNullOrEmpty(string?)" path="/returns"/></returns>
     public static bool NullOrEmpty(this string? s) => string.IsNullOrEmpty(s);
     /// <summary>
-    /// Prints an object in its entirety in relatively readable JSON format.
+    /// Prints all fields and properties on a specified object.
     /// </summary>
     /// <param name="obj">The object to print.</param>
+    /// <param name="indents">How many indents to print before each member in this specific object. Used internally.</param>
     /// <returns>A pretty-printed object.</returns>
-    public static string PrettyPrint(this object? obj) => JsonSerializer.Serialize(obj, new JsonSerializerOptions()
+    public static string PrettyPrint(this object? obj, int indents = 0)
     {
-        WriteIndented = true,
-        NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals,
-        Converters =
+        if (obj is null)
+            return Constants.NullString;
+        Type objType = obj.GetType();
+        MemberInfo[] members = objType.GetMembers(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+        if (!members.Any())
+            return $"{objType.Name} {obj}";
+        string result = $"{objType.Name} {{", memberPrefix = $"\n{"  ".Repeated(indents + 1)}";
+        foreach (MemberInfo member in objType.GetMembers())
         {
-            new JsonStringEnumConverter()
+            if(member is FieldInfo field)
+            {
+                result += $"{memberPrefix}{field.Name}: {field.GetValue(obj).PrettyPrint(indents + 1)}";
+            }
+            else if(member is PropertyInfo property)
+            {
+                result += $"{memberPrefix}{property.Name}: {property.GetValue(obj).PrettyPrint(indents + 1)}";
+            }
         }
-    });
+        result += $"=n{"  ".Repeated(indents)}";
+        return result;
+    }
     /// <summary>
     /// Represents an object in human-readable format, even if it's <see langword="null"/>.
     /// </summary>
