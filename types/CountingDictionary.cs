@@ -16,7 +16,8 @@ public class CountingDictionary<K, V> : IEnumerable<KeyValuePair<K, V>>, IDictio
     /// <summary>
     /// Initializes an empty counting dictionary.
     /// </summary>
-    public CountingDictionary() { }
+    public CountingDictionary()
+    { }
     /// <summary>
     /// Initializes a counting dictionary with the specified keys and counts.
     /// </summary>
