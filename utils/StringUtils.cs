@@ -100,29 +100,40 @@ public static class StringUtils
     /// Prints all fields and properties on a specified object.
     /// </summary>
     /// <param name="obj">The object to print.</param>
-    /// <param name="indents">How many indents to print before each member in this specific object. Used internally.</param>
+    /// <param name="indent">How many indents to print before each member in this specific object. Used internally.</param>
     /// <returns>A pretty-printed object.</returns>
-    public static string PrettyPrint(this object? obj, int indents = 0)
+    public static string PrettyPrint(this object? obj, string indent = "")
     {
+        if (indent.Length > 12)
+            return "too much recursion!";
         if (obj is null)
             return Constants.NullString;
         Type objType = obj.GetType();
-        MemberInfo[] members = objType.GetMembers(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-        if (!members.Any())
-            return $"{objType.Name} {obj}";
-        string result = $"{objType.Name} {{", memberPrefix = $"\n{"  ".Repeated(indents + 1)}";
-        foreach (MemberInfo member in objType.GetMembers())
+        if (objType.IsPrimitive)
+            return $"{obj}";
+        IEnumerable<MemberInfo> members = objType.GetMembers(BindingFlags.Instance | BindingFlags.Public)
+                                                 .Where(x => (x is FieldInfo fi && !fi.IsStatic) || (x is PropertyInfo pi && !(pi.GetGetMethod()?.IsStatic ?? false)));
+        string result = $"{objType.Name} {{", nextIndent = indent + "  ";
+        foreach (MemberInfo member in members)
         {
             if(member is FieldInfo field)
             {
-                result += $"{memberPrefix}{field.Name}: {field.GetValue(obj).PrettyPrint(indents + 1)}";
+                result += $"\n{nextIndent}{field.FieldType.Name} {field.Name}: {field.GetValue(obj).PrettyPrint(nextIndent)}";
             }
             else if(member is PropertyInfo property)
             {
-                result += $"{memberPrefix}{property.Name}: {property.GetValue(obj).PrettyPrint(indents + 1)}";
+                result += $"\n{nextIndent}{property.PropertyType.Name} {property.Name}: ";
+                try
+                {
+                    result += $"{property.GetValue(obj).PrettyPrint(nextIndent)}";
+                }
+                catch(Exception e)
+                {
+                    result += $"!{e.GetType().Name}!";
+                }
             }
         }
-        result += $"=n{"  ".Repeated(indents)}";
+        result += $"\n{indent}}}";
         return result;
     }
     /// <summary>
