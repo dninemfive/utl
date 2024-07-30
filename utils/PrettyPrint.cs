@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Collections;
+using System.Runtime.CompilerServices;
 namespace d9.utl;
 public static class PrettyPrintExtensions
 {
@@ -21,7 +22,7 @@ public static class PrettyPrintExtensions
             return t.AngleBracketGenericName();
         Type objType = obj.GetType();
         if (obj is IEnumerable enumerable)
-            return $"{objType.AngleBracketGenericName()}: {enumerable.EnumerableString()}";
+            return enumerable.EnumerableString();
         if (objType.IsPrimitive)
             return $"{obj}";
         IEnumerable<MemberInfo> members = objType.GetMembers(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
@@ -29,6 +30,9 @@ public static class PrettyPrintExtensions
         string result = $"{objType.AngleBracketGenericName()} {{", nextIndent = indent + "  ";
         foreach (MemberInfo member in members)
         {
+            // https://stackoverflow.com/a/1593822
+            if (member.GetCustomAttribute<CompilerGeneratedAttribute>() is not null)
+                continue;
             if(member.Summary(obj, out object? value) is string summary)
             {
                 result += $"\n{nextIndent}{summary}{value.PrettyPrint(nextIndent)}";
@@ -66,7 +70,16 @@ public static class PrettyPrintExtensions
     {
         string result = "[";
         foreach (object? item in enumerable)
-            result += $"{item.PrintNull}, ";
+        {
+            if(item is IEnumerable enumerable2)
+            {
+                result += $"{enumerable2.EnumerableString()}, ";
+            } 
+            else
+            {
+                result += $"{item.PrintNull()}, ";
+            }
+        }
         if (result.Length > 2)
             result = result[..^2];
         return $"{result}]";
