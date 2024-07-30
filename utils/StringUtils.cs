@@ -97,46 +97,6 @@ public static class StringUtils
     /// <returns><inheritdoc cref="string.IsNullOrEmpty(string?)" path="/returns"/></returns>
     public static bool NullOrEmpty(this string? s) => string.IsNullOrEmpty(s);
     /// <summary>
-    /// Prints all fields and properties on a specified object.
-    /// </summary>
-    /// <param name="obj">The object to print.</param>
-    /// <param name="indent">How many indents to print before each member in this specific object. Used internally.</param>
-    /// <returns>A pretty-printed object.</returns>
-    public static string PrettyPrint(this object? obj, string indent = "")
-    {
-        if (indent.Length > 12)
-            return "too much recursion!";
-        if (obj is null)
-            return Constants.NullString;
-        Type objType = obj.GetType();
-        if (objType.IsPrimitive)
-            return $"{obj}";
-        IEnumerable<MemberInfo> members = objType.GetMembers(BindingFlags.Instance | BindingFlags.Public)
-                                                 .Where(x => (x is FieldInfo fi && !fi.IsStatic) || (x is PropertyInfo pi && !(pi.GetGetMethod()?.IsStatic ?? false)));
-        string result = $"{objType.Name} {{", nextIndent = indent + "  ";
-        foreach (MemberInfo member in members)
-        {
-            if(member is FieldInfo field)
-            {
-                result += $"\n{nextIndent}{field.FieldType.Name} {field.Name}: {field.GetValue(obj).PrettyPrint(nextIndent)}";
-            }
-            else if(member is PropertyInfo property)
-            {
-                result += $"\n{nextIndent}{property.PropertyType.Name} {property.Name}: ";
-                try
-                {
-                    result += $"{property.GetValue(obj).PrettyPrint(nextIndent)}";
-                }
-                catch(Exception e)
-                {
-                    result += $"!{e.GetType().Name}!";
-                }
-            }
-        }
-        result += $"\n{indent}}}";
-        return result;
-    }
-    /// <summary>
     /// Represents an object in human-readable format, even if it's <see langword="null"/>.
     /// </summary>
     /// <param name="obj">The object or <see langword="null"/> value to represent.</param>

@@ -24,4 +24,8 @@
     <PackageReference Include="Google.Apis.Drive.v3" Version="1.60.0.3034" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="utils\pretty print\" />
+  </ItemGroup>
+
 </Project>
