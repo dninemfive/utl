@@ -178,4 +178,6 @@ public static class Linq2
     public static Dictionary<K, V> ToDictionary<K, V>(this IEnumerable<KeyValuePair<K, V>> items)
         where K : notnull
         => new(items);
+    public static T Second<T>(this IEnumerable<T> items)
+        => items.ElementAt(1);
 }

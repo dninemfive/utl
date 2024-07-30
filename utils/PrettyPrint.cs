@@ -3,6 +3,11 @@ using System.Reflection;
 using System.Collections;
 using System.Runtime.CompilerServices;
 namespace d9.utl;
+[AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Interface)]
+public class IncludeNonPublicMembersInPrettyPrintAttribute : Attribute
+{
+
+}
 public static class PrettyPrintExtensions
 {
 
@@ -12,33 +17,48 @@ public static class PrettyPrintExtensions
     /// <param name="obj">The object to print.</param>
     /// <param name="indent">How many indents to print before each member in this specific object. Used internally.</param>
     /// <returns>A pretty-printed object.</returns>
-    public static string PrettyPrint(this object? obj, string indent = "")
+    public static string PrettyPrint(this object? obj, string indent = "", bool includeInitialType = true)
     {
         if (indent.Length > 12)
-            return "too much recursion!";
+            return $"{obj?.GetType()?.AngleBracketGenericName().PrintNull()}.";
         if (obj is null)
             return Constants.NullString;
+        if (obj is char c)
+            return $"'{c}'";
+        if (obj is string s)
+            return $"\"{s}\"";
         if (obj is Type t)
             return t.AngleBracketGenericName();
         Type objType = obj.GetType();
-        if (obj is IEnumerable enumerable)
-            return enumerable.EnumerableString();
         if (objType.IsPrimitive)
             return $"{obj}";
-        IEnumerable<MemberInfo> members = objType.GetMembers(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
-                                                 .Where(x => (x is FieldInfo fi && !fi.IsStatic) || (x is PropertyInfo pi && !(pi.GetGetMethod()?.IsStatic ?? false)));
-        string result = $"{objType.AngleBracketGenericName()} {{", nextIndent = indent + "  ";
-        foreach (MemberInfo member in members)
+        string result = includeInitialType ? $"{objType.AngleBracketGenericName()} " : "", nextIndent = indent + "  ", brackets = "{}";
+        if(obj is IEnumerable enumerable)
         {
-            // https://stackoverflow.com/a/1593822
-            if (member.GetCustomAttribute<CompilerGeneratedAttribute>() is not null)
-                continue;
-            if(member.Summary(obj, out object? value) is string summary)
+            brackets = "[]";
+            result += brackets.First();
+            foreach(object? item in enumerable)
+                result += $"\n{nextIndent}{item?.GetType().AngleBracketGenericName()} {item.PrettyPrint(nextIndent, false)},";
+        }
+        else
+        {
+            BindingFlags bindingFlags = BindingFlags.Instance | BindingFlags.Public;
+            if (objType.GetCustomAttribute<IncludeNonPublicMembersInPrettyPrintAttribute>() is not null)
+                bindingFlags |= BindingFlags.NonPublic;
+            result += brackets.First();
+            IEnumerable<MemberInfo> members = objType.GetMembers(bindingFlags)
+                                                     .Where(x => (x is FieldInfo fi && !fi.IsStatic) || (x is PropertyInfo pi && !(pi.GetGetMethod()?.IsStatic ?? false)));
+            foreach (MemberInfo member in members)
             {
-                result += $"\n{nextIndent}{summary}{value.PrettyPrint(nextIndent)}";
+                // https://stackoverflow.com/a/1593822
+                if (member.GetCustomAttribute<CompilerGeneratedAttribute>() is not null)
+                    continue;
+                if (member.Summary(obj, out object? value) is string summary)
+                    result += $"\n{nextIndent}{summary}{value.PrettyPrint(nextIndent, false)},";
             }
         }
-        result += $"\n{indent}}}";
+        result = result[..^1];
+        result += $"\n{indent}{brackets.Second()}";
         return result;
     }
     private static string? Summary(this MemberInfo member, object owner, out object? value)
@@ -65,24 +85,6 @@ public static class PrettyPrintExtensions
             value = property.GetValue(owner);
         }
         return type is not null;
-    }
-    private static string EnumerableString(this IEnumerable enumerable)
-    {
-        string result = "[";
-        foreach (object? item in enumerable)
-        {
-            if(item is IEnumerable enumerable2)
-            {
-                result += $"{enumerable2.EnumerableString()}, ";
-            } 
-            else
-            {
-                result += $"{item.PrintNull()}, ";
-            }
-        }
-        if (result.Length > 2)
-            result = result[..^2];
-        return $"{result}]";
     }
     public static string AngleBracketGenericName(this Type type)
     {
