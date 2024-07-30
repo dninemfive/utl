@@ -3,11 +3,8 @@ using System.Reflection;
 using System.Collections;
 using System.Runtime.CompilerServices;
 namespace d9.utl;
-[AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Interface)]
-public class IncludeNonPublicMembersInPrettyPrintAttribute : Attribute
-{
-
-}
+[AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
+public class IncludeInPrettyPrintAttribute : Attribute { }
 public static class PrettyPrintExtensions
 {
 
@@ -42,12 +39,10 @@ public static class PrettyPrintExtensions
         }
         else
         {
-            BindingFlags bindingFlags = BindingFlags.Instance | BindingFlags.Public;
-            if (objType.GetCustomAttribute<IncludeNonPublicMembersInPrettyPrintAttribute>() is not null)
-                bindingFlags |= BindingFlags.NonPublic;
+            BindingFlags bindingFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
             result += brackets.First();
             IEnumerable<MemberInfo> members = objType.GetMembers(bindingFlags)
-                                                     .Where(x => (x is FieldInfo fi && !fi.IsStatic) || (x is PropertyInfo pi && !(pi.GetGetMethod()?.IsStatic ?? false)));
+                                                     .Where(IncludeInPrettyPrint);
             foreach (MemberInfo member in members)
             {
                 // https://stackoverflow.com/a/1593822
@@ -68,8 +63,7 @@ public static class PrettyPrintExtensions
             return $"{type.AngleBracketGenericName()} {member.Name}: ";
         }
         return null;
-    }
-    
+    }    
     private static bool IsFieldOrProperty(this MemberInfo member, object owner, [NotNullWhen(true)] out Type? type, out object? value)
     {
         type = null;
@@ -96,4 +90,17 @@ public static class PrettyPrintExtensions
         }
         return result;
     }
+    private static bool IncludeInPrettyPrint(this MemberInfo member)
+        => member.IsPublicInstanceField() || member.IsPublicInstanceProperty();
+    private static bool IsPublicInstanceField(this MemberInfo member)
+        => member is FieldInfo field 
+        && !field.IsStatic
+        && (field.IsPublic
+            || field.GetCustomAttribute<IncludeInPrettyPrintAttribute>() is not null);
+    private static bool IsPublicInstanceProperty(this MemberInfo member)
+        => member is PropertyInfo property 
+        && property.GetGetMethod() is MethodInfo getter 
+        && !getter.IsStatic 
+        && (getter.IsPublic 
+            || getter.GetCustomAttribute<IncludeInPrettyPrintAttribute>() is not null);
 }
