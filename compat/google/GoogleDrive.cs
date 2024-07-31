@@ -1,15 +1,14 @@
 ﻿using Google.Apis.Download;
 using Google.Apis.Drive.v3;
-using Google.Apis.Services;
 
 namespace d9.utl.compat.google;
 public class GoogleDrive
     : GoogleServiceWrapper<DriveService>
 {
-    public GoogleDrive(DriveService service) 
-        : base(service) { }
-    public GoogleDrive(GoogleAuth auth) 
-        : this(new DriveService(auth.InitializerFor(DriveService.Scope.Drive))) { }
+    public GoogleDrive(DriveService service, Log? log = null) 
+        : base(service, log) { }
+    public GoogleDrive(GoogleAuth auth, Log? log = null) 
+        : this(new DriveService(auth.InitializerFor(DriveService.Scope.Drive)), log) { }
     /// <summary>
     /// Attempts to download a file from a Drive URL to the <paramref name="filePath">specified path</paramref>
     /// and prints whether or not it was successful, as well as the response code.
@@ -33,7 +32,7 @@ public class GoogleDrive
         }
         catch (Exception e)
         {
-            Utils.DebugLog($"Error when downloading file from Drive!\n\t{e.Message}");
+            Log?.WriteLine($"Error when downloading file from Drive!\n\t{e.Summary()}");
             return null;
         }
     }

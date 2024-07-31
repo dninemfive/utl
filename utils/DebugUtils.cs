@@ -16,10 +16,10 @@ public static class DebugUtils
     /// </summary>
     /// <param name="log">The log to write to.</param>
     /// <param name="obj">The object to write to the log.</param>
-    public static void DebugLog(this Log log, object? obj)
+    public static async Task DebugLog(this Log? log, object? obj)
     {
-        if (DebugEnabled)
-            log.WriteLine(obj);
+        if (DebugEnabled && log is not null)
+            await log.WriteLine(obj);
     }
     /// <summary>
     /// Calls <paramref name="action"/> iff <see cref="DebugEnabled"/> is <see langword="true"/>.
@@ -39,11 +39,4 @@ public static class DebugUtils
     /// <param name="caller">See <see cref="CallerMemberNameAttribute"/>.</param>
     public static string Summary(this Exception exception, [CallerMemberName] string caller = "")
         => $"{caller} {exception.GetType().Name}: {exception.Message}";
-    /// <summary>
-    /// Logs an exception's <see cref="Summary(Exception, string)">caller, name, and method</see> iff <see cref="DebugEnabled"/> is <see langword="true"/>.
-    /// </summary>
-    /// <param name="exception">The exception to log.</param>
-    /// <param name="caller">See <see cref="CallerMemberNameAttribute"/>.</param>
-    public static void DebugLog(this Exception exception, [CallerMemberName] string caller = "")
-        => IfDebug(Console.WriteLine, exception.Summary(caller));
 }

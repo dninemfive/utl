@@ -5,8 +5,10 @@ public class GoogleServiceWrapper<T>
     where T : BaseClientService
 {
     public T Service { get; protected set; }
-    protected GoogleServiceWrapper(T service)
+    public Log? Log { get; protected set; }
+    protected GoogleServiceWrapper(T service, Log? log = null)
     {
         Service = service;
+        Log = log;
     }
 }

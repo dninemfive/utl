@@ -36,7 +36,7 @@ public static partial class CommandLineArgs
     {
         IntermediateArgs = new(Environment.GetCommandLineArgs()[1..]);
         foreach ((int pos, string warning) in IntermediateArgs.Warnings)
-            DebugUtils.IfDebug(Console.WriteLine, $"Error in command-line args at position {pos}: {warning}");
+            DebugUtils.IfDebug(Console.Error.WriteLine, $"Error in command-line args at position {pos}: {warning}");
     }
     /// <summary>
     /// Attempts to get the argument named <c><paramref name="argName"/></c> as type <typeparamref

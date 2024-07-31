@@ -23,7 +23,7 @@ public partial class GoogleCalendar
     {
         EventsResource.InsertRequest request = new(Service, newEvent, Id);
         Event result = request.Execute();
-        Utils.DebugLog($"Event {result.Id} \"{result.Summary}\" created.");
+        Log?.DebugLog($"Event {result.Id} \"{result.Summary}\" created.");
         return result;
     }
     /// <summary>
@@ -36,7 +36,7 @@ public partial class GoogleCalendar
     {
         EventsResource.UpdateRequest request = new(Service, newEvent, Id, eventId);
         Event result = request.Execute();
-        Utils.DebugLog($"Event {result.Id} \"{result.Summary}\" updated.");
+        Log?.DebugLog($"Event {result.Id} \"{result.Summary}\" updated.");
         return result;
     }
 }
