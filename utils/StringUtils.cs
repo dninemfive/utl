@@ -158,7 +158,16 @@ public static partial class StringUtils
     /// <param name="chars">The characters to be removed.</param>
     /// <returns>A copy of <c>s</c> without any instances of the specified characters.</returns>
     public static string Without(this string s, IEnumerable<char> chars)
-        => s.Without(chars.Select(c => $"{c}"));
+    {
+        string result = "";
+        foreach(char c in s)
+        {
+            if (chars.Contains(c))
+                continue;
+            result += c;
+        }
+        return result;
+    }
     /// <summary>Removes a set of substrings from a string.</summary>
     /// <param name="s">The string from which the substrings will be removed.</param>
     /// <param name="strs">The substrings to be removed.</param>
@@ -182,14 +191,14 @@ public static partial class StringUtils
     /// <returns>As described above.</returns>
     public static string ToHex(this byte[] bytes) => BitConverter.ToString(bytes).Without("-");
     /// <summary>
-    /// Enumerates over the specified enumerable and returns each element with its corresponding index.
+    /// Enumerates over the specified <paramref name="enumerable"/> and returns each element with its corresponding index.
     /// </summary>
     /// <typeparam name="T">The type of the elements to enumerate.</typeparam>
     /// <param name="enumerable">The enumerable containing the elements to enumerate.</param>
-    /// <param name="log">The <see cref="Log"/> to write to. If not specified, uses <see cref="Utils.Log(object?)"/> instead.</param>
+    /// <param name="log">A <see langword="void"/> function which takes a <see langword="string"/>, intended to allow logging progress of this method.</param>
     /// <param name="numberOfPrints">The total number of lines of progress which will be printed.</param>
     /// <returns>The elements of the specified <c><paramref name="enumerable"/></c>, with their respective indices.</returns>
-    public static IEnumerable<(T val, int i)> WithProgress<T>(this IEnumerable<T> enumerable, Log? log = null, int numberOfPrints = 10)
+    public static IEnumerable<(T element, int index)> WithIndices<T>(this IEnumerable<T> enumerable, Action<string>? log = null, int numberOfPrints = 10)
     {
         int total = enumerable.Count(), ct = 0, interval = total / numberOfPrints;
         foreach(T t in enumerable)
@@ -198,8 +207,7 @@ public static partial class StringUtils
             {
                 string msg = $"{ct,8}/{total,-8} ({ct / (float)total:P0})";
                 if (log is not null)
-                    log.WriteLine(msg);
-                else Utils.Log(msg);
+                    log(msg);
             }
             yield return (t, ct);
             ct++;
@@ -214,7 +222,7 @@ public static partial class StringUtils
     /// <returns>The items in the list separated by commas as appropriate, with a conjunction
     ///          between the last two items.</returns>
     /// <remarks>Uses the Oxford comma, which is the correct way to write such lists.</remarks>
-    public static string NaturalLanguageList<T>(this IEnumerable<T> items, string conjunction = "or")
+    public static string NaturalLanguageList<T>(this IEnumerable<T> items, string conjunction)
         => items.Count() switch
         {
             0 => "",
