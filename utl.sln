@@ -7,6 +7,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "utl", "utl.csproj", "{2131B
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "utl-unit-tests", "test\utl-unit-tests.csproj", "{9EC12F4C-9230-4DA9-B3EE-2AB3EDC28D3B}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{CF31EFC8-6C34-4222-AC8F-897C3AAFABF3}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
