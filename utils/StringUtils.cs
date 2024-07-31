@@ -6,30 +6,65 @@ namespace d9.utl;
 /// </summary>
 public static class StringUtils
 {
+    public static class Default
+    {
+        public const string TruncationSuffix = "…";
+        public const string ColumnSeparator = " ";
+    }
     /// <summary>
     /// Formats a <see cref="DateTime"/> into a sortable and filesystem-safe string which can be used to name files.
     /// </summary>
     /// <param name="datetime">The <see cref="DateTime"/> to format.</param>
     public static string FileNameFormat(this DateTime datetime) => $"{datetime:yyyy-MM-dd-HHmmss}";
+
+    /// <summary>
+    /// Truncates a string so that it is at most <paramref name="maxLength"/> characters long, including an optional <paramref name="truncationSuffix"/>.
+    /// </summary>
+    /// <param name="value">The string to truncate.</param>
+    /// <param name="maxLength">The maximum length of the resulting string.</param>
+    /// <param name="truncationSuffix">A string to append to the result in order to indicate that it was truncated.<br/><br/>This will <b>never</b> cause the result to be longer than <paramref name="maxLength"/>; an <see cref="ArgumentException"/> will be thrown if <paramref name="truncationSuffix"/><c>.Length &gt;</c> <paramref name="maxLength"/>.</param>
+    /// <exception cref="ArgumentException">Thrown if <paramref name="truncationSuffix"/><c>.Length &gt;</c> <paramref name="maxLength"/>.</exception>
+    /// <returns>The first <paramref name="maxLength"/> characters of <paramref name="value"/>, with <paramref name="truncationSuffix"/> at the end if appropriate.</returns>
+    /// <remarks>Largely based on <see href="https://stackoverflow.com/a/2776689">this StackOverflow</see> answer. i chose not to allow <paramref name="value"/> to be <see langword="null"/> because i would prefer to use .<see cref="PrintNull(object?, string)">PrintNull</see>() in a chain before this instead.</remarks>
+    public static string Truncate(this string value, int maxLength, string truncationSuffix = Default.TruncationSuffix)
+    {
+        if (truncationSuffix.Length > maxLength)
+            throw new ArgumentException($"`{truncationSuffix}` (length {truncationSuffix.Length}) is longer than the specified maxLength ({maxLength})!", nameof(truncationSuffix));
+        int targetLength = maxLength - truncationSuffix.Length;
+        if (value.Length > targetLength)
+            return value[..targetLength] + truncationSuffix;
+        return value;
+    }
+    /// <summary>Prints the specified <paramref name="values"/> so that they are in columns of the specified widths.</summary>
+    /// <typeparam name="T">The type of the objects to print.</typeparam>
+    /// <param name="values">An enumerable holding the objects to print paired with the width of their respective columns.</param>
+    /// <param name="columnSeparator">A string which will separate each column.</param>
+    /// <param name="truncationSuffix"></param>
+    /// <returns>A string corresponding to the objects <c>t</c> in order, with columns padded to <c>width</c>.</returns>
+    public static string InColumns<T>(this IEnumerable<(T t, int width)> values, string columnSeparator = Default.ColumnSeparator, string? truncationSuffix = null)
+    {
+        List<string> strs = new();
+        foreach ((T t, int width) in values)
+        {
+            string str = t.PrintNull();
+            if (truncationSuffix is not null)
+                str = str.Truncate(width, truncationSuffix);
+            strs.Add(str.PadRight(width));
+        }
+        return strs.Any() ? strs.JoinWithDelimiter(columnSeparator) : "";
+    }
     /// <summary>Prints the specified <paramref name="values"/> so that they are in columns of the specified widths.</summary>
     /// <typeparam name="T">The type of the objects to print.</typeparam>
     /// <param name="values">An enumerable holding the objects to print paired with the width of their respective columns.</param>
     /// <returns>A string corresponding to the objects <c>t</c> in order, with columns padded to <c>width</c>.</returns>
-    public static string InColumns<T>(this IEnumerable<(T t, int width)> values)
-    {
-        string result = "";
-        foreach ((T t, int width) in values)
-        {
-            result += t.PrintNull().PadRight(width);
-        }
-        return result;
-    }
+    public static string InColumns<T>(this IEnumerable<(T t, int width)> values, string columnSeparator = Default.ColumnSeparator, bool truncate = false)
+        => values.InColumns(columnSeparator, truncate ? Default.TruncationSuffix : null);
     /// <summary><inheritdoc cref="InColumns{T}(IEnumerable{ValueTuple{T, int}})" path="/summary"/></summary>
     /// <typeparam name="T"><inheritdoc cref="InColumns{T}(IEnumerable{ValueTuple{T, int}})" path="/typeparam[@name='T']"/></typeparam>
     /// <param name="values">An enumerable holding the objects to print.</param>
     /// <param name="widths">An enumerable holding the widths of the columns, which will be applied in the same order as the objects.</param>
     /// <returns>A string corresponding to the <paramref name="values"/> in order, in columns padded to their respective <paramref name="widths"/>.</returns>
-    public static string InColumns<T>(this IEnumerable<T> values, IEnumerable<int> widths) => InColumns(values.Zip(widths));
+    public static string InColumns<T>(this IEnumerable<T> values, IEnumerable<int> widths, string columnSeparator = Default.ColumnSeparator, bool truncate = false) => InColumns(values.Zip(widths), columnSeparator, truncate);
     /// <summary>
     /// Prints the specified <paramref name="values"/> so that they are in columns of the specified <paramref name="width"/>.
     /// </summary>
@@ -44,13 +79,17 @@ public static class StringUtils
     /// </summary>
     /// <param name="chars">The characters to join.</param>
     /// <returns>The specified characters, joined to a string.</returns>
-    public static string Join(this IEnumerable<char> chars) => chars.Select(x => $"{x}").Aggregate((x, y) => x + y);
+    public static string Join(this IEnumerable<char> chars)
+        => chars.Select(x => $"{x}").Aggregate((x, y) => x + y);
     /// <summary>
     /// Concatenates a collection of strings.
     /// </summary>
     /// <param name="strings">The strings to join.</param>
     /// <returns>The specified strings, concatenated together.</returns>
-    public static string Join(this IEnumerable<string> strings) => strings.Aggregate((x, y) => x + y);
+    public static string Join(this IEnumerable<string> strings)
+        => strings.Aggregate((x, y) => x + y);
+    public static string JoinWithDelimiter(this IEnumerable<string> strings, string delimiter)
+        => strings.Aggregate((x, y) => $"{x}{delimiter}{y}");
     /// <summary>
     /// Represents an enumerable in human-readable format.
     /// </summary>
@@ -73,7 +112,7 @@ public static class StringUtils
         {
             0 => string.Empty,
             1 => $"{enumerable.First()}",
-            _ => enumerable.Select(x => x.PrintNull(nullString)).Aggregate((a, b) => $"{a}{delimiter}{b}")
+            _ => enumerable.Select(x => x.PrintNull(nullString)).JoinWithDelimiter(delimiter)
         }}{rightBracket}";
     }
     /// <summary><inheritdoc cref="ListNotation{T}(IEnumerable{T}, string, string, string, string)" path="/summary"/></summary>
