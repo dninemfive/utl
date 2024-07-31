@@ -1,21 +1,37 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Serialization;
+
 namespace d9.utl;
 /// <summary>
 /// Utilities which convert objects to strings or perform operations on strings.
 /// </summary>
 public static partial class StringUtils
 {
-
     /// <summary>
-    /// Truncates a string so that it is at most <paramref name="maxLength"/> characters long, including an optional <paramref name="truncationSuffix"/>.
+    /// Truncates a string so that it is at most <paramref name="maxLength"/> characters long,
+    /// including an optional <paramref name="truncationSuffix"/>.
     /// </summary>
     /// <param name="value">The string to truncate.</param>
     /// <param name="maxLength">The maximum length of the resulting string.</param>
-    /// <param name="truncationSuffix">A string to append to the result in order to indicate that it was truncated.<br/><br/>This will <b>never</b> cause the result to be longer than <paramref name="maxLength"/>; an <see cref="ArgumentException"/> will be thrown if <paramref name="truncationSuffix"/><c>.Length &gt;</c> <paramref name="maxLength"/>.</param>
-    /// <exception cref="ArgumentException">Thrown if <paramref name="truncationSuffix"/><c>.Length &gt;</c> <paramref name="maxLength"/>.</exception>
-    /// <returns>The first <paramref name="maxLength"/> characters of <paramref name="value"/>, with <paramref name="truncationSuffix"/> at the end if appropriate.</returns>
-    /// <remarks>Largely based on <see href="https://stackoverflow.com/a/2776689">this StackOverflow</see> answer. i chose not to allow <paramref name="value"/> to be <see langword="null"/> because i would prefer to use .<see cref="PrintNull(object?, string)">PrintNull</see>() in a chain before this instead.</remarks>
+    /// <param name="truncationSuffix">
+    /// A string to append to the result in order to indicate that it was truncated. <br/><br/> This
+    /// will <b>never</b> cause the result to be longer than <paramref name="maxLength"/>; an <see
+    /// cref="ArgumentException"/> will be thrown if <paramref name="truncationSuffix"/><c>.Length &gt;
+    /// </c><paramref name="maxLength"/>.
+    /// </param>
+    /// <exception cref="ArgumentException">
+    /// Thrown if <paramref name="truncationSuffix"/><c>.Length &gt;</c><paramref name="maxLength"/>.
+    /// </exception>
+    /// <returns>
+    /// The first <paramref name="maxLength"/> characters of <paramref name="value"/>, with
+    /// <paramref name="truncationSuffix"/> at the end if appropriate.
+    /// </returns>
+    /// <remarks>
+    /// Largely based on <see href="https://stackoverflow.com/a/2776689">this StackOverflow answer</see>.
+    /// i chose not to allow <paramref name="value"/> to be <see langword="null"/> because i
+    /// would prefer to use .<see cref="PrintNull(object?, string)">PrintNull</see>() in a chain
+    /// before this instead.
+    /// </remarks>
     public static string Truncate(this string value, int maxLength, string truncationSuffix = Default.TruncationSuffix)
     {
         if (truncationSuffix.Length > maxLength)
@@ -29,7 +45,7 @@ public static partial class StringUtils
     /// Join a set of characters to a string.
     /// </summary>
     /// <param name="chars">The characters to join.</param>
-    /// <returns>The specified characters, joined to a string.</returns>
+    /// <returns>The specified characters, joined into a string.</returns>
     public static string Join(this IEnumerable<char> chars)
         => chars.Select(x => $"{x}").Aggregate((x, y) => x + y);
     /// <summary>
@@ -44,7 +60,10 @@ public static partial class StringUtils
     /// </summary>
     /// <param name="strings"><inheritdoc cref="Join(IEnumerable{string})" path="/param[@name='strings']"/></param>
     /// <param name="delimiter">The string to delimit each pair of strings.</param>
-    /// <returns>The specified <paramref name="strings"/>, concatenated, with <paramref name="delimiter"/> between each pair.</returns>
+    /// <returns>
+    /// The specified <paramref name="strings"/>, concatenated, with <paramref name="delimiter"/>
+    /// between each pair.
+    /// </returns>
     public static string JoinWithDelimiter(this IEnumerable<string> strings, string delimiter)
         => strings.Aggregate((x, y) => $"{x}{delimiter}{y}");
     /// <summary>
@@ -56,7 +75,9 @@ public static partial class StringUtils
     /// <param name="rightBracket">The string to append to the end of the result.</param>
     /// <param name="delimiter">The string to place in between each item.</param>
     /// <param name="nullString">The value to return if the enumerable is <see langword="null"/>.</param>
-    /// <returns>A string of the format <c>[item1, item2, ... itemN]</c> representing the items in <c>enumerable</c>.</returns>
+    /// <returns>
+    /// A string of the format <c>[item1, item2, ... itemN]</c> representing the items in <c>enumerable</c>.
+    /// </returns>
     public static string ListNotation<T>(this IEnumerable<T> enumerable,
                                               string leftBracket = "[",
                                               string rightBracket = "]",
@@ -73,13 +94,27 @@ public static partial class StringUtils
                                          .JoinWithDelimiter(delimiter)
         }}{rightBracket}";
     }
-    /// <summary><inheritdoc cref="ListNotation{T}(IEnumerable{T}, string, string, string, string)" path="/summary"/></summary>
-    /// <typeparam name="T"><inheritdoc cref="ListNotation{T}(IEnumerable{T}, string, string, string, string)" path="/typeparam[@name='T']"/></typeparam>
-    /// <param name="enumerable"><inheritdoc cref="ListNotation{T}(IEnumerable{T}, string, string, string, string)" path="/param[@name='enumerable']"/></param>
-    /// <param name="brackets">A tuple of the left and right brackets to print. If <see langword="null"/>, no brackets are printed.</param>
-    /// <param name="delimiter"><inheritdoc cref="ListNotation{T}(IEnumerable{T}, string, string, string, string)" path="/param[@name='delimiter']"/></param>
-    /// <param name="nullString"><inheritdoc cref="ListNotation{T}(IEnumerable{T}, string, string, string, string)" path="/param[@name='nullString']"/></param>
-    /// <returns><inheritdoc cref="ListNotation{T}(IEnumerable{T}, string, string, string, string)" path="/returns"/></returns>
+    /// <summary>
+    /// <inheritdoc cref="ListNotation{T}(IEnumerable{T}, string, string, string, string)" path="/summary"/>
+    /// </summary>
+    /// <typeparam name="T">
+    /// <inheritdoc cref="ListNotation{T}(IEnumerable{T}, string, string, string, string)" path="/typeparam[@name='T']"/>
+    /// </typeparam>
+    /// <param name="enumerable">
+    /// <inheritdoc cref="ListNotation{T}(IEnumerable{T}, string, string, string, string)" path="/param[@name='enumerable']"/>
+    /// </param>
+    /// <param name="brackets">
+    /// A tuple of the left and right brackets to print. If <see langword="null"/>, no brackets are printed.
+    /// </param>
+    /// <param name="delimiter">
+    /// <inheritdoc cref="ListNotation{T}(IEnumerable{T}, string, string, string, string)" path="/param[@name='delimiter']"/>
+    /// </param>
+    /// <param name="nullString">
+    /// <inheritdoc cref="ListNotation{T}(IEnumerable{T}, string, string, string, string)" path="/param[@name='nullString']"/>
+    /// </param>
+    /// <returns>
+    /// <inheritdoc cref="ListNotation{T}(IEnumerable{T}, string, string, string, string)" path="/returns"/>
+    /// </returns>
     public static string ListNotation<T>(this IEnumerable<T> enumerable,
                                               (string left, string right)? brackets,
                                                string delimiter = ", ",
@@ -97,7 +132,8 @@ public static partial class StringUtils
         _ => $"{s[0].ToLower()}{s[1..]}"
     };
     /// <summary>
-    /// Wrapper for <see cref="string.IsNullOrEmpty(string?)"/>, because it reads better to me as an extension method.
+    /// Wrapper for <see cref="string.IsNullOrEmpty(string?)"/>, because it reads better to me as an
+    /// extension method.
     /// </summary>
     /// <param name="s">The string to check.</param>
     /// <returns><inheritdoc cref="string.IsNullOrEmpty(string?)" path="/returns"/></returns>
@@ -122,16 +158,23 @@ public static partial class StringUtils
     /// </summary>
     /// <param name="obj">The object or <see langword="null"/> value to represent.</param>
     /// <param name="resultIfNull">The string to print if <paramref name="obj"/> is <see langword="null"/>.</param>
-    /// <returns>A string which is either <c><paramref name="obj"/>.ToString()</c>, if <paramref name="obj"/> is not <see langword="null"/>, or <paramref name="resultIfNull"/> otherwise.</returns>
+    /// <returns>
+    /// A string which is either <c><paramref name="obj"/>.ToString()</c>, if <paramref name="obj"/>
+    /// is not <see langword="null"/>, or <paramref name="resultIfNull"/> otherwise.
+    /// </returns>
     public static string PrintNull(this object? obj, string resultIfNull = Constants.NullString)
         => obj?.ToString() ?? resultIfNull;
     /// <summary>
     /// Repeats a character a specified number of times.
     /// </summary>
     /// <param name="c">The character to repeat.</param>
-    /// <param name="times">How many times <paramref name="c"/> should be repeated..</param>
+    /// <param name="times">How many times <paramref name="c"/> should be repeated.</param>
     /// <returns>A string consisting of <c>times</c> instances of <c>c</c>.</returns>
-    /// <remarks>Would be <c>Obsolete</c> because of <see langword="string"/>.<see langword="new"/>(<see langword="char"/>, <see langword="int"/>), but i'm keeping it for consistency since there's no equivalent for strings.</remarks>
+    /// <remarks>
+    /// Would be <c>Obsolete</c> because of <see langword="string"/>. <see langword="new"/>( <see
+    /// langword="char"/>, <see langword="int"/>), but i'm keeping it for consistency since there's
+    /// no equivalent for strings.
+    /// </remarks>
     public static string Repeated(this char c, int times)
         => new(c, times);
     /// <summary>
@@ -148,19 +191,22 @@ public static partial class StringUtils
         return result;
     }
     /// <summary>
-    /// Converts a character to lowercase. Wrapper for <see cref="char.ToLower(char)"/>, because it reads better to me as an extension method.
+    /// Converts a character to lowercase. Wrapper for <see cref="char.ToLower(char)"/>, because it
+    /// reads better to me as an extension method.
     /// </summary>
     /// <param name="c">The character to format.</param>
     /// <returns><inheritdoc cref="char.ToLower(char)"/></returns>
     public static char ToLower(this char c) => char.ToLower(c);
-    /// <summary>Removes a set of characters from a string.</summary>
+    /// <summary>
+    /// Removes a set of characters from a string.
+    /// </summary>
     /// <param name="s">The string from which the characters will be removed.</param>
     /// <param name="chars">The characters to be removed.</param>
     /// <returns>A copy of <c>s</c> without any instances of the specified characters.</returns>
     public static string Without(this string s, IEnumerable<char> chars)
     {
         string result = "";
-        foreach(char c in s)
+        foreach (char c in s)
         {
             if (chars.Contains(c))
                 continue;
@@ -168,7 +214,9 @@ public static partial class StringUtils
         }
         return result;
     }
-    /// <summary>Removes a set of substrings from a string.</summary>
+    /// <summary>
+    /// Removes a set of substrings from a string.
+    /// </summary>
     /// <param name="s">The string from which the substrings will be removed.</param>
     /// <param name="strs">The substrings to be removed.</param>
     /// <returns>A copy of <c>s</c> without any instances of the specified substrings.</returns>
@@ -185,23 +233,29 @@ public static partial class StringUtils
     /// <returns>The <see langword="byte"/>, formatted to hexadecimal as with <see cref="ToHex(byte[])"/>.</returns>
     public static string ToHex(this byte b) => new[] { b }.ToHex();
     /// <summary>
-    /// Writes <see langword="byte"/>s in hexadecimal without separating them with hyphens.
+    /// Writes <see langword="byte"/> s in hexadecimal without separating them with hyphens.
     /// </summary>
-    /// <param name="bytes">The <see langword="byte"/>s to convert.</param>
+    /// <param name="bytes">The <see langword="byte"/> s to convert.</param>
     /// <returns>As described above.</returns>
     public static string ToHex(this byte[] bytes) => BitConverter.ToString(bytes).Without("-");
     /// <summary>
-    /// Enumerates over the specified <paramref name="enumerable"/> and returns each element with its corresponding index.
+    /// Enumerates over the specified <paramref name="enumerable"/> and returns each element with
+    /// its corresponding index.
     /// </summary>
     /// <typeparam name="T">The type of the elements to enumerate.</typeparam>
     /// <param name="enumerable">The enumerable containing the elements to enumerate.</param>
-    /// <param name="log">A <see langword="void"/> function which takes a <see langword="string"/>, intended to allow logging progress of this method.</param>
+    /// <param name="log">
+    /// A <see langword="void"/> function which takes a <see langword="string"/>, intended to allow
+    /// logging progress of this method.
+    /// </param>
     /// <param name="numberOfPrints">The total number of lines of progress which will be printed.</param>
-    /// <returns>The elements of the specified <c><paramref name="enumerable"/></c>, with their respective indices.</returns>
+    /// <returns>
+    /// The elements of the specified <c><paramref name="enumerable"/></c>, with their respective indices.
+    /// </returns>
     public static IEnumerable<(T element, int index)> WithIndices<T>(this IEnumerable<T> enumerable, Action<string>? log = null, int numberOfPrints = 10)
     {
         int total = enumerable.Count(), ct = 0, interval = total / numberOfPrints;
-        foreach(T t in enumerable)
+        foreach (T t in enumerable)
         {
             if (ct % interval == 0)
             {
@@ -217,10 +271,13 @@ public static partial class StringUtils
     /// Prints the specified items as a list in natural English, with the specified conjunction.
     /// </summary>
     /// <param name="items">The items to print.</param>
-    /// <param name="conjunction">The conjunction at the end of the string, just before the last
-    /// item.</param>
-    /// <returns>The items in the list separated by commas as appropriate, with a conjunction
-    ///          between the last two items.</returns>
+    /// <param name="conjunction">
+    /// The conjunction at the end of the string, just before the last item.
+    /// </param>
+    /// <returns>
+    /// The items in the list separated by commas as appropriate, with a conjunction between the
+    /// last two items.
+    /// </returns>
     /// <remarks>Uses the Oxford comma, which is the correct way to write such lists.</remarks>
     public static string NaturalLanguageList<T>(this IEnumerable<T> items, string conjunction)
         => items.Count() switch

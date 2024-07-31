@@ -8,8 +8,8 @@ public static class Linq2
 {
     /// <summary>
     /// Breaks a collection into <c><paramref name="n"/></c> parts of roughly equal size. <br/><br/>
-    /// Specifically, the size of each part will either be <c>floor( <paramref
-    /// name="original"/>.Count()</c> / <c><paramref name="n"/>)</c> or <c>floor( <paramref
+    /// Specifically, the size of each part will either be <c>floor(<paramref
+    /// name="original"/>.Count()</c> / <c><paramref name="n"/>)</c> or <c>floor(<paramref
     /// name="original"/>.Count()</c> / <c><paramref name="n"/>) + 1</c>, with the larger parts
     /// coming first.
     /// </summary>
@@ -82,7 +82,7 @@ public static class Linq2
     /// <param name="random"><inheritdoc cref="Shuffled{T}(IEnumerable{T}, Random?)" path="/param[@name='random']"/></param>
     /// <returns>
     /// A random element from <paramref name="enumerable"/> such that, on average, any given element
-    /// will have <paramref name="weight"/>( <c>element</c>) / (total weight) probability of occuring.
+    /// will have <paramref name="weight"/>(<c>element</c>) / (total weight) probability of occuring.
     /// </returns>
     public static T WeightedRandomElement<T>(this IEnumerable<T> enumerable,
                                                   Func<T, double> weight,
@@ -178,4 +178,14 @@ public static class Linq2
     public static Dictionary<K, V> ToDictionary<K, V>(this IEnumerable<KeyValuePair<K, V>> items)
         where K : notnull
         => new(items);
+    /// <summary>
+    /// Wrapper for <see cref="Enumerable.Repeat{TResult}(TResult, int)"/> as an extension method,
+    /// because that reads much more cleanly to me.
+    /// </summary>
+    /// <typeparam name="T">The type of the <paramref name="item"/> to repeat.</typeparam>
+    /// <param name="item">The item to repeat.</param>
+    /// <param name="count">How many times the <paramref name="item"/> should be repeated.</param>
+    /// <returns>An enumerable of <paramref name="count"/><paramref name="item"/>s.</returns>
+    public static IEnumerable<T> Repeat<T>(this T item, int count)
+        => Enumerable.Repeat(item, count);
 }

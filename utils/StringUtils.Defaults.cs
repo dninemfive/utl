@@ -11,7 +11,8 @@ public static partial class StringUtils
         /// </summary>
         public const string TruncationSuffix = "…";
         /// <summary>
-        /// The default string which separates objects printed <see cref="InColumns{T}(IEnumerable{ValueTuple{T, int}}, string, string?, string)">in columns</see>.
+        /// The default string which separates objects printed <see
+        /// cref="InColumns{T}(IEnumerable{ValueTuple{T, int}}, string, string?, string)">in columns</see>.
         /// </summary>
         public const string ColumnSeparator = " ";
     }
