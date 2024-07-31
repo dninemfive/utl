@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System.Numerics;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace d9.utl;
@@ -287,4 +288,40 @@ public static partial class StringUtils
             2 => $"{items.First()} {conjunction} {items.Last()}",
             _ => $"{items.SkipLast(1).ListNotation(brackets: null)}, {conjunction} {items.Last()}"
         };
+    /// <summary>
+    /// Chooses the <paramref name="singular"/> or <paramref name="plural"/> form of a string based on the size of a <paramref name="number"/>.
+    /// </summary>
+    /// <typeparam name="T">The type of the number to compare.</typeparam>
+    /// <param name="number">The number whose size determines the form of the string to use.</param>
+    /// <param name="singular">The string to use if the <paramref name="number"/> is equal to 1.</param>
+    /// <param name="plural">The string to use if the <paramref name="number"/> is <em>not</em> equal to 1.</param>
+    /// <remarks>Not localized. Localizing this kind of thing would be way out of scope for this project.</remarks>
+    public static string Plural<T>(this T number, string singular, string plural)
+        where T : INumberBase<T>
+        => T.Abs(number) == T.One ? singular : plural;
+    /// <summary>
+    /// Chooses whether to pluralize (append an s to) a string based on the size of a <paramref name="number"/>.
+    /// </summary>
+    /// <typeparam name="T"><inheritdoc cref="Plural{T}(T, string, string)" path="/typeparam[@name='T']"/></typeparam>
+    /// <param name="number"><inheritdoc cref="Plural{T}(T, string, string)" path="/param[@name='number']"/></param>
+    /// <param name="singular"><inheritdoc cref="Plural{T}(T, string, string)" path="/param[@name='singular']"/></param>
+    /// <remarks>Not localized. Localizing this kind of thing would be way out of scope for this project.</remarks>
+    public static string Plural<T>(this T number, string singular)
+        where T : INumberBase<T>
+        => number.Plural(singular, $"{singular}s");
+    /// <summary>
+    /// Produces the ordinal form of a <paramref name="number"/>.
+    /// </summary>
+    /// <typeparam name="T">The type of the number to make an ordinal from.</typeparam>
+    /// <param name="number">The number to make an ordinal from.</param>
+    /// <remarks>Not localized. Localizing this kind of thing would be way out of scope for this project.</remarks>
+    public static string Ordinal<T>(this int number)
+        => number is 11 or 12 or 13 ? $"{number}th"
+            : (number % 10) switch
+            {
+                1 => $"{number}st",
+                2 => $"{number}nd",
+                3 => $"{number}rd",
+                _ => $"{number}th"
+            };
 }
