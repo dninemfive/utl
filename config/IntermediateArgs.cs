@@ -30,6 +30,8 @@ public partial record IntermediateArgs
     /// <summary>
     /// The arguments without dashes, organized by their keys.
     /// </summary>
+    // todo: add a public version of this?
+    [IncludeInPrettyPrint]
     private Dictionary<string, ICollection<string>> _args { get; set; } = new();
     /// <summary>
     /// The flags set on the program. Note that flags can repeat, and that the <see
@@ -37,6 +39,7 @@ public partial record IntermediateArgs
     /// occurrences of empty but non- <see langword="null"/> collections in <see
     /// cref="_args">_args</see> corresponding to its alias as occurrences of that key.
     /// </summary>
+    [IncludeInPrettyPrint]
     private List<char> _flags { get; set; } = new();
     /// <summary>
     /// Any warnings generated due to syntax errors in the arguments and their respective positions.
