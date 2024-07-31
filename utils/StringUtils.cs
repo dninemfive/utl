@@ -4,18 +4,8 @@ namespace d9.utl;
 /// <summary>
 /// Utilities which convert objects to strings or perform operations on strings.
 /// </summary>
-public static class StringUtils
+public static partial class StringUtils
 {
-    public static class Default
-    {
-        public const string TruncationSuffix = "…";
-        public const string ColumnSeparator = " ";
-    }
-    /// <summary>
-    /// Formats a <see cref="DateTime"/> into a sortable and filesystem-safe string which can be used to name files.
-    /// </summary>
-    /// <param name="datetime">The <see cref="DateTime"/> to format.</param>
-    public static string FileNameFormat(this DateTime datetime) => $"{datetime:yyyy-MM-dd-HHmmss}";
 
     /// <summary>
     /// Truncates a string so that it is at most <paramref name="maxLength"/> characters long, including an optional <paramref name="truncationSuffix"/>.
@@ -35,45 +25,6 @@ public static class StringUtils
             return value[..targetLength] + truncationSuffix;
         return value;
     }
-    /// <summary>Prints the specified <paramref name="values"/> so that they are in columns of the specified widths.</summary>
-    /// <typeparam name="T">The type of the objects to print.</typeparam>
-    /// <param name="values">An enumerable holding the objects to print paired with the width of their respective columns.</param>
-    /// <param name="columnSeparator">A string which will separate each column.</param>
-    /// <param name="truncationSuffix"></param>
-    /// <returns>A string corresponding to the objects <c>t</c> in order, with columns padded to <c>width</c>.</returns>
-    public static string InColumns<T>(this IEnumerable<(T t, int width)> values, string columnSeparator = Default.ColumnSeparator, string? truncationSuffix = null)
-    {
-        List<string> strs = new();
-        foreach ((T t, int width) in values)
-        {
-            string str = t.PrintNull();
-            if (truncationSuffix is not null)
-                str = str.Truncate(width, truncationSuffix);
-            strs.Add(str.PadRight(width));
-        }
-        return strs.Any() ? strs.JoinWithDelimiter(columnSeparator) : "";
-    }
-    /// <summary>Prints the specified <paramref name="values"/> so that they are in columns of the specified widths.</summary>
-    /// <typeparam name="T">The type of the objects to print.</typeparam>
-    /// <param name="values">An enumerable holding the objects to print paired with the width of their respective columns.</param>
-    /// <returns>A string corresponding to the objects <c>t</c> in order, with columns padded to <c>width</c>.</returns>
-    public static string InColumns<T>(this IEnumerable<(T t, int width)> values, string columnSeparator = Default.ColumnSeparator, bool truncate = false)
-        => values.InColumns(columnSeparator, truncate ? Default.TruncationSuffix : null);
-    /// <summary><inheritdoc cref="InColumns{T}(IEnumerable{ValueTuple{T, int}})" path="/summary"/></summary>
-    /// <typeparam name="T"><inheritdoc cref="InColumns{T}(IEnumerable{ValueTuple{T, int}})" path="/typeparam[@name='T']"/></typeparam>
-    /// <param name="values">An enumerable holding the objects to print.</param>
-    /// <param name="widths">An enumerable holding the widths of the columns, which will be applied in the same order as the objects.</param>
-    /// <returns>A string corresponding to the <paramref name="values"/> in order, in columns padded to their respective <paramref name="widths"/>.</returns>
-    public static string InColumns<T>(this IEnumerable<T> values, IEnumerable<int> widths, string columnSeparator = Default.ColumnSeparator, bool truncate = false) => InColumns(values.Zip(widths), columnSeparator, truncate);
-    /// <summary>
-    /// Prints the specified <paramref name="values"/> so that they are in columns of the specified <paramref name="width"/>.
-    /// </summary>
-    /// <typeparam name="T"><inheritdoc cref="InColumns{T}(IEnumerable{ValueTuple{T, int}})" path="/typeparam[@name='T']"/></typeparam>
-    /// <param name="values"><inheritdoc cref="InColumns{T}(IEnumerable{T}, IEnumerable{int})" path="/param[@name='values']"/></param>
-    /// <param name="width">The width of each column.</param>
-    /// <returns>A string corresponding to the <paramref name="values"/> in order, in columns of size <paramref name="width"/>.</returns>
-    public static string InColumns<T>(this IEnumerable<T> values, int width)
-        => values.InColumns(Enumerable.Repeat(width, values.Count()));
     /// <summary>
     /// Join a set of characters to a string.
     /// </summary>
@@ -82,12 +33,18 @@ public static class StringUtils
     public static string Join(this IEnumerable<char> chars)
         => chars.Select(x => $"{x}").Aggregate((x, y) => x + y);
     /// <summary>
-    /// Concatenates a collection of strings.
+    /// Concatenates a collection of <paramref name="strings"/>.
     /// </summary>
     /// <param name="strings">The strings to join.</param>
-    /// <returns>The specified strings, concatenated together.</returns>
+    /// <returns>The specified <paramref name="strings"/>, concatenated together.</returns>
     public static string Join(this IEnumerable<string> strings)
         => strings.Aggregate((x, y) => x + y);
+    /// <summary>
+    /// Concatenates a collection of <paramref name="strings"/> with a delimiter between them.
+    /// </summary>
+    /// <param name="strings"><inheritdoc cref="Join(IEnumerable{string})" path="/param[@name='strings']"/></param>
+    /// <param name="delimiter">The string to delimit each pair of strings.</param>
+    /// <returns>The specified <paramref name="strings"/>, concatenated, with <paramref name="delimiter"/> between each pair.</returns>
     public static string JoinWithDelimiter(this IEnumerable<string> strings, string delimiter)
         => strings.Aggregate((x, y) => $"{x}{delimiter}{y}");
     /// <summary>
@@ -112,7 +69,8 @@ public static class StringUtils
         {
             0 => string.Empty,
             1 => $"{enumerable.First()}",
-            _ => enumerable.Select(x => x.PrintNull(nullString)).JoinWithDelimiter(delimiter)
+            _ => enumerable.Select(x => x.PrintNull(nullString))
+                                         .JoinWithDelimiter(delimiter)
         }}{rightBracket}";
     }
     /// <summary><inheritdoc cref="ListNotation{T}(IEnumerable{T}, string, string, string, string)" path="/summary"/></summary>
@@ -143,13 +101,8 @@ public static class StringUtils
     /// </summary>
     /// <param name="s">The string to check.</param>
     /// <returns><inheritdoc cref="string.IsNullOrEmpty(string?)" path="/returns"/></returns>
-    public static bool NullOrEmpty(this string? s) => string.IsNullOrEmpty(s);
-    /// <summary>
-    /// Prints an object in its entirety in relatively readable JSON format.
-    /// </summary>
-    /// <param name="obj">The object to print.</param>
-    /// <returns>A pretty-printed object.</returns>
-    public static string PrettyPrint(this object? obj) => JsonSerializer.Serialize(obj, new JsonSerializerOptions()
+    public static bool IsNullOrEmpty(this string? s) => string.IsNullOrEmpty(s);
+    private static readonly JsonSerializerOptions _prettyPrintOptions = new()
     {
         WriteIndented = true,
         NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals,
@@ -157,13 +110,19 @@ public static class StringUtils
         {
             new JsonStringEnumConverter()
         }
-    });
+    };
+    /// <summary>
+    /// Prints an object in its entirety in relatively readable JSON format.
+    /// </summary>
+    /// <param name="obj">The object to print.</param>
+    /// <returns>A pretty-printed object.</returns>
+    public static string PrettyPrint(this object? obj) => JsonSerializer.Serialize(obj, _prettyPrintOptions);
     /// <summary>
     /// Represents an object in human-readable format, even if it's <see langword="null"/>.
     /// </summary>
     /// <param name="obj">The object or <see langword="null"/> value to represent.</param>
-    /// <param name="resultIfNull">The string to print if <c>obj</c> is null.</param>
-    /// <returns>A string which is either <c>obj.ToString()</c>, if <c>obj</c> is not <see langword="null"/>, or <c>ifNull</c> otherwise.</returns>
+    /// <param name="resultIfNull">The string to print if <paramref name="obj"/> is <see langword="null"/>.</param>
+    /// <returns>A string which is either <c><paramref name="obj"/>.ToString()</c>, if <paramref name="obj"/> is not <see langword="null"/>, or <paramref name="resultIfNull"/> otherwise.</returns>
     public static string PrintNull(this object? obj, string resultIfNull = Constants.NullString)
         => obj?.ToString() ?? resultIfNull;
     /// <summary>
@@ -199,14 +158,14 @@ public static class StringUtils
     /// <param name="chars">The characters to be removed.</param>
     /// <returns>A copy of <c>s</c> without any instances of the specified characters.</returns>
     public static string Without(this string s, IEnumerable<char> chars)
-        => s.Remove(chars.Select(c => $"{c}"));
+        => s.Without(chars.Select(c => $"{c}"));
     /// <summary>Removes a set of substrings from a string.</summary>
     /// <param name="s">The string from which the substrings will be removed.</param>
     /// <param name="strs">The substrings to be removed.</param>
     /// <returns>A copy of <c>s</c> without any instances of the specified substrings.</returns>
-    public static string Remove(this string s, IEnumerable<string> strs)
+    public static string Without(this string s, IEnumerable<string> strs)
     {
-        foreach (string s2 in strs.Where(x => !x.NullOrEmpty()))
+        foreach (string s2 in strs.Where(x => !x.IsNullOrEmpty()))
             s = s.Replace(s2, "");
         return s;
     }

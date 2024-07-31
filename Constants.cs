@@ -124,7 +124,7 @@ public static class Constants
         return "application/octet-stream";
     }
     /// <summary>
-    /// The default string to indicate a null value when logged.
+    /// The default string to indicate a value was <see langword="null"/>.
     /// </summary>
     public const string NullString = "(null)";
 }

@@ -72,4 +72,9 @@ public static class TimeUtils
         }.Where(x => x is not null);
         return portions.Any() ? portions.NaturalLanguageList() : "0 seconds";
     }
+    /// <summary>
+    /// Formats a <see cref="DateTime"/> into a sortable and filesystem-safe string which can be used to name files.
+    /// </summary>
+    /// <param name="datetime">The <see cref="DateTime"/> to format.</param>
+    public static string FileNameFormat(this DateTime datetime) => $"{datetime:yyyy-MM-dd-HHmmss}";
 }
