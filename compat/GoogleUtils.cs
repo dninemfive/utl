@@ -8,7 +8,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
 using System.Text.Json.Serialization;
-using d9.utl;
 
 namespace d9.utl.compat;
 
@@ -24,13 +23,18 @@ public static class GoogleUtils
     private class GoogleAuthConfig : IValidityCheck
     {
         /// <summary>
-        /// Whether or not the <see cref="GoogleAuthConfig"/> has been fully and correctly loaded. Implements <see cref="IValidityCheck"/>.
-        /// <br/><br/>Specifically, all fields (<see cref="KeyPath">KeyPath</see>, <see cref="Email">Email</see>, and <see cref="AppName">AppName</see>) must be non-<see langword="null"/>,
-        /// and <c>KeyPath</c> must point to an existing file.
+        /// Whether or not the <see cref="GoogleAuthConfig"/> has been fully and correctly loaded.
+        /// Implements <see cref="IValidityCheck"/>. <br/><br/> Specifically, all fields ( <see
+        /// cref="KeyPath">KeyPath</see>, <see cref="Email">Email</see>, and <see
+        /// cref="AppName">AppName</see>) must be non- <see langword="null"/>, and <c>KeyPath</c>
+        /// must point to an existing file.
         /// </summary>
         /// <param name="reason"><inheritdoc cref="IValidityCheck.IsValid(out string?)" path="/param[@name='reason']"/></param>
         /// <returns><inheritdoc cref="IValidityCheck.IsValid(out string?)" path="/returns"/></returns>
-        /// <remarks><b>NOTE:</b> does not check whether <c>KeyPath</c> is a valid key, <c>Email</c> is a valid email, or <c>AppName</c> is a valid app name.</remarks>
+        /// <remarks>
+        /// <b>NOTE:</b> does not check whether <c>KeyPath</c> is a valid key, <c>Email</c> is a
+        /// valid email, or <c>AppName</c> is a valid app name.
+        /// </remarks>
         public bool IsValid([NotNullWhen(false)] out string? reason)
         {
             reason = null;
@@ -47,13 +51,15 @@ public static class GoogleUtils
         // initialized by JsonSerializer
 #pragma warning disable CS0649
         /// <summary>
-        /// The path to a <see href="https://en.wikipedia.org/wiki/PKCS_12">p12</see> file containing the key for the desired Google service.
+        /// The path to a <see href="https://en.wikipedia.org/wiki/PKCS_12">p12</see> file
+        /// containing the key for the desired Google service.
         /// </summary>
         [JsonInclude]
         public string? KeyPath;
         /// <summary>
-        /// The email associated with the service in OAuth. This is not the email for the account which created the service, but rather the
-        /// one provided when you register your project at <see href="https://console.cloud.google.com/"/>.
+        /// The email associated with the service in OAuth. This is not the email for the account
+        /// which created the service, but rather the one provided when you register your project at
+        /// <see href="https://console.cloud.google.com/"/>.
         /// </summary>
         [JsonInclude]
         public string? Email;
@@ -65,69 +71,79 @@ public static class GoogleUtils
 #pragma warning restore CS0649
     }
     /// <summary>
-    /// The path to the <see cref="GoogleAuthConfig">config file</see> for Google authentication, provided via command-line argument.
+    /// The path to the <see cref="GoogleAuthConfig">config file</see> for Google authentication,
+    /// provided via command-line argument.
     /// </summary>
-    private static readonly string? ConfigPath = CommandLineArgs.TryGet("googleAuth", CommandLineArgs.Parsers.FilePath)
-                                              ?? "google auth.json.secret".AbsoluteOrInBaseFolder();
+    private static readonly string? _configPath = CommandLineArgs.TryGet("googleAuth", CommandLineArgs.Parsers.FilePath)
+                                                ?? "google auth.json.secret".AbsoluteOrInBaseFolder();
     /// <summary>
-    /// The <see cref="GoogleAuthConfig"/> loaded from the file, or <see langword="null"/> if it could not be loaded.
+    /// The <see cref="GoogleAuthConfig"/> loaded from the file, or <see langword="null"/> if it
+    /// could not be loaded.
     /// </summary>
-    private static readonly GoogleAuthConfig? AuthConfig = Config.TryLoad<GoogleAuthConfig>(ConfigPath);
+    private static readonly GoogleAuthConfig? _authConfig = Config.TryLoad<GoogleAuthConfig>(_configPath);
     /// <summary>
     /// <see langword="true"/> if the auth config is usable or <see langword="false"/> otherwise.
     /// </summary>
-    public static bool HasValidAuthConfig => AuthConfig?.IsValid(out string? _) ?? false;
+    public static bool HasValidAuthConfig => _authConfig?.IsValid(out string? _) ?? false;
     /// <summary>
     /// The exception thrown when the <see cref="GoogleAuthConfig"/> is not <see cref="IValidityCheck">valid</see>.
     /// </summary>
     private static Exception NoValidAuthConfig(string methodName, string reason) =>
-        new($"{methodName}: Cannot authenticate with Google because {ConfigPath} is not a valid AuthConfig: {reason}!");
+        new($"{methodName}: Cannot authenticate with Google because {_configPath} is not a valid AuthConfig: {reason}!");
     /// <summary>
     /// Gets the Google Auth certificate from the (privately-stored) key and password files.
     /// </summary>
-    /// <remarks>Largely a copy of code from <see href="https://www.daimto.com/google-drive-authentication-c/">this example</see>.<br/>
-    /// <br/> Apparently the password is always <c>notasecret</c> and that can't be changed, which is strange.</remarks>
+    /// <remarks>
+    /// Largely a copy of code from <see
+    /// href="https://www.daimto.com/google-drive-authentication-c/">this example</see>. <br/><br/>
+    /// Apparently the password is always <c>notasecret</c> and that can't be changed, which is strange.
+    /// </remarks>
     private static X509Certificate2 Certificate
     {
         get
         {
-            if (!AuthConfig.IsNonNullAndValid(out string? invalidReason)) 
+            if (!_authConfig.IsNonNullAndValid(out string? invalidReason))
                 throw NoValidAuthConfig(nameof(Certificate), invalidReason);
             // AuthConfig and KeyPath are certainly non-null because they're checked by IsValid
-            return new(AuthConfig!.KeyPath!, "notasecret", X509KeyStorageFlags.Exportable);
+            return new(_authConfig!.KeyPath!, "notasecret", X509KeyStorageFlags.Exportable);
         }
     }
     /// <summary>
     /// Constructs a credential with the specified scopes.
     /// </summary>
-    /// <remarks>Largely a copy of code from <see href="https://www.daimto.com/google-drive-authentication-c/">this example</see>.</remarks>
-    /// <param name="scopes">The <see href="https://developers.google.com/identity/protocols/oauth2/scopes">Google scopes</see> the credential 
-    /// is permitted to use.</param>
+    /// <remarks>
+    /// Largely a copy of code from <see
+    /// href="https://www.daimto.com/google-drive-authentication-c/">this example</see>.
+    /// </remarks>
+    /// <param name="scopes">
+    /// The <see href="https://developers.google.com/identity/protocols/oauth2/scopes">Google
+    /// scopes</see> the credential is permitted to use.
+    /// </param>
     private static ServiceAccountCredential Credential(params string[] scopes)
     {
-        if (!AuthConfig.IsNonNullAndValid(out string? invalidReason)) 
+        if (!_authConfig.IsNonNullAndValid(out string? invalidReason))
             throw NoValidAuthConfig(nameof(Credential), invalidReason);
-        return new(new ServiceAccountCredential.Initializer(AuthConfig!.Email) { Scopes = scopes }
+        return new(new ServiceAccountCredential.Initializer(_authConfig!.Email) { Scopes = scopes }
                                                .FromCertificate(Certificate));
     }
+
     #region calendar
     /// <summary>
-    /// Gets a 
-    /// <see href="https://googleapis.dev/dotnet/Google.Apis.Calendar.v3/latest/api/Google.Apis.Calendar.v3.CalendarService.html">
-    ///     calendar service
-    /// </see>
-    /// using a <see cref="Credential">Credential</see> scoped to allow all Calendar operations.
+    /// Gets a <see
+    /// href="https://googleapis.dev/dotnet/Google.Apis.Calendar.v3/latest/api/Google.Apis.Calendar.v3.CalendarService.html">
+    /// calendar service</see> using a <see cref="Credential">Credential</see> scoped to allow all
+    /// Calendar operations.
     /// </summary>
     public static CalendarService CalendarService
     {
         get
         {
-            if (!AuthConfig.IsNonNullAndValid(out string? invalidReason))
+            if (!_authConfig.IsNonNullAndValid(out string? invalidReason))
                 throw NoValidAuthConfig(nameof(CalendarService), invalidReason);
             return new(new BaseClientService.Initializer()
             {
                 HttpClientInitializer = Credential(CalendarService.Scope.Calendar),
-                ApplicationName = AuthConfig!.AppName
+                ApplicationName = _authConfig!.AppName
             });
         }
     }
@@ -159,7 +175,8 @@ public static class GoogleUtils
         return result;
     }
     /// <summary>
-    /// Converts a normal <see cref="DateTime"/> to a Google Calendar <see cref="EventDateTime"/>.</summary>
+    /// Converts a normal <see cref="DateTime"/> to a Google Calendar <see cref="EventDateTime"/>.
+    /// </summary>
     /// <param name="dateTime">The <see cref="DateTime"/> to convert.</param>
     /// <returns>An <see cref="EventDateTime"/> corresponding to the given <c><paramref name="dateTime"/></c>.</returns>
     public static EventDateTime ToEventDateTime(this DateTime dateTime) => new() { DateTime = dateTime };
@@ -167,29 +184,30 @@ public static class GoogleUtils
     /// The 11 colors available to Google Calendar events.
     /// </summary>
     /// <remarks>
-    /// The API returns hex codes which do not match the colors shown in the desktop app; 
-    /// <see href="https://docs.google.com/spreadsheets/d/1M2lyC0jHT3Mj-eA9OPJ2m_JQr1f3qpJVX5a8dNXnDB0/edit?usp=sharing">see this sheet for the exact details</see>.
+    /// The API returns hex codes which do not match the colors shown in the desktop app; <see
+    /// href="https://docs.google.com/spreadsheets/d/1M2lyC0jHT3Mj-eA9OPJ2m_JQr1f3qpJVX5a8dNXnDB0/edit?usp=sharing">see
+    /// this sheet for the exact details</see>.
     /// </remarks>
     public enum EventColor
     {
         /// <summary>
-        /// The first hardcoded color for Google Calendar events, hex code <c>#7986cb</c>. 
+        /// The first hardcoded color for Google Calendar events, hex code <c>#7986cb</c>.
         /// </summary>
         Lavender = 1,
         /// <summary>
-        /// The second hardcoded color for Google Calendar events, hex code <c>#33b679</c>. 
+        /// The second hardcoded color for Google Calendar events, hex code <c>#33b679</c>.
         /// </summary>
         Sage = 2,
         /// <summary>
-        /// The third hardcoded color for Google Calendar events, hex code <c>#8e24aa</c>. 
+        /// The third hardcoded color for Google Calendar events, hex code <c>#8e24aa</c>.
         /// </summary>
         Grape = 3,
         /// <summary>
-        /// The fourth hardcoded color for Google Calendar events, hex code <c>#e67c73</c>. 
+        /// The fourth hardcoded color for Google Calendar events, hex code <c>#e67c73</c>.
         /// </summary>
         Flamingo = 4,
         /// <summary>
-        /// The fifth hardcoded color for Google Calendar events, hex code <c>#f6bf26</c>. 
+        /// The fifth hardcoded color for Google Calendar events, hex code <c>#f6bf26</c>.
         /// </summary>
         Banana = 5,
         /// <summary>
@@ -218,37 +236,44 @@ public static class GoogleUtils
         Tomato = 11
     }
     #endregion calendar
+
     #region drive
     /// <summary>
-    /// Gets a 
-    /// <see href="https://developers.google.com/resources/api-libraries/documentation/drive/v3/csharp/latest/classGoogle_1_1Apis_1_1Drive_1_1v3_1_1DriveService.html">
-    ///     drive service
-    /// </see>
-    /// using a <see cref="Credential">Credential</see> scoped to allow all Drive operations.
+    /// Gets a <see
+    /// href="https://developers.google.com/resources/api-libraries/documentation/drive/v3/csharp/latest/classGoogle_1_1Apis_1_1Drive_1_1v3_1_1DriveService.html">
+    /// drive service</see> using a <see cref="Credential">Credential</see> scoped to allow all
+    /// Drive operations.
     /// </summary>
     public static DriveService DriveService
     {
         get
         {
-            if (!AuthConfig.IsNonNullAndValid(out string? invalidReason))
+            if (!_authConfig.IsNonNullAndValid(out string? invalidReason))
                 throw NoValidAuthConfig(nameof(DriveService), invalidReason);
             return new(new BaseClientService.Initializer()
             {
                 HttpClientInitializer = Credential(DriveService.Scope.Drive),
-                ApplicationName = AuthConfig!.AppName
+                ApplicationName = _authConfig!.AppName
             });
         }
     }
     /// <summary>
-    /// Attempts to download a file from a Drive URL to the <paramref name="filePath">specified path</paramref>
-    /// and prints whether or not it was successful, as well as the response code.
+    /// Attempts to download a file from a Drive URL to the <paramref name="filePath">specified
+    /// path</paramref> and prints whether or not it was successful, as well as the response code.
     /// </summary>
-    /// <remarks>The file must be shared, through the Sheets UI, with the <see cref="GoogleAuthConfig.Email">email associated with the service account</see>.</remarks>
+    /// <remarks>
+    /// The file must be shared, through the Sheets UI, with the <see
+    /// cref="GoogleAuthConfig.Email">email associated with the service account</see>.
+    /// </remarks>
     /// <param name="fileId">The Drive ID of the file to download.</param>
     /// <param name="filePath">The path to the file when downloaded.</param>
-    /// <param name="mimeType">The type of the file to download. Should be a valid 
-    /// <see href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types">MIME type</see>.</param>
-    /// <returns>The path to the downloaded file, if successfully downloaded, or <see langword="null"/> otherwise.</returns>
+    /// <param name="mimeType">
+    /// The type of the file to download. Should be a valid <see
+    /// href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types">MIME type</see>.
+    /// </param>
+    /// <returns>
+    /// The path to the downloaded file, if successfully downloaded, or <see langword="null"/> otherwise.
+    /// </returns>
     public static string? Download(string fileId, string filePath, string mimeType)
     {
         FilesResource.ExportRequest request = new(DriveService, fileId, mimeType);
