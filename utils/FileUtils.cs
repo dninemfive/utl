@@ -42,12 +42,14 @@ public static class FileUtils
     /// folder is empty, deletes it.
     /// </summary>
     /// <param name="folder">The folder to delete.</param>
-    /// <param name="suppressWarnings">
-    /// If <see langword="false"/>, a warning will be printed if this method attempts to delete a
-    /// non-empty folder.
+    /// <param name="log">
+    /// If non- <see langword="null"/>, this will be called with a message for any folders which
+    /// can't be deleted because they are not empty.
     /// </param>
-    /// <exception cref="ArgumentException"></exception>
-    public static void DeleteFolderRecursive(this string folder, bool suppressWarnings = true)
+    /// <exception cref="ArgumentException">
+    /// Thrown if attempting to delete a nonexistent or non-directory path.
+    /// </exception>
+    public static void DeleteFolderRecursive(this string folder, Action<string>? log = null)
     {
         if (!Directory.Exists(folder))
             throw new ArgumentException($"Attempted to delete directory `{folder}`, but it either does not exist or is not a directory.");
@@ -57,10 +59,9 @@ public static class FileUtils
         {
             Directory.Delete(folder);
         }
-        else
+        else if (log is not null)
         {
-            if (!suppressWarnings)
-                Utils.Log($"Can't delete directory `{folder}` because it isn't empty.");
+            log($"Can't delete directory `{folder}` because it isn't empty.");
         }
     }
     /// <summary>
@@ -70,13 +71,14 @@ public static class FileUtils
     /// <param name="pathsToIgnore">
     /// The absolute paths to folders whose empty subfolders should not be deleted.
     /// </param>
+    /// <param name="log"><inheritdoc cref="DeleteFolderRecursive(string, Action{string}?)" path="/param[@name='log']"/></param>
     /// <remarks>TODO: update to support relative paths in <c><paramref name="pathsToIgnore"/></c> as well.</remarks>
-    public static void DeleteEmptyFolders(this string folder, params string[] pathsToIgnore)
+    public static void DeleteEmptyFolders(this string folder, Action<string>? log = null, params string[] pathsToIgnore)
     {
-        foreach (string path in Directory.EnumerateDirectories(folder))
+        foreach (string path in Directory.EnumerateDirectories(folder.AbsoluteOrInBaseFolder()))
         {
             if (!pathsToIgnore.Any(folder.IsSubfolderOf))
-                DeleteFolderRecursive(folder, true);
+                DeleteFolderRecursive(folder, log);
         }
     }
     /// <summary>
@@ -129,7 +131,8 @@ public static class FileUtils
     /// </exception>
     public static bool IsInFolder(this string path, string folder)
     {
-        string? directoryName = Path.GetDirectoryName(path) ?? throw new Exception($"{path} can't be in {folder} because it has no valid directory name!");
+        string? directoryName = Path.GetDirectoryName(path)
+            ?? throw new Exception($"{path} can't be in {folder} because it has no valid directory name!");
         return directoryName.IsSubfolderOf(folder);
     }
     /// <summary>

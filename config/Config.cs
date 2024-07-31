@@ -44,20 +44,22 @@ public static class Config
     /// <typeparam name="T"><inheritdoc cref="Load{T}(string)" path="/typeparam[@name='T']"/></typeparam>
     /// <param name="path"><inheritdoc cref="Load{T}(string)" path="/param[@name='path']"/></param>
     /// <param name="suppressWarnings">
-    /// If <see langword="false"/> and the program has the Debug flag applied, any caught exceptions
-    /// will be printed to the <see cref="Utils.DefaultLog"/>.
+    /// If <see langword="false"/> and the program has the <c>--debug</c> flag applied, any caught exceptions
+    /// will be printed to the console.
     /// </param>
     /// <returns>
     /// A <typeparamref name="T"/> instance loaded from the specified path, if successful, or <see
-    /// langword="default"/>( <typeparamref name="T"/>) otherwise.
+    /// langword="default"/>(<typeparamref name="T"/>) otherwise.
     /// </returns>
     public static T? TryLoad<T>(string? path, bool suppressWarnings = false)
     {
-        Utils.DebugLog($"TryLoad<{typeof(T).Name}>({path.PrintNull()}, {suppressWarnings})");
+        // todo: update with new Log thing once that's merged
+        // LogExtensions.DebugLog($"TryLoad<{typeof(T).Name}>({path.PrintNull()}, {suppressWarnings})");
         T? failWithMessage(string msg)
         {
             if (!suppressWarnings)
-                Utils.DebugLog($"Failed to load config at path `{path}`: {msg}!");
+                // LogExtensions.DebugLog($"Failed to load config at path `{path}`: {msg}!");
+                DebugUtils.IfDebug(Console.WriteLine, $"Failed to load config at path `{path}`: {msg}!");
             return default;
         }
         path = path?.AbsoluteOrInBaseFolder();
@@ -69,7 +71,7 @@ public static class Config
         }
         catch (Exception e)
         {
-            return failWithMessage(e.Message);
+            return failWithMessage($"{e.GetType().Name}: {e.Message}");
         }
     }
 }

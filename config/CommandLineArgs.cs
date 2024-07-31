@@ -36,7 +36,7 @@ public static partial class CommandLineArgs
     {
         IntermediateArgs = new(Environment.GetCommandLineArgs()[1..]);
         foreach ((int pos, string warning) in IntermediateArgs.Warnings)
-            Utils.DebugLog($"Error in command-line args at position {pos}: {warning}");
+            DebugUtils.IfDebug(Console.WriteLine, $"Error in command-line args at position {pos}: {warning}");
     }
     /// <summary>
     /// Attempts to get the argument named <c><paramref name="argName"/></c> as type <typeparamref
@@ -52,9 +52,23 @@ public static partial class CommandLineArgs
     /// </returns>
     public static T? TryGet<T>(string argName, Parser<T> parser)
         => parser(IntermediateArgs[argName], false);
+    /// <summary>
+    /// Tries to parse a given argument to the specified value type.
+    /// </summary>
+    /// <typeparam name="T">The type to parse the argument into.</typeparam>
+    /// <param name="argName">The name of the argument to parse.</param>
+    /// <param name="formatProvider">An <see cref="IFormatProvider"/> to help parse the argument.</param>
+    /// <returns></returns>
     public static T? TryParseStruct<T>(string argName, IFormatProvider? formatProvider = null)
         where T : struct, IParsable<T>
         => Parsers.Struct<T>(formatProvider)(IntermediateArgs[argName], false);
+    /// <summary>
+    /// Tries to parse a given argument to the specified reference type.
+    /// </summary>
+    /// <typeparam name="T">The type to parse the argument into.</typeparam>
+    /// <param name="argName">The name of the argument to parse.</param>
+    /// <param name="formatProvider">An <see cref="IFormatProvider"/> to help parse the argument.</param>
+    /// <returns></returns>
     public static T? TryParseClass<T>(string argName, IFormatProvider? formatProvider = null)
         where T : class, IParsable<T>
         => Parsers.Class<T>(formatProvider)(IntermediateArgs[argName], false);
