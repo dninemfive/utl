@@ -38,7 +38,7 @@ public static partial class CommandLineArgs
             }
             catch (Exception e)
             {
-                Utils.DebugLog(e);
+                LogExtensions.DebugLog(e);
                 return null;
             }
             return path;
@@ -66,7 +66,7 @@ public static partial class CommandLineArgs
             }
             catch (Exception e)
             {
-                Utils.DebugLog(e);
+                LogExtensions.DebugLog(e);
                 return null;
             }
             if (!File.Exists(path))
