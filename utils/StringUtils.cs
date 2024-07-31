@@ -10,9 +10,8 @@ public static class StringUtils
     /// Formats a <see cref="DateTime"/> into a sortable and filesystem-safe string which can be used to name files.
     /// </summary>
     /// <param name="datetime">The <see cref="DateTime"/> to format.</param>
-    /// <returns>The specified <c><paramref name="datetime"/></c> formatted as described above.</returns>
     public static string FileNameFormat(this DateTime datetime) => $"{datetime:yyyy-MM-dd-HHmmss}";
-    /// <summary><inheritdoc cref="InColumns{T}(IEnumerable{T}, IEnumerable{int})" path="/summary"/></summary>
+    /// <summary>Prints the specified <paramref name="values"/> so that they are in columns of the specified widths.</summary>
     /// <typeparam name="T">The type of the objects to print.</typeparam>
     /// <param name="values">An enumerable holding the objects to print paired with the width of their respective columns.</param>
     /// <returns>A string corresponding to the objects <c>t</c> in order, with columns padded to <c>width</c>.</returns>
@@ -25,12 +24,21 @@ public static class StringUtils
         }
         return result;
     }
-    /// <summary>Prints the specified objects in columns with specified widths.</summary>
-    /// <typeparam name="T">The type of the objects to print.</typeparam>
+    /// <summary><inheritdoc cref="InColumns{T}(IEnumerable{ValueTuple{T, int}})" path="/summary"/></summary>
+    /// <typeparam name="T"><inheritdoc cref="InColumns{T}(IEnumerable{ValueTuple{T, int}})" path="/typeparam[@name='T']"/></typeparam>
     /// <param name="values">An enumerable holding the objects to print.</param>
     /// <param name="widths">An enumerable holding the widths of the columns, which will be applied in the same order as the objects.</param>
-    /// <returns>A string corresponding to the <c>values</c> in order, in columns padded to their respective <c>widths</c>.</returns>
+    /// <returns>A string corresponding to the <paramref name="values"/> in order, in columns padded to their respective <paramref name="widths"/>.</returns>
     public static string InColumns<T>(this IEnumerable<T> values, IEnumerable<int> widths) => InColumns(values.Zip(widths));
+    /// <summary>
+    /// Prints the specified <paramref name="values"/> so that they are in columns of the specified <paramref name="width"/>.
+    /// </summary>
+    /// <typeparam name="T"><inheritdoc cref="InColumns{T}(IEnumerable{ValueTuple{T, int}})" path="/typeparam[@name='T']"/></typeparam>
+    /// <param name="values"><inheritdoc cref="InColumns{T}(IEnumerable{T}, IEnumerable{int})" path="/param[@name='values']"/></param>
+    /// <param name="width">The width of each column.</param>
+    /// <returns>A string corresponding to the <paramref name="values"/> in order, in columns of size <paramref name="width"/>.</returns>
+    public static string InColumns<T>(this IEnumerable<T> values, int width)
+        => values.InColumns(Enumerable.Repeat(width, values.Count()));
     /// <summary>
     /// Join a set of characters to a string.
     /// </summary>

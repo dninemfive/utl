@@ -29,7 +29,7 @@ public readonly struct UrlQuery
                               .Select(x => x.value)
                        : Enumerable.Empty<string>();
     /// <summary>
-    /// Gets the <paramref name="index"/> th item corresponding to the specified <paramref name="key"/>.
+    /// Gets the <paramref name="index"/>th item corresponding to the specified <paramref name="key"/>.
     /// </summary>
     /// <param name="key">The key whose corresponding item to get.</param>
     /// <param name="index">
