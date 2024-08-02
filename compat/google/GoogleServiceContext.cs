@@ -33,13 +33,46 @@ public partial class GoogleServiceContext
     /// <param name="configPath">The path from which the <see cref="Config"/> will be loaded.</param>
     /// <param name="log"><inheritdoc cref="Log" path="/summary"/></param>
     public GoogleServiceContext(string configPath, Log? log = null) : this(utl.Config.Load<GoogleAuthConfig>(configPath), log) { }
+    public static GoogleServiceContext? TryLoad(string configPath, Log? log = null)
+    {
+        GoogleAuthConfig? file = utl.Config.TryLoad<GoogleAuthConfig>(configPath, out string? errorMessage);
+        if(file is GoogleAuthConfig config)
+        {
+            if(!config.IsValid(out string? reason))
+            {
+                log?.WriteLine(reason);
+            } 
+            else
+            {
+                return new(config, log);
+            }
+        }
+        else
+        {
+            log?.WriteLine($"Error when attempting to load GoogleServiceContext: {errorMessage}");
+        }
+        return null;
+    }
     /// <summary>
     /// Gets the Google Auth certificate from the (privately-stored) key and password files.
     /// </summary>
     /// <remarks>Largely a copy of code from <see href="https://www.daimto.com/google-drive-authentication-c/">this example</see>.<br/>
     /// <br/> Apparently the password is always <c>notasecret</c> and that can't be changed, which is strange.</remarks>
     public X509Certificate2 Certificate
-        => new(Config.KeyPath, "notasecret", X509KeyStorageFlags.Exportable);
+    {
+        get
+        {
+            string keyPath = Config.KeyPath.AbsoluteOrInBaseFolder();
+            try
+            {
+                return new(keyPath, "notasecret", X509KeyStorageFlags.Exportable);
+            } 
+            catch(Exception e)
+            {
+                throw new Exception($"Could not load certificate at path `{keyPath}`: {e.Summary()}");
+            }
+        }
+    }
     /// <summary>
     /// Constructs a credential with the specified scopes.
     /// </summary>
