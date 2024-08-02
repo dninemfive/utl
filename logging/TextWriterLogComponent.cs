@@ -37,6 +37,7 @@ public class TextWriterLogComponent
         if (!_disposed)
         {
             _disposed = true;
+            _writer.Flush();
             _writer.Dispose();
         }
         GC.SuppressFinalize(this);
@@ -49,6 +50,7 @@ public class TextWriterLogComponent
         if (!_disposed)
         {
             _disposed = true;
+            await _writer.FlushAsync();
             await _writer.DisposeAsync();
         }
         GC.SuppressFinalize(this);
