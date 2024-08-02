@@ -169,16 +169,6 @@ public static class Linq2
         where K : notnull
         => new(tuples.Select(x => new KeyValuePair<K, V>(x.key, x.value)));
     /// <summary>
-    /// Creates a new dictionary from the specified <paramref name="items"/>.
-    /// </summary>
-    /// <typeparam name="K">The key type of the specified <paramref name="items"/>.</typeparam>
-    /// <typeparam name="V">The value type of the specified <paramref name="items"/>.</typeparam>
-    /// <param name="items">The items from which to create a dictionary.</param>
-    /// <returns>A new dictionary containing the specified key-value pairs.</returns>
-    public static Dictionary<K, V> ToDictionary<K, V>(this IEnumerable<KeyValuePair<K, V>> items)
-        where K : notnull
-        => new(items);
-    /// <summary>
     /// Wrapper for <see cref="Enumerable.Repeat{TResult}(TResult, int)"/> as an extension method,
     /// because that reads much more cleanly to me.
     /// </summary>
