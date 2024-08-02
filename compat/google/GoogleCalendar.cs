@@ -12,7 +12,7 @@ public partial class GoogleCalendar
     {
         Id = id;
     }
-    public GoogleCalendar(string id, GoogleAuth auth) 
+    public GoogleCalendar(string id, GoogleServiceContext auth) 
         : this(id, new CalendarService(auth.InitializerFor(CalendarService.Scope.Calendar))) { }
     /// <summary>
     /// Adds an event to the associated calendar.

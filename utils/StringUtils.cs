@@ -309,6 +309,10 @@ public static partial class StringUtils
     public static string Plural<T>(this T number, string singular)
         where T : INumberBase<T>
         => number.Plural(singular, $"{singular}s");
+    public static string Plural<T>(this IEnumerable<T> enumerable, string singular, string plural)
+        => enumerable.Count().Plural(singular, plural);
+    public static string Plural<T>(this IEnumerable<T> enumerable, string singular)
+        => enumerable.Count().Plural(singular);
     /// <summary>
     /// Produces the ordinal form of a <paramref name="number"/>.
     /// </summary>

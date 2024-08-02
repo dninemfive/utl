@@ -15,14 +15,16 @@ namespace d9.utl.compat.google;
 /// <summary>
 /// Utilities for authenticating and interfacing with Google services.
 /// </summary>
-public partial class GoogleAuth
+public partial class GoogleServiceContext
 {
     public GoogleAuthConfig Config { get; private set; }
-    public GoogleAuth(GoogleAuthConfig config)
+    public Log? Log { get; private set; }
+    public GoogleServiceContext(GoogleAuthConfig config, Log? log = null)
     {
         Config = config;
+        Log = log;
     }
-    public GoogleAuth(string configPath) : this(utl.Config.Load<GoogleAuthConfig>(configPath)) { }
+    public GoogleServiceContext(string configPath) : this(utl.Config.Load<GoogleAuthConfig>(configPath)) { }
     /// <summary>
     /// Gets the Google Auth certificate from the (privately-stored) key and password files.
     /// </summary>

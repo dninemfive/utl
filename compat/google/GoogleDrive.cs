@@ -5,10 +5,8 @@ namespace d9.utl.compat.google;
 public class GoogleDrive
     : GoogleServiceWrapper<DriveService>
 {
-    public GoogleDrive(DriveService service, Log? log = null) 
-        : base(service, log) { }
-    public GoogleDrive(GoogleAuth auth, Log? log = null) 
-        : this(new DriveService(auth.InitializerFor(DriveService.Scope.Drive)), log) { }
+    public GoogleDrive(GoogleServiceContext context) 
+        : this(new DriveService(context.InitializerFor(DriveService.Scope.Drive)), context.Log) { }
     /// <summary>
     /// Attempts to download a file from a Drive URL to the <paramref name="filePath">specified path</paramref>
     /// and prints whether or not it was successful, as well as the response code.
