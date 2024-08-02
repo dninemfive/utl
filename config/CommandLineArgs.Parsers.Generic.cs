@@ -1,14 +1,11 @@
 ﻿using System.Globalization;
 
 namespace d9.utl;
-public static partial class CommandLineArgs
+public partial class CommandLineArgs
 {
-    /// <summary>
-    /// Predefined <see cref="Parser{T}">parsers</see> for command-line args.
-    /// </summary>
-    public static partial class Parsers
+    public partial class Parsers
     {
-        private static IEnumerable<T?> _structs<T>(IEnumerable<string>? values, IFormatProvider? formatProvider, bool includeNull = true)
+        private IEnumerable<T?> _structs<T>(IEnumerable<string>? values, IFormatProvider? formatProvider, bool includeNull = true)
             where T : struct, IParsable<T>
         {
             if (values is null)
@@ -19,7 +16,7 @@ public static partial class CommandLineArgs
                     yield return result;
             }
         }
-        private static IEnumerable<T?> _classes<T>(IEnumerable<string>? values, IFormatProvider? formatProvider)
+        private IEnumerable<T?> _classes<T>(IEnumerable<string>? values, IFormatProvider? formatProvider)
             where T : class, IParsable<T>
         {
             if (values is null)
@@ -30,10 +27,10 @@ public static partial class CommandLineArgs
                 yield return result;
             }
         }
-        public static Parser<IEnumerable<T?>> Structs<T>(IFormatProvider? formatProvider = null)
+        public Parser<IEnumerable<T?>> Structs<T>(IFormatProvider? formatProvider = null)
             where T : struct, IParsable<T>
             => (values, _) => _structs<T>(values, formatProvider);
-        public static Parser<IEnumerable<T?>> Classes<T>(IFormatProvider? formatProvider = null)
+        public Parser<IEnumerable<T?>> Classes<T>(IFormatProvider? formatProvider = null)
             where T : class, IParsable<T>
             => (values, _) => _classes<T>(values, formatProvider);
         /// <summary>
@@ -50,7 +47,7 @@ public static partial class CommandLineArgs
         /// An instance of <typeparamref name="T"/>, if any of the <c>values</c> can be successfully
         /// parsed, or <see langword="null"/> otherwise.
         /// </returns>
-        public static Parser<T?> Struct<T>(IFormatProvider? formatProvider = null)
+        public Parser<T?> Struct<T>(IFormatProvider? formatProvider = null)
             where T : struct, IParsable<T>
             => (values, _) => _structs<T>(values, formatProvider, false).FirstOrDefault();
         /// <summary>
@@ -67,7 +64,7 @@ public static partial class CommandLineArgs
         /// An instance of <typeparamref name="T"/>, if any of the <c>values</c> can be successfully
         /// parsed, or <see langword="null"/> otherwise.
         /// </returns>
-        public static Parser<T?> Class<T>(IFormatProvider? formatProvider = null)
+        public Parser<T?> Class<T>(IFormatProvider? formatProvider = null)
             where T : class, IParsable<T>
             => (values, _) =>
             {

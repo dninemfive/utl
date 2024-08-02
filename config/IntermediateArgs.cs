@@ -106,7 +106,9 @@ public partial record IntermediateArgs
     /// with corresponding values, if there were any, in order of appearance. <br/><br/> If the key
     /// was <b>not</b> present in the args, <see langword="null"/>.
     /// </returns>
-    public IEnumerable<string>? this[string key] => _args.TryGetValue(key, out ICollection<string>? value) ? value : null;
+    public IEnumerable<string> this[string key]
+        => _args.TryGetValue(key, out ICollection<string>? value) ? value
+                                                                  : Enumerable.Empty<string>();
     /// <summary>
     /// Gets the value of a given flag character.
     /// </summary>

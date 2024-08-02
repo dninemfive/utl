@@ -1,33 +1,29 @@
 ﻿namespace d9.utl;
-public static partial class CommandLineArgs
+public partial class CommandLineArgs
 {
     /// <summary>
     /// Predefined <see cref="Parser{T}">parsers</see> for command-line args.
     /// </summary>
-    public static partial class Parsers
+    public partial class Parsers
     {
-        /// <summary>
-        /// <para>
-        /// Checks that the <see cref="FirstNonEmptyString">first non-null-or-empty <see
-        /// langword="string"/></see> is a path to a folder.
-        /// </para>
-        /// <list type="bullet">
-        /// <item>If the folder exists, returns the path.</item>
-        /// <item>
-        /// If the folder does not exist but the path is valid, creates the folder and returns the path.
-        /// </item>
-        /// <item>Otherwise, returns <see langword="null"/>.</item>
-        /// </list>
-        /// <para>
-        /// If the result is not <see langword="null"/>, it is guaranteed to be a path pointing to a
-        /// folder which exists.
-        /// </para>
-        /// </summary>
-        public static Parser<string?> FolderPath => delegate (IEnumerable<string>? enumerable, bool _)
+        public Parser<string> FolderPaths => delegate (IntermediateArgs args, string name)
         {
+            foreach(string path in args[name])
+            {
+                if (Directory.Exists(path))
+                    yield return path;
+                try
+                {
+                    
+                } 
+                catch(Exception e)
+                {
+
+                }
+            }
             string? possiblePath = FirstNonEmptyString(enumerable, false);
             if (possiblePath is null)
-                return null;
+                yield return null;
             string path;
             try
             {

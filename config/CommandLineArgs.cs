@@ -4,39 +4,28 @@
 /// Handles automatically loading command-line arguments into variables.
 /// </summary>
 /// <example>public static readonly string ExampleArg = CommandLineArgs.Get("example", CommandLineArgs.Parsers.FirstNonNullString);</example>
-public static partial class CommandLineArgs
+public partial class CommandLineArgs
 {
+    public static CommandLineArgs Instance
+        = new(Environment.GetCommandLineArgs()[1..]);
     /// <summary>
     /// The IntermediateArgs instance for this run of the application.
     /// </summary>
-    public static IntermediateArgs IntermediateArgs { get; private set; }
-    /// <summary>
-    /// Defines a parser which operates on the values recorded for a given variable by an <see
-    /// cref="IntermediateArgs"/> instance and returns an object of the specified type.
-    /// </summary>
-    /// <typeparam name="T">The type of the object to return.</typeparam>
-    /// <param name="values">
-    /// A potentially <see langword="null"/><see cref="IEnumerable{T}">IEnumerable</see>&lt; <see
-    /// langword="string"/>&gt; corresponding to the values passed after invoking a given variable's name.
-    /// </param>
-    /// <param name="flag">
-    /// If the <see cref="IntermediateArgs._flags">flag</see> specified for the variable in question
-    /// is present, <see langword="true"/>; otherwise, <see langword="false"/>.
-    /// </param>
-    /// <returns>
-    /// An object of type <typeparamref name="T"/>, if parsing was successful, or <see
-    /// langword="null"/> if parsing was not successful.
-    /// </returns>
-    public delegate T? Parser<T>(IEnumerable<string>? values, bool flag);
+    public IntermediateArgs IntermediateArgs { get; private set; }
     /// <summary>
     /// Loads the command-line <see langword="args"/> and parses them into <see
     /// cref="IntermediateArgs">an intermediate state</see>.
     /// </summary>
-    static CommandLineArgs()
+    public CommandLineArgs()
     {
         IntermediateArgs = new(Environment.GetCommandLineArgs()[1..]);
         foreach ((int pos, string warning) in IntermediateArgs.Warnings)
             DebugUtils.IfDebug(Console.WriteLine, $"Error in command-line args at position {pos}: {warning}");
+    }
+    public CommandLineArgs(params string[] args) : this(args, Log.ConsoleAndFile("d9.utl.args.log", true));
+    public CommandLineArgs(IEnumerable<string> args, Log? log = null)
+    {
+
     }
     /// <summary>
     /// Attempts to get the argument named <c><paramref name="argName"/></c> as type <typeparamref
@@ -50,7 +39,7 @@ public static partial class CommandLineArgs
     /// An object of type <typeparamref name="T"/> if parsing was successful, or <see
     /// langword="null"/> otherwise.
     /// </returns>
-    public static T? TryGet<T>(string argName, Parser<T> parser)
+    public T? TryGet<T>(string argName, Parser<T> parser)
         => parser(IntermediateArgs[argName], false);
     /// <summary>
     /// Tries to parse a given argument to the specified value type.
@@ -59,7 +48,7 @@ public static partial class CommandLineArgs
     /// <param name="argName">The name of the argument to parse.</param>
     /// <param name="formatProvider">An <see cref="IFormatProvider"/> to help parse the argument.</param>
     /// <returns></returns>
-    public static T? TryParseStruct<T>(string argName, IFormatProvider? formatProvider = null)
+    public T? TryParseStruct<T>(string argName, IFormatProvider? formatProvider = null)
         where T : struct, IParsable<T>
         => Parsers.Struct<T>(formatProvider)(IntermediateArgs[argName], false);
     /// <summary>
@@ -69,7 +58,7 @@ public static partial class CommandLineArgs
     /// <param name="argName">The name of the argument to parse.</param>
     /// <param name="formatProvider">An <see cref="IFormatProvider"/> to help parse the argument.</param>
     /// <returns></returns>
-    public static T? TryParseClass<T>(string argName, IFormatProvider? formatProvider = null)
+    public T? TryParseClass<T>(string argName, IFormatProvider? formatProvider = null)
         where T : class, IParsable<T>
         => Parsers.Class<T>(formatProvider)(IntermediateArgs[argName], false);
     /// <summary>
@@ -89,8 +78,8 @@ public static partial class CommandLineArgs
     /// cref="IntermediateArgs.this[char]">flag</see> is present in the arguments, or <see
     /// langword="false"/> otherwise.
     /// </returns>
-    public static bool GetFlag(string argName, char? flag = null)
-        => Parsers.Flag(IntermediateArgs[argName], IntermediateArgs[flag ?? argName.First().ToLower()]);
+    public bool GetFlag(string argName, char? flag = null)
+        => IntermediateArgs[argName].Any() || IntermediateArgs[flag ?? argName.First()];
     /// <summary>
     /// Gets the value of the argument named <c><paramref name="argName"/></c>, if present, and
     /// <b>throws an exception</b> if the argument is not found.
@@ -104,6 +93,6 @@ public static partial class CommandLineArgs
     /// cref="Exception"/> is thrown.
     /// </param>
     /// <returns>The value of the argument named <c><paramref name="argName"/></c>, if it exists.</returns>
-    public static T Get<T>(string argName, Parser<T> parser, Exception? exception = null)
+    public T Get<T>(string argName, Parser<T> parser, Exception? exception = null)
         => TryGet(argName, parser) ?? throw exception ?? new Exception($"Tried to get command-line argument {argName}, but it was not found!");
 }

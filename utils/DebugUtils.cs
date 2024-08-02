@@ -10,7 +10,7 @@ public static class DebugUtils
     /// <summary>
     /// Whether or not to perform debug prints.
     /// </summary>
-    public static readonly bool DebugEnabled = CommandLineArgs.GetFlag("debug");
+    public static readonly bool DebugEnabled = CommandLineArgs.Instance.GetFlag("debug", 'D');
     /// <summary>
     /// <paramref name="log"/> the given <paramref name="obj"/> only if the program was run with the <c>--debug</c> flag.
     /// </summary>
