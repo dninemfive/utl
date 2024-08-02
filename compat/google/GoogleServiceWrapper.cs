@@ -1,4 +1,5 @@
 ﻿using Google.Apis.Services;
+using System.Reflection;
 
 namespace d9.utl.compat.google;
 /// <summary>
@@ -71,7 +72,7 @@ public abstract class GoogleServiceWrapper<T>
         where W : GoogleServiceWrapper<T>
     {
         if (Activator.CreateInstance(typeof(T), context.InitializerFor(scopes)) is T service)
-            return Activator.CreateInstance(typeof(W), service, context) as W;
+            return Activator.CreateInstance(typeof(W), bindingAttr: BindingFlags.NonPublic | BindingFlags.Instance, null, [service, context], null) as W;
         return null;
     }
 }
