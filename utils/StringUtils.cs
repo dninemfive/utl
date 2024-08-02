@@ -296,23 +296,42 @@ public static partial class StringUtils
     /// <param name="singular">The string to use if the <paramref name="number"/> is equal to 1.</param>
     /// <param name="plural">The string to use if the <paramref name="number"/> is <em>not</em> equal to 1.</param>
     /// <remarks>Not localized. Localizing this kind of thing would be way out of scope for this project.</remarks>
-    public static string Plural<T>(this T number, string singular, string plural)
+    /// <returns><paramref name="singular"/> if <paramref name="number"/> is 1 or -1, or <paramref name="plural"/> otherwise.</returns>
+    public static string Plural<T>(this string singular, string plural, T number)
         where T : INumberBase<T>
         => T.Abs(number) == T.One ? singular : plural;
     /// <summary>
     /// Chooses whether to pluralize (append an s to) a string based on the size of a <paramref name="number"/>.
     /// </summary>
-    /// <typeparam name="T"><inheritdoc cref="Plural{T}(T, string, string)" path="/typeparam[@name='T']"/></typeparam>
-    /// <param name="number"><inheritdoc cref="Plural{T}(T, string, string)" path="/param[@name='number']"/></param>
-    /// <param name="singular"><inheritdoc cref="Plural{T}(T, string, string)" path="/param[@name='singular']"/></param>
-    /// <remarks>Not localized. Localizing this kind of thing would be way out of scope for this project.</remarks>
-    public static string Plural<T>(this T number, string singular)
+    /// <typeparam name="T"><inheritdoc cref="Plural{T}(string, string, T)" path="/typeparam[@name='T']"/></typeparam>
+    /// <param name="number"><inheritdoc cref="Plural{T}(string, string, T)" path="/param[@name='number']"/></param>
+    /// <param name="singular"><inheritdoc cref="Plural{T}(string, string, T)" path="/param[@name='singular']"/></param>
+    /// <remarks><inheritdoc cref="Plural{T}(string, string, T)" path="/remarks"/></remarks>
+    /// <returns><paramref name="singular"/> if <paramref name="number"/> is 1 or -1, <paramref name="singular"/> + "s" otherwise.</returns>
+    public static string Plural<T>(this string singular, T number)
         where T : INumberBase<T>
-        => number.Plural(singular, $"{singular}s");
-    public static string Plural<T>(this IEnumerable<T> enumerable, string singular, string plural)
-        => enumerable.Count().Plural(singular, plural);
-    public static string Plural<T>(this IEnumerable<T> enumerable, string singular)
-        => enumerable.Count().Plural(singular);
+        => singular.Plural($"{singular}s", number);
+    /// <summary>
+    /// Chooses the <paramref name="singular"/> or <paramref name="plural"/> form of a string based on the size of an <paramref name="enumerable"/>.
+    /// </summary>
+    /// <typeparam name="T"><inheritdoc cref="Plural{T}(string, string, T)" path="/typeparam[@name='T']"/></typeparam>
+    /// <param name="enumerable">The enumerable whose size determines the form of the string to use.</param>
+    /// <param name="singular">The string to use if the <paramref name="enumerable"/> has exactly 1 element.</param>
+    /// <param name="plural">The string to use if the <paramref name="enumerable"/> has 0 or multiple elements.</param>
+    /// <remarks><inheritdoc cref="Plural{T}(string, string, T)" path="/remarks"/></remarks>
+    /// <returns><paramref name="singular"/> if <paramref name="enumerable"/> has exactly 1 item, or <paramref name="plural"/> otherwise.</returns>
+    public static string Plural<T>(this string singular, string plural, IEnumerable<T> enumerable)
+        => singular.Plural(plural, enumerable.Count());
+    /// <summary>
+    /// Chooses whether to pluralize (append an s to) a string based on the size of an <paramref name="enumerable"/>.
+    /// </summary>
+    /// <typeparam name="T"><inheritdoc cref="Plural{T}(string, string, T)" path="/typeparam[@name='T']"/></typeparam>
+    /// <param name="enumerable"><inheritdoc cref="Plural{T}(string, string, IEnumerable{T})" path="/param[@name='enumerable']"/></param>
+    /// <param name="singular"><inheritdoc cref="Plural{T}(string, string, IEnumerable{T})" path="/param[@name='singular']"/></param>
+    /// <remarks><inheritdoc cref="Plural{T}(string, string, T)" path="/remarks"/></remarks>
+    /// <returns><paramref name="singular"/> if <paramref name="enumerable"/> has exactly 1 item, or <paramref name="singular"/> + "s" otherwise.</returns>
+    public static string Plural<T>(this string singular, IEnumerable<T> enumerable)
+        => singular.Plural(enumerable.Count());
     /// <summary>
     /// Produces the ordinal form of a <paramref name="number"/>.
     /// </summary>

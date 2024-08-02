@@ -16,7 +16,7 @@ public class GoogleServiceWrapper<T>
         GoogleServiceWrapper<T>? wrapper = TryCreateFrom(context, scopes);
         if (wrapper is GoogleServiceWrapper<T> result)
             return result;
-        throw new Exception($"Could not initialize GoogleServiceWrapper<{typeof(T).Name}> with context {context} and {scopes.Plural("scope")} {scopes.ListNotation()}!");
+        throw new Exception($"Could not initialize GoogleServiceWrapper<{typeof(T).Name}> with context {context} and {"scope".Plural(scopes)} {scopes.ListNotation()}!");
     }
     public static GoogleServiceWrapper<T>? TryCreateFrom(GoogleServiceContext context, params string[] scopes)
     {
