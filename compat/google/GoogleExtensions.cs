@@ -1,6 +1,9 @@
 ﻿using Google.Apis.Calendar.v3.Data;
 
 namespace d9.utl.compat.google;
+/// <summary>
+/// Helpful extension methods when working with Google types
+/// </summary>
 public static class GoogleExtensions
 {
     /// <summary>
