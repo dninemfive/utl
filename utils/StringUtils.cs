@@ -38,7 +38,7 @@ public static partial class StringUtils
         if (truncationSuffix.Length > maxLength)
             throw new ArgumentException($"`{truncationSuffix}` (length {truncationSuffix.Length}) is longer than the specified maxLength ({maxLength})!", nameof(truncationSuffix));
         int targetLength = maxLength - truncationSuffix.Length;
-        if (value.Length > targetLength)
+        if (value.Length > maxLength)
             return value[..targetLength] + truncationSuffix;
         return value;
     }
