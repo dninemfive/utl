@@ -13,8 +13,12 @@ public readonly struct UrlQuery
     /// </summary>
     /// <remarks><b>NOTE:</b> keys are not guaranteed to be unique.</remarks>
     public readonly IReadOnlyCollection<(string key, string value)> Items { get; }
-    internal UrlQuery(IEnumerable<(string key, string value)> items)
-        => Items = items.ToImmutableList();
+    /// <summary>
+    /// Creates a UrlQuery with the specified <paramref name="parameters"/>.
+    /// </summary>
+    /// <param name="parameters">The query parameters to include.</param>
+    public UrlQuery(IEnumerable<(string key, string value)> parameters)
+        => Items = parameters.ToImmutableList();
     /// <summary>
     /// Gets all the values responding to the instance(s) of the specified <paramref name="key"/>,
     /// if any.
@@ -173,4 +177,10 @@ public readonly struct UrlQuery
     /// </summary>
     /// <param name="query">The query to convert.</param>
     public static implicit operator string(UrlQuery query) => query.ToString();
+    /// <summary>
+    /// Implicitly converts the specified list of <paramref name="parameters"/> to a UrlQuery.
+    /// </summary>
+    /// <param name="parameters"><inheritdoc cref="UrlQuery(IEnumerable{ValueTuple{string, string}})" path="/param[@name='parameters']"/></param>
+    public static implicit operator UrlQuery(List<(string key, string value)> parameters)
+        => new(parameters);
 }
