@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Immutable;
+using System.Net;
 
 namespace d9.utl;
 /// <summary>
@@ -12,13 +13,13 @@ public readonly struct UrlQuery
     /// The individual parts of the query.
     /// </summary>
     /// <remarks><b>NOTE:</b> keys are not guaranteed to be unique.</remarks>
-    public readonly IReadOnlyCollection<(string key, string value)> Items { get; }
+    public readonly IReadOnlyCollection<(string key, string value)> Parameters { get; }
     /// <summary>
     /// Creates a UrlQuery with the specified <paramref name="parameters"/>.
     /// </summary>
     /// <param name="parameters">The query parameters to include.</param>
     public UrlQuery(IEnumerable<(string key, string value)> parameters)
-        => Items = parameters.ToImmutableList();
+        => Parameters = parameters.ToImmutableList();
     /// <summary>
     /// Gets all the values responding to the instance(s) of the specified <paramref name="key"/>,
     /// if any.
@@ -29,9 +30,9 @@ public readonly struct UrlQuery
     /// enumerable if the key was not present.
     /// </returns>
     public IEnumerable<string> this[string key]
-        => Items.Any() ? Items.Where(x => x.key == key)
-                              .Select(x => x.value)
-                       : Enumerable.Empty<string>();
+        => Parameters.Any() ? Parameters.Where(x => x.key == key)
+                                        .Select(x => x.value)
+                            : Enumerable.Empty<string>();
     /// <summary>
     /// Gets the <paramref name="index"/>th item corresponding to the specified <paramref name="key"/>.
     /// </summary>
@@ -62,7 +63,7 @@ public readonly struct UrlQuery
     public UrlQuery Set(string key, Func<string, string> function)
     {
         List<(string key, string value)> items = new();
-        foreach ((string key, string value) item in Items)
+        foreach ((string key, string value) item in Parameters)
         {
             if (item.key == key)
             {
@@ -78,7 +79,7 @@ public readonly struct UrlQuery
     private UrlQuery KeepOrDrop(string[] tags, bool drop)
     {
         List<(string key, string value)> items = new();
-        foreach ((string key, string value) item in Items)
+        foreach ((string key, string value) item in Parameters)
         {
             if (tags.Contains(item.key) ^ drop)
                 items.Add(item);
@@ -164,23 +165,37 @@ public readonly struct UrlQuery
     /// </summary>
     /// <returns>A valid URL query string representing this query.</returns>
     /// <remarks>TODO: properly encode characters which require escaping (and decode them when constructing UrlQueries)</remarks>
-    public override string ToString() => $"?{Items.Select(x => $"{x.key}={x.value}").Aggregate((x, y) => $"{x}&{y}")}";
+    public override string ToString() => $"?{Parameters.Select(x => $"{x.key}={x.value}").JoinWithDelimiter("&")}";
     /// <summary>
     /// Implements <see cref="IEnumerable{T}"/> over this query's keys and values.
     /// </summary>
     public IEnumerator<(string key, string value)> GetEnumerator()
-        => Items.GetEnumerator();
+        => Parameters.GetEnumerator();
     IEnumerator IEnumerable.GetEnumerator()
-        => ((IEnumerable)Items).GetEnumerator();
+        => ((IEnumerable)Parameters).GetEnumerator();
     /// <summary>
     /// Implicitly converts a UrlQuery into its corresponding query string.
     /// </summary>
     /// <param name="query">The query to convert.</param>
     public static implicit operator string(UrlQuery query) => query.ToString();
     /// <summary>
-    /// Implicitly converts the specified list of <paramref name="parameters"/> to a UrlQuery.
+    /// Transforms this query's keys and values using the specified <paramref name="keyTransform"/> and <paramref name="valueTransform"/>.
     /// </summary>
-    /// <param name="parameters"><inheritdoc cref="UrlQuery(IEnumerable{ValueTuple{string, string}})" path="/param[@name='parameters']"/></param>
-    public static implicit operator UrlQuery(List<(string key, string value)> parameters)
-        => new(parameters);
+    /// <param name="keyTransform">A function applied to all keys to produce the keys of the resulting UrlQuery.</param>
+    /// <param name="valueTransform">A function applied to all values to produce the values of the resulting UrlQuery. If <see langword="null"/>, defaults to copying the <paramref name="keyTransform"/>.</param>
+    /// <returns>A new UrlQuery corresponding to the transformation specified.</returns>
+    public UrlQuery Transform(Func<string, string> keyTransform, Func<string, string>? valueTransform = null)
+        => new(Parameters.Select(x => (keyTransform(x.key), (valueTransform ?? keyTransform)(x.value))));
+    /// <summary>
+    /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.net.webutility.urlencode">URL-encodes</see> the parameters of this UrlQuery.
+    /// </summary>
+    /// <returns>A new UrlQuery with parameters encoded as described in the linked article.</returns>
+    public UrlQuery UrlEncode()
+        => Transform(WebUtility.UrlEncode);
+    /// <summary>
+    /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.net.webutility.urldecode">URL-decodes</see> the parameters of this UrlQuery.
+    /// </summary>
+    /// <returns>A new UrlQuery with parameters decoded as described in the linked article.</returns>
+    public UrlQuery UrlDecode()
+        => Transform(WebUtility.UrlDecode);
 }
