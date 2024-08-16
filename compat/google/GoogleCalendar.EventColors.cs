@@ -2,12 +2,13 @@
 public partial class GoogleCalendar
 {
     /// <summary>
-    /// Static class containing the RGB colors corresponding to the values of the <see cref="EventColor"/> enum.
+    /// Static class containing the RGB colors corresponding to the values of the <see
+    /// cref="EventColor"/> enum.
     /// </summary>
     /// <remarks>
-    /// See
-    /// <see href="https://docs.google.com/spreadsheets/d/1M2lyC0jHT3Mj-eA9OPJ2m_JQr1f3qpJVX5a8dNXnDB0/edit?usp=sharing">this sheet</see>
-    /// for more information.
+    /// See <see
+    /// href="https://docs.google.com/spreadsheets/d/1M2lyC0jHT3Mj-eA9OPJ2m_JQr1f3qpJVX5a8dNXnDB0/edit?usp=sharing">this
+    /// sheet</see> for more information.
     /// </remarks>
     public static class EventColors
     {
@@ -48,7 +49,8 @@ public partial class GoogleCalendar
             { EventColor.Tomato,    0xf2b3b3 }
         };
         /// <summary>
-        /// The colors returned by the Google Calendar API for each event color code, which differ from those actually used on the desktop site.
+        /// The colors returned by the Google Calendar API for each event color code, which differ
+        /// from those actually used on the desktop site.
         /// </summary>
         public static IReadOnlyDictionary<EventColor, RgbColor> Api => _apiColors;
         private static readonly Dictionary<EventColor, RgbColor> _apiColors = new()

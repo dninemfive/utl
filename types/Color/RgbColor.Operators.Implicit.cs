@@ -28,10 +28,22 @@ public readonly partial struct RgbColor
     /// <remarks><inheritdoc cref="RgbColor(string)" path="/remarks"/></remarks>
     public static implicit operator RgbColor(string hexCode)
         => new(hexCode);
+    /// <summary>
+    /// Implicitly converts the specified <paramref name="tuple"/> of floating-point values in the range [0..1] into an RgbColor.
+    /// </summary>
+    /// <param name="tuple">The tuple to convert.</param>
     public static implicit operator RgbColor((float r, float g, float b) tuple)
         => FromFloatingPoints(tuple.r, tuple.g, tuple.b);
+    /// <summary>
+    /// Implicitly converts the specified <paramref name="tuple"/> of floating-point values in the range [0..1] into an RgbColor.
+    /// </summary>
+    /// <param name="tuple">The tuple to convert.</param>
     public static implicit operator RgbColor((double r, double g, double b) tuple)
         => FromFloatingPoints(tuple.r, tuple.g, tuple.b);
+    /// <summary>
+    /// Implicitly converts the specified <paramref name="tuple"/> of floating-point values in the range [0..1] into an RgbColor.
+    /// </summary>
+    /// <param name="tuple">The tuple to convert.</param>
     public static implicit operator RgbColor((decimal r, decimal g, decimal b) tuple)
         => FromFloatingPoints(tuple.r, tuple.g, tuple.b);
 }

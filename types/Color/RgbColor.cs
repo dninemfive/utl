@@ -66,19 +66,17 @@ public readonly partial struct RgbColor
     /// <remarks><b>Throws</b> an <see cref="Exception"/> if the string is not in the correct format.</remarks>
     public RgbColor(string hexCode)
         : this(_fromHexString(hexCode) ?? throw _invalidFormatException(hexCode)) { }
-    private static IEnumerable<string> _argsOutOfRange<T>(params (T, string)[] args)
-        where T : IFloatingPoint<T>
-    {
-        foreach((T t, string s) in args)
-            if (t < T.Zero || t > T.One)
-                yield return $"{s} ({t})";
-    }
+    /// <summary>
+    /// Creates an RGB color from the specified floating point values in the range [0..1], where 0 is the minimum and 1 is the maximum value for each channel.
+    /// </summary>
+    /// <typeparam name="T">The type of the floating points to use.</typeparam>
+    /// <param name="r"><inheritdoc cref="R" path="/summary"/></param>
+    /// <param name="g"><inheritdoc cref="G" path="/summary"/></param>
+    /// <param name="b"><inheritdoc cref="B" path="/summary"/></param>
+    /// <param name="checked">If <see langword="true"/>, an <b>throws</b> an exception if any value is outside the range [0..1]; otherwise, values will be clamped to the valid range.</param>
     public static RgbColor FromFloatingPoints<T>(T r, T g, T b, bool @checked = false)
         where T : IFloatingPoint<T>
     {
-        IEnumerable<string> argsOutOfrange = _argsOutOfRange((r, nameof(r)), (g, nameof(g)), (b, nameof(b)));
-        if (argsOutOfrange.Any())
-            throw new Exception($"The following arguments were out of the range [0..1]: {argsOutOfrange.ListNotation(brackets: null)}");
         Func<byte, T> createT = @checked ? T.CreateChecked : T.CreateSaturating;
         T maxByte = createT(byte.MaxValue);
         Func<T, byte> createByte = @checked ? byte.CreateChecked : byte.CreateSaturating;
@@ -116,7 +114,6 @@ public readonly partial struct RgbColor
         }
         return false;
     }
-    private static Regex _hexRegex = GenerateHexRegex();
     /// <summary>
     /// Deconstructs the RGB color into its components.
     /// </summary>
@@ -136,4 +133,5 @@ public readonly partial struct RgbColor
         => $"#{R.ToHex()}{G.ToHex()}{B.ToHex()}";
     [GeneratedRegex(@"#?[\da-fA-F]{6}")]
     private static partial Regex GenerateHexRegex();
+    private static Regex _hexRegex = GenerateHexRegex();
 }
