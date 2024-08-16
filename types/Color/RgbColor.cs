@@ -66,6 +66,22 @@ public readonly partial struct RgbColor
     /// <remarks><b>Throws</b> an <see cref="Exception"/> if the string is not in the correct format.</remarks>
     public RgbColor(string hexCode)
         : this(_fromHexString(hexCode) ?? throw _invalidFormatException(hexCode)) { }
+    private static IEnumerable<string> _argsOutOfRange<T>(params (T, string)[] args)
+        where T : IFloatingPoint<T>
+    {
+        foreach((T t, string s) in args)
+            if (t < T.Zero || t > T.One)
+                yield return $"{s} ({t})";
+    }
+    public static RgbColor FromFloatingPoints<T>(T r, T g, T b)
+        where T : IFloatingPoint<T>
+    {
+        IEnumerable<string> argsOutOfrange = _argsOutOfRange((r, nameof(r)), (g, nameof(g)), (b, nameof(b)));
+        if (argsOutOfrange.Any())
+            throw new Exception($"The following arguments were out of the range [0..1]: {argsOutOfrange.ListNotation(brackets: null)}");
+        T maxByte = T.CreateSaturating(byte.MaxValue);
+        return new(byte.CreateSaturating(r * maxByte), byte.CreateSaturating(g * maxByte), byte.CreateSaturating(b * maxByte));
+    }
     /// <summary>
     /// Parses the specified string into an RGB color.
     /// </summary>
@@ -141,27 +157,12 @@ public readonly partial struct RgbColor
     /// <remarks><inheritdoc cref="RgbColor(string)" path="/remarks"/></remarks>
     public static implicit operator RgbColor(string hexCode)
         => new(hexCode);
-    public RgbColor Transform(Func<byte, byte> channelTransform)
-        => new(channelTransform(R), channelTransform(G), channelTransform(B));
-    private static RgbColor _applyOp(Func<byte, byte, int> op, RgbColor a, RgbColor b)
-        => new(byte.CreateSaturating(op(a.R, b.R)),
-               byte.CreateSaturating(op(a.G, b.G)),
-               byte.CreateSaturating(op(a.B, b.B)));
-    public static RgbColor operator +(RgbColor a, RgbColor b)
-        => _applyOp((x, y) => x + y, a, b);
-    public static RgbColor operator -(RgbColor a, RgbColor b)
-        => _applyOp((x, y) => x - y, a, b);
-    public static RgbColor operator *(RgbColor a, RgbColor b)
-        => _applyOp((x, y) => x * y, a, b);
-    public static RgbColor operator /(RgbColor a, RgbColor b)
-        => _applyOp((x, y) => x * y, a, b);
-    private static RgbColor _applyOp<T>(Func<byte, T, T> op, RgbColor a, T c)
-        where T : INumberBase<T>
-        => new(byte.CreateSaturating(op(a.R, c)),
-               byte.CreateSaturating(op(a.G, c)),
-               byte.CreateSaturating(op(a.B, c)));
-    public static RgbColor operator *(RgbColor a, float b)
-        => _applyOp((byte x, float y) => x * y, a, b);
+    public static implicit operator RgbColor((float r, float g, float b) tuple)
+        => FromFloatingPoints(tuple.r, tuple.g, tuple.b);
+    public static implicit operator RgbColor((double r, double g, double b) tuple)
+        => FromFloatingPoints(tuple.r, tuple.g, tuple.b);
+    public static implicit operator RgbColor((decimal r, decimal g, decimal b) tuple)
+        => FromFloatingPoints(tuple.r, tuple.g, tuple.b);
     [GeneratedRegex(@"#?[\da-fA-F]{6}")]
     private static partial Regex GenerateHexRegex();
 }
