@@ -5,9 +5,9 @@ public partial class GoogleCalendar
     /// The 11 colors available to Google Calendar events.
     /// </summary>
     /// <remarks>
-    /// The API returns hex codes which do not match the colors shown in the desktop app; please see
+    /// The API returns hex codes which do not match the colors shown in the desktop app; see
     /// <see href="https://docs.google.com/spreadsheets/d/1M2lyC0jHT3Mj-eA9OPJ2m_JQr1f3qpJVX5a8dNXnDB0/edit?usp=sharing">this sheet</see>
-    /// for exact details.
+    /// for exact details, or use <see cref="EventColors"/> to access them programmatically.
     /// </remarks>
     public enum EventColor
     {
