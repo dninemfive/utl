@@ -39,7 +39,7 @@ public readonly partial struct RgbColor
     /// Constructs an RGB color from the specified integer, treated as a hexadecimal number.
     /// </summary>
     /// <param name="hex">An integer corresponding to a valid RGB color code.</param>
-    /// <remarks>Throws an <see cref="ArgumentOutOfRangeException"/> if <paramref name="hex"/> is less than 0 or greater than 0xFFFFFF (16777215 in decimal).</remarks>
+    /// <remarks><b>Throws</b> an <see cref="ArgumentOutOfRangeException"/> if <paramref name="hex"/> is less than 0 or greater than 0xFFFFFF (16777215 in decimal).</remarks>
     public RgbColor(int hex)
     {
         ArgumentOutOfRangeException.ThrowIfLessThan(hex, 0);
@@ -62,7 +62,7 @@ public readonly partial struct RgbColor
     /// Constructs an RGB color from the specified string.
     /// </summary>
     /// <param name="hexCode">A string in the format <c>#XXXXXX</c>, where each X is a valid hexadecimal digit, and the # symbol is optional.</param>
-    /// <remarks>Throws an exception if the string is not in the correct format.</remarks>
+    /// <remarks><b>Throws</b> an <see cref="Exception"/> if the string is not in the correct format.</remarks>
     public RgbColor(string hexCode)
         : this(_fromHexString(hexCode) ?? throw _invalidFormatException(hexCode)) { }
     /// <summary>
@@ -71,7 +71,7 @@ public readonly partial struct RgbColor
     /// <param name="hexCode"><inheritdoc cref="RgbColor(string)" path="/param[@name='hexCode']"/></param>
     /// <param name="_">Unused.</param>
     /// <returns>An RgbColor corresponding to the string specified.</returns>
-    /// <remarks>Throws an exception if the string is not in the correct format.</remarks>
+    /// <remarks><inheritdoc cref="RgbColor(string)" path="/remarks"/></remarks>
     public static RgbColor Parse(string hexCode, IFormatProvider? _)
     {
         if (TryParse(hexCode, _, out RgbColor result))
@@ -127,10 +127,19 @@ public readonly partial struct RgbColor
     /// <param name="tuple">The tuple to convert.</param>
     public static implicit operator RgbColor((byte r, byte g, byte b) tuple)
         => new(tuple.r, tuple.g, tuple.b);
+    /// <summary>
+    /// Implicitly converts the specified <paramref name="hex"/> integer into an RgbColor.
+    /// </summary>
+    /// <param name="hex"><inheritdoc cref="RgbColor(int)" path="/param[@name='hex']"/></param>
     public static implicit operator RgbColor(int hex)
         => new(hex);
-    public static implicit operator RgbColor(string s)
-        => new(s);
+    /// <summary>
+    /// Implicitly converts the specified <paramref name="hexCode"/> string into an RgbColor.
+    /// </summary>
+    /// <param name="hexCode"><inheritdoc cref="RgbColor(string)" path="/param[@name='s']"/></param>
+    /// <remarks><inheritdoc cref="RgbColor(string)" path="/remarks"/></remarks>
+    public static implicit operator RgbColor(string hexCode)
+        => new(hexCode);
     [GeneratedRegex(@"#?[\da-fA-F]{6}")]
     private static partial Regex GenerateHexRegex();
 }
