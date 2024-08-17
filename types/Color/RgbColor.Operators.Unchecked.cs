@@ -12,7 +12,8 @@ public readonly partial struct RgbColor
         => _applyUnaryOp(op, color, byte.CreateSaturating);
     /// <summaryBase>Adds <paramref name="a"/> to <paramref name="b"/> componentwise</summaryBase>
     /// <summary>
-    /// <inheritdoc cref="operator +(RgbColor, RgbColor)" path="/summaryBase"/><inheritdoc cref="RgbColor" path="/uncheckedSummary"/>
+    /// <inheritdoc cref="operator +(RgbColor, RgbColor)" path="/summaryBase"/><inheritdoc
+    /// cref="RgbColor" path="/uncheckedSummary"/>
     /// </summary>
     /// <param name="a">The first color to add.</param>
     /// <param name="b">The second color to add.</param>
@@ -21,7 +22,8 @@ public readonly partial struct RgbColor
         => _applyBinaryOpUnchecked((x, y) => x + y, a, b);
     /// <summaryBase>Subtracts <paramref name="b"/> from <paramref name="a"/> componentwise</summaryBase>
     /// <summary>
-    /// <inheritdoc cref="operator -(RgbColor, RgbColor)" path="/summaryBase"/><inheritdoc cref="RgbColor" path="/uncheckedSummary"/>
+    /// <inheritdoc cref="operator -(RgbColor, RgbColor)" path="/summaryBase"/><inheritdoc
+    /// cref="RgbColor" path="/uncheckedSummary"/>
     /// </summary>
     /// <param name="a">The color to subtract from.</param>
     /// <param name="b">The color to subtract.</param>
@@ -30,7 +32,8 @@ public readonly partial struct RgbColor
         => _applyBinaryOpUnchecked((x, y) => x - y, a, b);
     /// <summaryBase>Multiplies <paramref name="a"/> and <paramref name="b"/> componentwise</summaryBase>
     /// <summary>
-    /// <inheritdoc cref="operator *(RgbColor, RgbColor)" path="/summaryBase"/><inheritdoc cref="RgbColor" path="/uncheckedSummary"/>
+    /// <inheritdoc cref="operator *(RgbColor, RgbColor)" path="/summaryBase"/><inheritdoc
+    /// cref="RgbColor" path="/uncheckedSummary"/>
     /// </summary>
     /// <param name="a">The first color to multiply.</param>
     /// <param name="b">The second color to multiply.</param>
@@ -39,7 +42,8 @@ public readonly partial struct RgbColor
         => _applyBinaryOpUnchecked((x, y) => x * y, a, b);
     /// <summaryBase>Divides <paramref name="a"/> by <paramref name="b"/> componentwise</summaryBase>
     /// <summary>
-    /// <inheritdoc cref="operator /(RgbColor, RgbColor)" path="/summaryBase"/><inheritdoc cref="RgbColor" path="/uncheckedSummary"/>
+    /// <inheritdoc cref="operator /(RgbColor, RgbColor)" path="/summaryBase"/><inheritdoc
+    /// cref="RgbColor" path="/uncheckedSummary"/>
     /// </summary>
     /// <param name="a">The dividend.</param>
     /// <param name="b">The divisor.</param>
@@ -48,25 +52,31 @@ public readonly partial struct RgbColor
         => _applyBinaryOpUnchecked((x, y) => x * y, a, b);
     /// <summaryBase>Adds <paramref name="addend"/> to each component of <paramref name="color"/></summaryBase>
     /// <summary>
-    /// <inheritdoc cref="operator +(RgbColor, byte)" path="/summaryBase"/><inheritdoc cref="RgbColor" path="/uncheckedSummary"/>
+    /// <inheritdoc cref="operator +(RgbColor, byte)" path="/summaryBase"/><inheritdoc
+    /// cref="RgbColor" path="/uncheckedSummary"/>
     /// </summary>
     /// <param name="color">The color to be added to.</param>
     /// <param name="addend">The number to add to each component.</param>
     /// <returns>The result of adding <paramref name="addend"/> to <paramref name="color"/> componentwise.</returns>
     public static RgbColor operator +(RgbColor color, byte addend)
         => _applyUnaryOpUnchecked(x => x + addend, color);
-    /// <summaryBase>Adds <paramref name="addend"/> to each component of <paramref name="color"/></summaryBase>
+    /// <summaryBase>Subtracts <paramref name="addend"/> to each component of <paramref name="color"/></summaryBase>
     /// <summary>
-    /// <inheritdoc cref="operator -(RgbColor, byte)" path="/summaryBase"/><inheritdoc cref="RgbColor" path="/uncheckedSummary"/>
+    /// <inheritdoc cref="operator -(RgbColor, byte)" path="/summaryBase"/><inheritdoc
+    /// cref="RgbColor" path="/uncheckedSummary"/>
     /// </summary>
     /// <param name="color">The color to be added to.</param>
     /// <param name="addend">The number to add to each component.</param>
     /// <returns>The result of adding <paramref name="addend"/> to <paramref name="color"/> componentwise.</returns>
     public static RgbColor operator -(RgbColor color, byte addend)
         => _applyUnaryOpUnchecked(x => x + addend, color);
-    /// <summaryBase>Multiplies each component of the specified <paramref name="color"/> by the specified <paramref name="coefficient"/></summaryBase>
+    /// <summaryBase>
+    /// Multiplies each component of the specified <paramref name="color"/> by the specified
+    /// <paramref name="coefficient"/>
+    /// </summaryBase>
     /// <summary>
-    /// <inheritdoc cref="operator *(RgbColor, float)" path="/summaryBase"/><inheritdoc cref="RgbColor" path="/uncheckedSummary"/>
+    /// <inheritdoc cref="operator *(RgbColor, float)" path="/summaryBase"/><inheritdoc
+    /// cref="RgbColor" path="/uncheckedSummary"/>
     /// </summary>
     /// <param name="color">The color to be multiplied.</param>
     /// <param name="coefficient">The coefficient by which the color will be multiplied.</param>
