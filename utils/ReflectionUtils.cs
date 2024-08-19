@@ -50,7 +50,19 @@ public static class ReflectionUtils
     /// <returns>An <see cref="IEnumerable{T}">IEnumerable</see>&lt;<see cref="Type"/>&gt; where every element <c>t</c> is present if and only if
     /// <c>selector(t)</c> returns <see langword="true"/>.</returns>
     public static IEnumerable<Type> AllLoadedTypes(this AppDomain domain)
-        => domain.GetAssemblies().SelectMany(x => x.GetTypes());
+    //    => domain.GetAssemblies().SelectMany(x => x.GetTypes());
+    {
+        List<Type> result = [];
+        foreach(Assembly assembly in domain.GetAssemblies())
+        {
+            try
+            {
+                foreach (Type type in assembly.GetTypes())
+                    result.Add(type);
+            } catch {}
+        }
+        return result;
+    }
     /// <summary>
     /// Selects the types in loaded assemblies which have the specified attribute.
     /// </summary>
