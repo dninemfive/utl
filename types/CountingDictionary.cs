@@ -16,13 +16,20 @@ public class CountingDictionary<K, V> : IEnumerable<KeyValuePair<K, V>>, IDictio
     /// <summary>
     /// Initializes an empty counting dictionary.
     /// </summary>
-    public CountingDictionary()
-    { }
+    public CountingDictionary() { }
+    /// <summary>
+    /// Initializes a counting dictionary by counting the specified <paramref name="items"/>.
+    /// </summary>
+    /// <param name="items">The initial items to count.</param>
+    public CountingDictionary(IEnumerable<K> items) : this()
+    {
+        Add(items);
+    }
     /// <summary>
     /// Initializes a counting dictionary with the specified keys and counts.
     /// </summary>
     /// <param name="dict">The dictionary with which to initialize the counting dictionary.</param>
-    public CountingDictionary(Dictionary<K, V> dict)
+    public CountingDictionary(Dictionary<K, V> dict) : this()
     {
         _dict = dict;
     }
@@ -83,6 +90,15 @@ public class CountingDictionary<K, V> : IEnumerable<KeyValuePair<K, V>>, IDictio
     /// <param name="value"></param>
     public void Add(K key, V? value = default)
         => _dict.Add(key, value ?? V.One);
+    /// <summary>
+    /// Adds many items at once to the count.
+    /// </summary>
+    /// <param name="keys">The items to count.</param>
+    public void Add(IEnumerable<K> keys)
+    {
+        foreach (K k in keys)
+            Add(k);
+    }
     /// <summary>
     /// Whether this dictionary contains the specified <paramref name="key"/>.
     /// </summary>
