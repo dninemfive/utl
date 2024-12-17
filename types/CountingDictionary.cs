@@ -65,7 +65,11 @@ public class CountingDictionary<K, V> : IEnumerable<KeyValuePair<K, V>>, IDictio
     /// The number of times that <paramref name="key"/> has been <see
     /// cref="Increment(K)">counted</see> by the dictionary.
     /// </returns>
-    public V this[K key] { get => _dict.TryGetValue(key, out V? value) ? value : V.Zero; set => _dict[key] = value; }
+    public V this[K key]
+    { 
+        get => _dict.TryGetValue(key, out V? value) ? value : V.Zero;
+        set => _dict[key] = value;
+    }
     IEnumerator<KeyValuePair<K, V>> IEnumerable<KeyValuePair<K, V>>.GetEnumerator() => _dict.GetEnumerator();
     /// <summary>
     /// Implements <see cref="IEnumerator"/><c>.GetEnumerator()</c> for the dictionary's key-value pairs.
@@ -88,8 +92,8 @@ public class CountingDictionary<K, V> : IEnumerable<KeyValuePair<K, V>>, IDictio
     /// </summary>
     /// <param name="key">The key whose value to set.</param>
     /// <param name="value"></param>
-    public void Add(K key, V? value = default)
-        => _dict.Add(key, value ?? V.One);
+    public void Add(K key, V value)
+        => _dict.Add(key, value);
     /// <summary>
     /// Adds many items at once to the count.
     /// </summary>
@@ -97,7 +101,7 @@ public class CountingDictionary<K, V> : IEnumerable<KeyValuePair<K, V>>, IDictio
     public void Add(IEnumerable<K> keys)
     {
         foreach (K k in keys)
-            Add(k);
+            Add(k, V.One);
     }
     /// <summary>
     /// Whether this dictionary contains the specified <paramref name="key"/>.
