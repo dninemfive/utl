@@ -178,25 +178,4 @@ public static class Linq2
     /// <returns>An enumerable of <paramref name="count"/><paramref name="item"/>s.</returns>
     public static IEnumerable<T> Repeat<T>(this T item, int count)
         => Enumerable.Repeat(item, count);
-    /// <summary>
-    /// Just a wrapper for Linq's <see
-    /// cref="Enumerable.FirstOrDefault{TSource}(IEnumerable{TSource}, Func{TSource,
-    /// bool}, TSource)"/> which takes a <see langword="params"/> argument, making it more readable
-    /// in certain circumstances.
-    /// </summary>
-    /// <typeparam name="T">The type of the objects to sieve.</typeparam>
-    /// <param name="lambda">
-    /// The function which will sieve the objects. If it returns <see langword="true"/> for an
-    /// object, the object is <see langword="return"/> ed and enumeration stops.
-    /// </param>
-    /// <param name="default">
-    /// The default value if no object causes the <c><paramref name="lambda"/></c> to return true.
-    /// </param>
-    /// <param name="items">The items to sieve.</param>
-    /// <returns>
-    /// The first object satisfying <c><paramref name="lambda"/></c>, if any, or <c><paramref
-    /// name="default"/></c> if none do.
-    /// </returns>
-    public static T Sieve<T>(Func<T, bool> lambda, T @default, params T[] items)
-        => items.FirstOrDefault(lambda, @default);
 }
