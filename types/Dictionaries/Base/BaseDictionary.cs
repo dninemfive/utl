@@ -10,4 +10,6 @@ public abstract partial class BaseDictionary<K, V>()
     public BaseDictionary(IEnumerable<(K key, V value)> initial)
         : this()
         => _dictionary = initial.ToDictionary();
+    public override string ToString()
+        => _dictionary.ListNotation(brackets: ("{", "}"));
 }
