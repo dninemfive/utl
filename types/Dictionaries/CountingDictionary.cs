@@ -1,4 +1,5 @@
 ﻿using d9.utl.types;
+using d9.utl.types.Dictionaries;
 using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
@@ -9,9 +10,9 @@ namespace d9.utl;
 /// </summary>
 /// <typeparam name="K">The object to count.</typeparam>
 /// <typeparam name="V">A <see href="">number</see> type to use to count.</typeparam>
-public class CountingDictionary<K, V> : BaseDictionary<K, V>
+public class CountingDictionary<K, V> : BaseDictionary<K, V>, IDictionaryMathOperators<K, V>
     where K : notnull
-    where V : INumberBase<V>
+    where V : INumber<V>
 {
     public CountingDictionary() : base() { }
     public CountingDictionary(IEnumerable<KeyValuePair<K, V>> initial) : base(initial) { }
@@ -83,69 +84,4 @@ public class CountingDictionary<K, V> : BaseDictionary<K, V>
     /// <returns>The sum of the values which match the specified <paramref name="predicate"/>.</returns>
     public V CountWhere(Func<V, bool> predicate)
         => SumItems(this.Where(x => predicate(x.Value)));
-    /// <summary>
-    /// Multiplies all items in the specified dictionary by a constant <paramref name="factor"/>.
-    /// </summary>
-    /// <param name="dict">The dictionary to multiply.</param>
-    /// <param name="factor">The factor by which to multiply each key.</param>
-    /// <returns>
-    /// A new <see cref="CountingDictionary{K, V}"/> where each value has been multiplied by a
-    /// constant <paramref name="factor"/>.
-    /// </returns>
-    /// <remarks>Does <b>NOT</b> modify the original dictionary.</remarks>
-    public static CountingDictionary<K, V> operator *(CountingDictionary<K, V> dict, V factor)
-        => [..dict.Select(x => new KeyValuePair<K, V>(x.Key, x.Value * factor))];
-    /// <summary>
-    /// Multiplies all items in the specified dictionary by a constant <paramref name="factor"/>.
-    /// </summary>
-    /// <param name="dict">The dictionary to multiply.</param>
-    /// <param name="factor">The factor by which to multiply each key.</param>
-    /// <returns>
-    /// A new <see cref="CountingDictionary{K, V}"/> where each value has been multiplied by a
-    /// constant <paramref name="factor"/>.
-    /// </returns>
-    /// <remarks>Does <b>NOT</b> modify the original dictionary.</remarks>
-    public static CountingDictionary<K, V> operator *(V factor, CountingDictionary<K, V> dict)
-        => dict * factor;
-    public static CountingDictionary<K, V> operator /(CountingDictionary<K, V> dict, V factor)
-        => dict * (V.One / factor);
-    public static CountingDictionary<K, V> operator -(CountingDictionary<K, V> dict)
-        => dict * (V.Zero - V.One);
-    /// <summary>
-    /// Adds the corresponding items from two dictionaries together.
-    /// </summary>
-    /// <param name="a">The first CountingDictionary to add.</param>
-    /// <param name="b">The second dictionary to add.</param>
-    /// <returns>
-    /// A new <see cref="CountingDictionary{K, V}"/> whose keys are the union of the keys in both
-    /// dictionaries, and whose values are as follows: <br/>- If the key was <b>only</b> in either
-    /// dictionary <paramref name="a"/> or <paramref name="b"/>, the value in that dictionary;
-    /// <br/>- If the key was in both dictionaries, the sum of its corresponding value in each.
-    /// </returns>
-    /// <remarks>Does <b>NOT</b> modify the original dictionary.</remarks>
-    public static CountingDictionary<K, V> operator +(CountingDictionary<K, V> a, IReadOnlyDictionary<K, V> b)
-    {
-        Dictionary<K, V> result = new();
-        foreach (K key in a.Keys.Union(b.Keys))
-        {
-            a.TryGetValue(key, out V? aValue);
-            b.TryGetValue(key, out V? bValue);
-            result[key] = (aValue ?? V.Zero) + (bValue ?? V.Zero);
-        }
-        return new(result);
-    }
-    public static CountingDictionary<K, V> operator +(IReadOnlyDictionary<K, V> a, CountingDictionary<K, V> b)
-    {
-        Dictionary<K, V> result = new();
-        foreach (K key in a.Keys.Union(b.Keys))
-        {
-            a.TryGetValue(key, out V? aValue);
-            b.TryGetValue(key, out V? bValue);
-            result[key] = (aValue ?? V.Zero) + (bValue ?? V.Zero);
-        }
-        return new(result);
-    }
-    // todo: implement all of these as extensions IReadOnlyDictionary, IReadOnlyDictionary => IReadOnlyDictionary
-    public static CountingDictionary<K, V> operator -(IReadOnlyDictionary<K, V> a, CountingDictionary<K, V> b)
-        => a + -b;
 }
