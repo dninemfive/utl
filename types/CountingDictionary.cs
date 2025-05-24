@@ -42,28 +42,10 @@ public class CountingDictionary<K, V> : IEnumerable<KeyValuePair<K, V>>, IDictio
     public CountingDictionary(IEnumerable<KeyValuePair<K, V>> data) : this(new Dictionary<K, V>(data)) { }
     /// <inheritdoc cref="CountingDictionary{K, V}.CountingDictionary(IEnumerable{KeyValuePair{K, V}})"/>
     public CountingDictionary(IEnumerable<(K key, V value)> data) : this(data.ToDictionary()) { }
-    /// <summary>
-    /// Adds to a specific key.
-    /// </summary>
-    /// <param name="key">The object instance to count.</param>
-    public void Increment(K key)
-    {
-#pragma warning disable CA1854
-        // double lookup is unavoidable because i need ref access to the variable
-        if (_dict.ContainsKey(key))
-#pragma warning restore CA1854
-        {
-            _dict[key]++;
-        }
-        else
-        {
-            _dict[key] = V.One;
-        }
-    }
     /// <param name="key">The key whose count to retrieve.</param>
     /// <returns>
     /// The number of times that <paramref name="key"/> has been <see
-    /// cref="Increment(K)">counted</see> by the dictionary.
+    /// cref="Add(K)">added</see> to the dictionary.
     /// </returns>
     public V this[K key]
     { 
@@ -94,6 +76,8 @@ public class CountingDictionary<K, V> : IEnumerable<KeyValuePair<K, V>>, IDictio
     /// <param name="value"></param>
     public void Add(K key, V value)
         => _dict.Add(key, value);
+    public void Add(K key)
+        => this[key] += V.One;
     /// <summary>
     /// Adds many items at once to the count.
     /// </summary>
@@ -101,7 +85,7 @@ public class CountingDictionary<K, V> : IEnumerable<KeyValuePair<K, V>>, IDictio
     public void Add(IEnumerable<K> keys)
     {
         foreach (K k in keys)
-            Add(k, V.One);
+            Add(k);
     }
     /// <summary>
     /// Whether this dictionary contains the specified <paramref name="key"/>.
