@@ -10,19 +10,4 @@
     <Title></Title>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Compile Remove="test\**" />
-    <Compile Remove="utl-maui\**" />
-    <EmbeddedResource Remove="test\**" />
-    <EmbeddedResource Remove="utl-maui\**" />
-    <None Remove="test\**" />
-    <None Remove="utl-maui\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Google.Apis" Version="1.60.0" />
-    <PackageReference Include="Google.Apis.Calendar.v3" Version="1.60.0.3017" />
-    <PackageReference Include="Google.Apis.Drive.v3" Version="1.60.0.3034" />
-  </ItemGroup>
-
 </Project>
