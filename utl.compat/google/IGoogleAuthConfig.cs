@@ -1,10 +1,4 @@
-﻿using Config.Net;
-using d9.utl.utils;
-using System.Diagnostics.CodeAnalysis;
-using System.Reflection;
-using System.Text.Json.Serialization;
-
-namespace d9.utl.compat.google;
+﻿namespace d9.utl.compat.google;
 /// <summary>
 /// Configuration class which loads the necessary variables for Google authentication.
 /// </summary>
@@ -14,7 +8,7 @@ public interface IGoogleAuthConfig
     /// <summary>
     /// The path to a <see href="https://en.wikipedia.org/wiki/PKCS_12">p12</see> file containing the key for the desired Google service.
     /// </summary>
-    [InvalidIfNotFilePath]
+    [InvalidIfNotFile]
     public string KeyPath { get; }
     /// <summary>
     /// The email associated with the service in OAuth. This is not the email for the account which created the service, but rather the
