@@ -2,29 +2,6 @@
 using System.Reflection;
 
 namespace d9.utl;
-public interface IValidityAttribute
-{
-    public string? InvalidReason(object? value);
-}
-[AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
-public class InvalidIfNullAttribute() : Attribute, IValidityAttribute
-{
-    public string? InvalidReason(object? value)
-        => value is null ? "is null" : null;
-}
-[AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
-public class InvalidIfNotFilePath() : Attribute, IValidityAttribute
-{
-    public string? InvalidReason(object? value)
-    {
-        string? path = value as string;
-        if(!File.Exists(path))
-        {
-            return $"`{path.PrintNull()}` is not a valid file";
-        }
-        return null;
-    }
-}
 public static class ValidityCheckUtils
 {
     private static bool IsPropertyOrField(this MemberInfo mi, object owner, out object? value)
@@ -46,9 +23,9 @@ public static class ValidityCheckUtils
     {
         if(mi.IsPropertyOrField(owner, out object? value))
         {
-            foreach (IValidityAttribute check in mi.GetCustomAttributes()
-                                                   .Where(x => x is IValidityAttribute)
-                                                   .Select(x => (IValidityAttribute)x))
+            foreach (IValidityCheck check in mi.GetCustomAttributes()
+                                               .Where(x => x is IValidityCheck)
+                                               .Select(x => (IValidityCheck)x))
                 if (check.InvalidReason(value) is string s)
                     yield return s;
         }
