@@ -5,6 +5,15 @@ namespace d9.utl.types;
 public abstract partial class BaseDictionary<K, V>
     : IDictionary<K, V>, IEnumerable<KeyValuePair<K, V>>
 {
+    /// <summary>
+    /// Gets the value corresponding to the specified key. If not present, it is initialized to the
+    /// <see cref="GetDefaultValue(K)">default value</see> for the specified key.
+    /// </summary>
+    /// <param name="key">The key whose value to get.</param>
+    /// <returns>
+    /// The value corresponding to the key, which will the default if the key was not originally
+    /// present.
+    /// </returns>
     public V this[K key] 
     {
         get

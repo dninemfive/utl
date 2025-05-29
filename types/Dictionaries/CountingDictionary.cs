@@ -1,7 +1,4 @@
 ﻿using d9.utl.types;
-using d9.utl.types.Dictionaries;
-using System.Collections;
-using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 
 namespace d9.utl;
@@ -14,18 +11,33 @@ public class CountingDictionary<K, V> : BaseDictionary<K, V>, IDictionaryMathOpe
     where K : notnull
     where V : INumber<V>
 {
+    /// <summary>
+    /// Initializes an empty <c>CountingDictionary.</c>
+    /// </summary>
     public CountingDictionary() : base() { }
+    /// <summary>
+    /// Initializes a <c>CountingDictionary</c> where each key has its corresponding value.
+    /// </summary>
+    /// <param name="initial">The data with whihc to initialize the dictionary.</param>
     public CountingDictionary(IEnumerable<KeyValuePair<K, V>> initial) : base(initial) { }
+    /// <inheritdoc cref="CountingDictionary{K, V}(IEnumerable{KeyValuePair{K,V}})"/>
     public CountingDictionary(IEnumerable<(K key, V value)> initial) : base(initial) { }
     /// <summary>
-    /// Initializes a counting dictionary by counting the specified <paramref name="items"/>.
+    /// Initializes a <c>CountingDictionary</c> by counting the specified <paramref name="items"/>.
     /// </summary>
     /// <param name="items">The initial items to count.</param>
     public CountingDictionary(IEnumerable<K> items) : base()
     {
         Add(items);
     }
-    protected override V GetDefaultValue(K key)
+    /// <summary>
+    /// Returns the default value if the specified key is not found in the dictionary.
+    /// 
+    /// For counting dictionaries, this is always zero.
+    /// </summary>
+    /// <param name="_">Ignored.</param>
+    /// <returns><typeparamref name="V"/>.Zero.</returns>
+    protected override V GetDefaultValue(K _)
         => V.Zero;
     /// <summary>
     /// Increments the count of the specified <paramref name="key"/> by one. If the value of the
@@ -51,16 +63,20 @@ public class CountingDictionary<K, V> : BaseDictionary<K, V>, IDictionaryMathOpe
                     : V.Zero;
     /// <param name="keys">The keys whose values to sum.</param>
     /// <returns>The sum of the counts of the specified <paramref name="keys"/>.</returns>
-    public V CountMany(IEnumerable<K> keys)
+    public V TotalForKeys(IEnumerable<K> keys)
     {
         V result = V.Zero;
         foreach (K key in keys)
             result += this[key];
         return result;
     }
-    /// <inheritdoc cref="CountMany(IEnumerable{K})"/>
-    public V CountMany(params K[] keys)
-        => CountMany(keys.AsEnumerable());
+    /// <inheritdoc cref="TotalForKeys(IEnumerable{K})"/>
+    public V TotalForKeys(params K[] keys)
+        => TotalForKeys(keys.AsEnumerable());
+    /// <summary>
+    /// Sums the specified items.
+    /// </summary>
+    /// <remarks>Just a helper method used for the various <c>CountWhere</c> overloads.</remarks>
     private static V SumItems(IEnumerable<KeyValuePair<K, V>> items)
     {
         V result = V.Zero;
