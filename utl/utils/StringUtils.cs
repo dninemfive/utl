@@ -253,17 +253,11 @@ public static partial class StringUtils
     /// <returns>
     /// The elements of the specified <c><paramref name="enumerable"/></c>, with their respective indices.
     /// </returns>
-    public static IEnumerable<(T element, int index)> WithIndices<T>(this IEnumerable<T> enumerable, Action<string>? log = null, int numberOfPrints = 10)
+    public static IEnumerable<(T element, int index)> WithIndices<T>(this IEnumerable<T> enumerable)
     {
-        int total = enumerable.Count(), ct = 0, interval = total / numberOfPrints;
+        int ct = 0;
         foreach (T t in enumerable)
         {
-            if (ct % interval == 0)
-            {
-                string msg = $"{ct,8}/{total,-8} ({ct / (float)total:P0})";
-                if (log is not null)
-                    log(msg);
-            }
             yield return (t, ct);
             ct++;
         }
