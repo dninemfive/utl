@@ -1,8 +1,8 @@
-﻿using Google.Apis.Auth.OAuth2;
+﻿using Config.Net;
+using Google.Apis.Auth.OAuth2;
 using Google.Apis.Services;
-using System.Security.Cryptography.X509Certificates;
-using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Logging;
+using System.Security.Cryptography.X509Certificates;
 
 namespace d9.utl.compat.google;
 
@@ -34,12 +34,22 @@ public partial class GoogleServiceContext
     /// </summary>
     /// <param name="configPath">The path from which the <see cref="Config"/> will be loaded.</param>
     /// <param name="log"><inheritdoc cref="Log" path="/summary"/></param>
-    public GoogleServiceContext(string configPath, ILogger? log = null) : this(utl.Config.Load<GoogleAuthConfig>(configPath), log) { }
+    internal GoogleServiceContext(string configPath, ILogger? log = null) 
+        : this(new ConfigurationBuilder<GoogleAuthConfig>().UseJsonFile(configPath).Build(), log) { }
+    /// <summary>
+    /// Tries to load a config at the specified path, catching and optionally logging any thrown errors.
+    /// </summary>
+    /// <param name="configPath">The path to the config to load.</param>
+    /// <param name="log">A log which will print any errors and be passed to the new object.</param>
+    /// <returns>
+    /// A new <see cref="GoogleServiceContext"/> if a valid config was successfully loaded, or 
+    /// <see langword="null"/> otherwise.
+    /// </returns>
     public static GoogleServiceContext? TryLoad(string configPath, ILogger? log = null)
     {
-        GoogleAuthConfig? file = utl.Config.TryLoad<GoogleAuthConfig>(configPath, out string? errorMessage);
-        if(file is GoogleAuthConfig config)
+        try
         {
+            GoogleAuthConfig config = new ConfigurationBuilder<GoogleAuthConfig>().UseJsonFile(configPath).Build();
             if(!config.IsValid(out string? reason))
             {
                 log?.LogError("A GoogleAuthConfig was found at `{path}`, but it was invalid: `{reason}`", configPath, reason);
@@ -49,9 +59,9 @@ public partial class GoogleServiceContext
                 return new(config, log);
             }
         }
-        else
+        catch(Exception e)
         {
-            log?.LogError("{errorMessage}", errorMessage);
+            log?.LogError("{errorMessage}", e.Summary());
         }
         return null;
     }

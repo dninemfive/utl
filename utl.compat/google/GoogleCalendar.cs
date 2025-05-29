@@ -1,5 +1,6 @@
 ﻿using Google.Apis.Calendar.v3;
 using Google.Apis.Calendar.v3.Data;
+using Microsoft.Extensions.Logging;
 
 namespace d9.utl.compat.google;
 /// <summary>
@@ -62,7 +63,7 @@ public partial class GoogleCalendar
     {
         EventsResource.InsertRequest request = new(Service, newEvent, Id);
         Event result = request.Execute();
-        //Log?.DebugLog($"Event {result.Id} \"{result.Summary}\" created.");
+        Log?.LogDebug("Event {id} \"{summary}\" created.", result.Id, result.Summary);
         return result;
     }
     /// <summary>
@@ -75,7 +76,7 @@ public partial class GoogleCalendar
     {
         EventsResource.UpdateRequest request = new(Service, newEvent, Id, eventId);
         Event result = request.Execute();
-        //Log?.DebugLog($"Event {result.Id} \"{result.Summary}\" updated.");
+        Log?.LogDebug("Event {id} \"{summary}\" updated.", result.Id, result.Summary);
         return result;
     }
 }
