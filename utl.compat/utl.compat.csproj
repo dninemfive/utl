@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>d9.$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Config.Net" Version="5.2.1" />
+    <PackageReference Include="Google.Apis" Version="1.69.0" />
+    <PackageReference Include="Google.Apis.Calendar.v3" Version="1.69.0.3746" />
+    <PackageReference Include="Google.Apis.Drive.v3" Version="1.69.0.3783" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.5" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\utl\utl.csproj" />
+  </ItemGroup>
+
+</Project>
