@@ -178,4 +178,12 @@ public static class Linq2
     /// <returns>An enumerable of <paramref name="count"/><paramref name="item"/>s.</returns>
     public static IEnumerable<T> Repeat<T>(this T item, int count)
         => Enumerable.Repeat(item, count);
+    /// <summary>
+    /// Gets the second item in a collection, as a parallel to Linq's `.First()`.
+    /// </summary>
+    /// <typeparam name="T">The type of elements in the collection.</typeparam>
+    /// <param name="enumerable">The collection itself.</param>
+    /// <returns>The second item in the collection.</returns>
+    public static T Second<T>(this IEnumerable<T> enumerable)
+        => enumerable.ElementAt(1);
 }

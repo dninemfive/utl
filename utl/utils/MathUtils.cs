@@ -19,8 +19,11 @@ public static class MathUtils
     /// </returns>
     public static T Clamp<T>(this T t, T min, T max) where T : IComparable
     {
-        IEnumerable<T> sorted = new[] { t, min, max }.OrderBy(x => x);
-        return sorted.ElementAt(1);
+        if (t.CompareTo(min) < 0)
+            return min;
+        else if (t.CompareTo(max) > 0)
+            return max;
+        return t;
     }
     /// <summary>
     /// Gets the mean of an arbitrary set of numbers.
@@ -37,8 +40,8 @@ public static class MathUtils
     /// The <see href="https://en.wikipedia.org/wiki/Arithmetic_mean">arithmetic mean</see> of the
     /// given numbers.
     /// </returns>
-    public static T Mean<T>(params T[] numbers) where T : IAdditionOperators<T, T, T>, IDivisionOperators<T, int, T>
-        => numbers.Aggregate((x, y) => x + y) / numbers.Length;
+    public static T Mean<T>(params T[] numbers) where T : INumber<T>
+        => numbers.Aggregate((x, y) => x + y) / T.CreateChecked(numbers.Length);
     /// <summary>
     /// Gets the mean of an arbitrary set of numbers.
     /// </summary>
@@ -54,8 +57,8 @@ public static class MathUtils
     /// The <see href="https://en.wikipedia.org/wiki/Arithmetic_mean">arithmetic mean</see> of the
     /// given numbers.
     /// </returns>
-    public static T Mean<T>(this IEnumerable<T> numbers) where T : IAdditionOperators<T, T, T>, IDivisionOperators<T, int, T>
-        => numbers.Aggregate((x, y) => x + y) / numbers.Count();
+    public static T Mean<T>(this IEnumerable<T> numbers) where T : INumber<T>
+        => numbers.Aggregate((x, y) => x + y) / T.CreateChecked(numbers.Count());
     /// <summary>
     /// Gets the median, i.e. middle value when ordered, of an arbitrary set of orderable objects.
     /// </summary>
@@ -90,23 +93,23 @@ public static class MathUtils
     /// has an odd number of elements, or the average of the two middle numbers if it has an even
     /// number of elements.
     /// </returns>
-    public static T Median<T>(params T[] numbers) where T : IComparable, IAdditionOperators<T, T, T>, IDivisionOperators<T, int, T>
+    public static T Median<T>(params T[] numbers) where T : IComparable, INumber<T>
         => numbers.Median();
     /// <inheritdoc cref="Median{T}(T[])"/>
-    public static T Median<T>(this IEnumerable<T> numbers) where T : IComparable, IAdditionOperators<T, T, T>, IDivisionOperators<T, int, T>
+    public static T Median<T>(this IEnumerable<T> numbers) where T : IComparable, INumber<T>
         => Median(numbers, (x, y) => Mean(x, y));
     /// <typeparam name="T">
     /// A <see
-    /// href="https://learn.microsoft.com/en-us/dotnet/api/system.numerics.inumberbase-1">numeric</see> type.
+    /// href="https://learn.microsoft.com/en-us/dotnet/api/system.numerics.inumber-1">numeric</see> type.
     /// </typeparam>
     /// <param name="t">The number whose oddness to check.</param>
     /// <returns><see langword="true"/> if the number is odd, or <see langword="false"/> otherwise.</returns>
-    public static bool IsOdd<T>(this T t) where T : INumberBase<T> => T.IsOddInteger(t);
+    public static bool IsOdd<T>(this T t) where T : INumber<T> => T.IsOddInteger(t);
     /// <typeparam name="T">
     /// A <see
-    /// href="https://learn.microsoft.com/en-us/dotnet/api/system.numerics.inumberbase-1">numeric</see> type.
+    /// href="https://learn.microsoft.com/en-us/dotnet/api/system.numerics.inumber-1">numeric</see> type.
     /// </typeparam>
     /// <param name="t">The number whose evenness to check.</param>
     /// <returns><see langword="true"/> if the number is even, or <see langword="false"/> otherwise.</returns>
-    public static bool IsEven<T>(this T t) where T : INumberBase<T> => T.IsEvenInteger(t);
+    public static bool IsEven<T>(this T t) where T : INumber<T> => T.IsEvenInteger(t);
 }
