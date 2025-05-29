@@ -73,7 +73,7 @@ public static class Constants
         { "pdf",    "application/pdf" },
         { "php",    "application/x-httpd-php" },
         { "ppt",    "application/vnd.ms-powerpoint" },
-        { "pptx",     "application/vnd.openxmlformats-officedocument.presentationml.presentation" },
+        { "pptx",   "application/vnd.openxmlformats-officedocument.presentationml.presentation" },
         { "rar",    "application/vnd.rar" },
         { "rtf",    "application/rtf" },
         { "sh",     "application/x-sh" },
