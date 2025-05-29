@@ -1,5 +1,6 @@
 ﻿using Google.Apis.Download;
 using Google.Apis.Drive.v3;
+using Microsoft.Extensions.Logging;
 
 namespace d9.utl.compat.google;
 /// <summary>
@@ -59,7 +60,7 @@ public class GoogleDrive
         }
         catch (Exception e)
         {
-            Log?.WriteLine($"Error when downloading file from Drive!\n\t{e.Summary()}");
+            Log?.LogError("Error when downloading file from Drive!\n\t{summary}", e.Summary());
             return null;
         }
     }

@@ -1,6 +1,8 @@
 ﻿using Google.Apis.Auth.OAuth2;
 using Google.Apis.Services;
 using System.Security.Cryptography.X509Certificates;
+using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Logging;
 
 namespace d9.utl.compat.google;
 
@@ -16,13 +18,13 @@ public partial class GoogleServiceContext
     /// <summary>
     /// The log to which this context will write. If <see langword="null"/>, no log will be written to.
     /// </summary>
-    public Log? Log { get; private set; }
+    public ILogger? Log { get; private set; }
     /// <summary>
     /// Creates a GoogleServiceContext from the specified <paramref name="config"/> and <paramref name="log"/>.
     /// </summary>
     /// <param name="config"><inheritdoc cref="Config" path="/summary"/></param>
     /// <param name="log"><inheritdoc cref="Log" path="/summary"/></param>
-    public GoogleServiceContext(GoogleAuthConfig config, Log? log = null)
+    public GoogleServiceContext(GoogleAuthConfig config, ILogger? log = null)
     {
         Config = config;
         Log = log;
@@ -32,15 +34,15 @@ public partial class GoogleServiceContext
     /// </summary>
     /// <param name="configPath">The path from which the <see cref="Config"/> will be loaded.</param>
     /// <param name="log"><inheritdoc cref="Log" path="/summary"/></param>
-    public GoogleServiceContext(string configPath, Log? log = null) : this(utl.Config.Load<GoogleAuthConfig>(configPath), log) { }
-    public static GoogleServiceContext? TryLoad(string configPath, Log? log = null)
+    public GoogleServiceContext(string configPath, ILogger? log = null) : this(utl.Config.Load<GoogleAuthConfig>(configPath), log) { }
+    public static GoogleServiceContext? TryLoad(string configPath, ILogger? log = null)
     {
         GoogleAuthConfig? file = utl.Config.TryLoad<GoogleAuthConfig>(configPath, out string? errorMessage);
         if(file is GoogleAuthConfig config)
         {
             if(!config.IsValid(out string? reason))
             {
-                log?.WriteLine(reason);
+                log?.LogError("A GoogleAuthConfig was found at `{path}`, but it was invalid: `{reason}`", configPath, reason);
             } 
             else
             {
@@ -49,7 +51,7 @@ public partial class GoogleServiceContext
         }
         else
         {
-            log?.WriteLine($"Error when attempting to load GoogleServiceContext: {errorMessage}");
+            log?.LogError("{errorMessage}", errorMessage);
         }
         return null;
     }

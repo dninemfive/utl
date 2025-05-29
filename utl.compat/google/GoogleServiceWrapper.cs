@@ -1,4 +1,5 @@
 ﻿using Google.Apis.Services;
+using Microsoft.Extensions.Logging;
 using System.Reflection;
 
 namespace d9.utl.compat.google;
@@ -23,7 +24,7 @@ public abstract class GoogleServiceWrapper<T>
     /// <summary>
     /// A log to which to write any relevant events, in derived classes.
     /// </summary>
-    public Log? Log => Context.Log;
+    public ILogger? Log => Context.Log;
     /// <summary>
     /// Creates a wrapper for the specified <paramref name="service"/> in the specified <paramref name="context"/>.
     /// </summary>

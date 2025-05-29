@@ -7,7 +7,7 @@ namespace d9.utl.compat.google;
 /// Configuration class which loads the necessary variables for Google authentication.
 /// </summary>
 /// <remarks>For more info, see <see href="https://console.cloud.google.com/"/>.</remarks>
-public class GoogleAuthConfig : IValidityCheck
+public partial class GoogleAuthConfig : IValidityCheck
 {
     /// <summary>
     /// Whether or not the <see cref="GoogleAuthConfig"/> has been fully and correctly loaded. Implements <see cref="IValidityCheck"/>.
