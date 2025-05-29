@@ -112,4 +112,13 @@ public static class MathUtils
     /// <param name="t">The number whose evenness to check.</param>
     /// <returns><see langword="true"/> if the number is even, or <see langword="false"/> otherwise.</returns>
     public static bool IsEven<T>(this T t) where T : INumber<T> => T.IsEvenInteger(t);
+    /// <summary>
+    /// Adds the specified numbers.
+    /// </summary>
+    /// <typeparam name="T">The type of the numbers to sum.</typeparam>
+    /// <param name="numbers">The numbers to sum.</param>
+    /// <returns>All the numbers added together.</returns>
+    public static T Sum<T>(this IEnumerable<T> numbers)
+        where T : INumber<T>
+        => numbers.Aggregate((x, y) => x + y);
 }
