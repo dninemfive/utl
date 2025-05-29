@@ -1,4 +1,6 @@
-﻿using System.Security.Cryptography;
+﻿using d9.utl.types;
+using System.Reflection;
+using System.Security.Cryptography;
 
 namespace d9.utl;
 /// <summary>
@@ -10,6 +12,7 @@ namespace d9.utl;
 /// </remarks>
 public static class FileUtils
 {
+    private static DefaultDictionary<Assembly, string> _assemblyLocationCache = new(x => Path.GetDirectoryName(x.Location)!);
     /// <summary>
     /// If the specified <c><paramref name="path"/></c> is an absolute path, returns it unmodified;
     /// otherwise, creates an absolute path treating it as a subdirectory of <see cref="Config.BaseFolderPath"/>.
@@ -17,7 +20,7 @@ public static class FileUtils
     /// <param name="path">The path to make into an absolute path.</param>
     /// <returns>A <see langword="string"/> containing an absolute path, as specified above.</returns>
     public static string AbsoluteOrInBaseFolder(this string path)
-        => Path.IsPathFullyQualified(path) ? path : Path.Join(Config.BaseFolderPath, path);
+        => Path.IsPathFullyQualified(path) ? path : Path.Join(_assemblyLocationCache[Assembly.GetCallingAssembly()], path);
     /// <summary>
     /// Copies a file from <c><paramref name="oldPath"/></c> to <c><paramref name="newPath"/></c>.
     /// </summary>
