@@ -1,5 +1,5 @@
 using d9.utl;
-namespace d9.utl.unit_tests;
+namespace d9.utl.tests;
 
 [TestClass]
 public class Tests_MathUtils
