@@ -1,4 +1,5 @@
 ﻿using Config.Net;
+using d9.utl;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Services;
 using Microsoft.Extensions.Logging;
@@ -14,7 +15,7 @@ public partial class GoogleServiceContext
     /// <summary>
     /// The config which defines this context's authorization.
     /// </summary>
-    public GoogleAuthConfig Config { get; private set; }
+    public IGoogleAuthConfig Config { get; private set; }
     /// <summary>
     /// The log to which this context will write. If <see langword="null"/>, no log will be written to.
     /// </summary>
@@ -24,7 +25,7 @@ public partial class GoogleServiceContext
     /// </summary>
     /// <param name="config"><inheritdoc cref="Config" path="/summary"/></param>
     /// <param name="log"><inheritdoc cref="Log" path="/summary"/></param>
-    public GoogleServiceContext(GoogleAuthConfig config, ILogger? log = null)
+    public GoogleServiceContext(IGoogleAuthConfig config, ILogger? log = null)
     {
         Config = config;
         Log = log;
@@ -35,7 +36,7 @@ public partial class GoogleServiceContext
     /// <param name="configPath">The path from which the <see cref="Config"/> will be loaded.</param>
     /// <param name="log"><inheritdoc cref="Log" path="/summary"/></param>
     internal GoogleServiceContext(string configPath, ILogger? log = null) 
-        : this(new ConfigurationBuilder<GoogleAuthConfig>().UseJsonFile(configPath).Build(), log) { }
+        : this(new ConfigurationBuilder<IGoogleAuthConfig>().UseJsonFile(configPath).Build(), log) { }
     /// <summary>
     /// Tries to load a config at the specified path, catching and optionally logging any thrown errors.
     /// </summary>
@@ -49,10 +50,10 @@ public partial class GoogleServiceContext
     {
         try
         {
-            GoogleAuthConfig config = new ConfigurationBuilder<GoogleAuthConfig>().UseJsonFile(configPath).Build();
-            if(!config.IsValid(out string? reason))
+            IGoogleAuthConfig config = new ConfigurationBuilder<IGoogleAuthConfig>().UseJsonFile(configPath).Build();
+            if(!config.IsValid(out string reasons))
             {
-                log?.LogError("A GoogleAuthConfig was found at `{path}`, but it was invalid: `{reason}`", configPath, reason);
+                log?.LogError("A GoogleAuthConfig was found at `{path}`, but it was invalid for the following reasons:\n`{reasons}`", configPath, reasons.Indent());
             } 
             else
             {
@@ -95,7 +96,7 @@ public partial class GoogleServiceContext
         => new(new ServiceAccountCredential.Initializer(Config.Email) { Scopes = scopes }
                                            .FromCertificate(Certificate));
     /// <summary>
-    /// Constructs a <see cref="BaseClientService.Initializer"/> with the specified <paramref name="scopes"/> and using this context's <see cref="GoogleAuthConfig.AppName"/>.
+    /// Constructs a <see cref="BaseClientService.Initializer"/> with the specified <paramref name="scopes"/> and using this context's <see cref="IGoogleAuthConfig.AppName"/>.
     /// </summary>
     /// <param name="scopes">The scopes with which to create the initializer.</param>
     public BaseClientService.Initializer InitializerFor(params string[] scopes)

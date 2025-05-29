@@ -127,4 +127,8 @@ public static class Constants
     /// The default string to indicate a value was <see langword="null"/>.
     /// </summary>
     public const string NullString = "(null)";
+    /// <summary>
+    /// The default tab character used by <see cref="StringUtils.Indent(string, string, string?)"/>.
+    /// </summary>
+    public const string DefaultTab = "  ";
 }

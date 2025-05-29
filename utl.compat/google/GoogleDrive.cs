@@ -36,7 +36,7 @@ public class GoogleDrive
     /// </summary>
     /// <remarks>
     /// The file must be shared, through the Sheets UI, with the <see
-    /// cref="GoogleAuthConfig.Email">email associated with the service account</see>.
+    /// cref="IGoogleAuthConfig.Email">email associated with the service account</see>.
     /// </remarks>
     /// <param name="fileId">The Drive ID of the file to download.</param>
     /// <param name="filePath">The path to the file when downloaded.</param>

@@ -347,4 +347,23 @@ public static partial class StringUtils
                 3 => $"{number}rd",
                 _ => $"{number}th"
             };
+    /// <summary>
+    /// Indents a string with the specified <paramref name="tab"/> character.
+    /// </summary>
+    /// <param name="s">The string to indent.</param>
+    /// <param name="tab">The string to use to indent <paramref name="s"/>.</param>
+    /// <param name="count">The number of <paramref name="tab"/>s to indent with. If less than zero, defaults to 1.</param>
+    /// <param name="newline">The string which marks a new line. Defaults to the environment newline if not specified.</param>
+    /// <returns>
+    /// The string <paramref name="s"/>, but with each line (<b>including</b> the first) indented
+    /// with <paramref name="count"/> <paramref name="tab"/>s.
+    /// </returns>
+    public static string Indent(this string s, string tab = Constants.DefaultTab, int count = 1, string? newline = null)
+    {
+        if (count < 0)
+            count = 1;
+        newline ??= Environment.NewLine;
+        tab = tab.Repeated(count).Join();
+        return $"{tab}{s.Replace(newline, $"{newline}{tab}")}";
+    }
 }

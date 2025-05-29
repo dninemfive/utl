@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Config.Net" Version="5.2.1" />
     <PackageReference Include="Google.Apis" Version="1.69.0" />
     <PackageReference Include="Google.Apis.Calendar.v3" Version="1.69.0.3746" />
     <PackageReference Include="Google.Apis.Drive.v3" Version="1.69.0.3783" />
