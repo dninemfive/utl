@@ -5,12 +5,14 @@ VisualStudioVersion = 17.3.32929.385
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "utl", "utl\utl.csproj", "{2131BAE9-8AAF-42E4-BC81-BF8BC2DAEA63}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "utl-unit-tests", "utl.tests\utl-unit-tests.csproj", "{9EC12F4C-9230-4DA9-B3EE-2AB3EDC28D3B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "utl.tests", "utl.tests\utl.tests.csproj", "{9EC12F4C-9230-4DA9-B3EE-2AB3EDC28D3B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{CF31EFC8-6C34-4222-AC8F-897C3AAFABF3}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "utl.compat", "utl.compat\utl.compat.csproj", "{C873940E-A46F-4086-86A8-106DC8904E73}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -26,6 +28,10 @@ Global
 		{9EC12F4C-9230-4DA9-B3EE-2AB3EDC28D3B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9EC12F4C-9230-4DA9-B3EE-2AB3EDC28D3B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9EC12F4C-9230-4DA9-B3EE-2AB3EDC28D3B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C873940E-A46F-4086-86A8-106DC8904E73}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C873940E-A46F-4086-86A8-106DC8904E73}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C873940E-A46F-4086-86A8-106DC8904E73}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C873940E-A46F-4086-86A8-106DC8904E73}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
