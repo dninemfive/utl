@@ -68,6 +68,7 @@ public static class Linq2
         return enumerable.ElementAt(random.Next(enumerable.Count()));
     }
     private static readonly Random _cachedRandom = new();
+    private static readonly ArgumentException _noElementsException = new("WeightedRandomElement must be called with a collection containing at least one item.");
     /// <summary>
     /// Selects a random element from the specified <paramref name="enumerable"/> based on a
     /// supplied <paramref name="weight">weight function</paramref>.
@@ -90,7 +91,7 @@ public static class Linq2
                                                   Random? random = null)
     {
         if (!enumerable.Any())
-            throw new ArgumentException("WeightedRandomElement must be called with a collection containing at least one item.");
+            throw _noElementsException;
         random ??= new();
         if (targetWeight < 0)
         {
@@ -127,7 +128,9 @@ public static class Linq2
     /// </returns>
     public static K WeightedRandomElement<K>(this IReadOnlyDictionary<K, double> dict, double targetWeight = -1, Random? random = null)
         where K : notnull
-        => dict.WeightedRandomElement(x => x.Value, targetWeight, random).Key;
+        => dict.Any()
+            ? dict.WeightedRandomElement(x => x.Value, targetWeight, random).Key
+            : throw _noElementsException;
     /// <summary>
     /// Adds an arbitrary set of <paramref name="dictionaries"/> with numerical values together.
     /// </summary>
