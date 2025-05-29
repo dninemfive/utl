@@ -51,7 +51,7 @@ public partial class GoogleServiceContext
         try
         {
             IGoogleAuthConfig config = new ConfigurationBuilder<IGoogleAuthConfig>().UseJsonFile(configPath).Build();
-            if(!config.IsValid(out string reasons))
+            if(!config.IsValid(out string? reasons))
             {
                 log?.LogError("A GoogleAuthConfig was found at `{path}`, but it was invalid for the following reasons:\n`{reasons}`", configPath, reasons.Indent());
             } 
@@ -78,7 +78,7 @@ public partial class GoogleServiceContext
             string keyPath = Config.KeyPath.AbsoluteOrInBaseFolder();
             try
             {
-                return new(keyPath, "notasecret", X509KeyStorageFlags.Exportable);
+                return X509CertificateLoader.LoadPkcs12FromFile(keyPath, "notasecret", X509KeyStorageFlags.Exportable);
             } 
             catch(Exception e)
             {
