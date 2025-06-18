@@ -245,11 +245,6 @@ public static partial class StringUtils
     /// </summary>
     /// <typeparam name="T">The type of the elements to enumerate.</typeparam>
     /// <param name="enumerable">The enumerable containing the elements to enumerate.</param>
-    /// <param name="log">
-    /// A <see langword="void"/> function which takes a <see langword="string"/>, intended to allow
-    /// logging progress of this method.
-    /// </param>
-    /// <param name="numberOfPrints">The total number of lines of progress which will be printed.</param>
     /// <returns>
     /// The elements of the specified <c><paramref name="enumerable"/></c>, with their respective indices.
     /// </returns>

@@ -15,7 +15,7 @@ public static class FileUtils
     private static DefaultDictionary<Assembly, string> _assemblyLocationCache = new(x => Path.GetDirectoryName(x.Location)!);
     /// <summary>
     /// If the specified <c><paramref name="path"/></c> is an absolute path, returns it unmodified;
-    /// otherwise, creates an absolute path treating it as a subdirectory of <see cref="Config.BaseFolderPath"/>.
+    /// otherwise, creates an absolute path treating it as a subdirectory of the calling assembly's location.
     /// </summary>
     /// <param name="path">The path to make into an absolute path.</param>
     /// <returns>A <see langword="string"/> containing an absolute path, as specified above.</returns>

@@ -128,7 +128,7 @@ public static class Constants
     /// </summary>
     public const string NullString = "(null)";
     /// <summary>
-    /// The default tab character used by <see cref="StringUtils.Indent(string, string, string?)"/>.
+    /// The default tab character used by <see cref="StringUtils.Indent(string, string, int, string?)"/>.
     /// </summary>
     public const string DefaultTab = "  ";
 }
