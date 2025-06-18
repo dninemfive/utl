@@ -7,14 +7,33 @@ public static class ReflectionUtils
 {
     #region Assembly
     /// <summary>
-    /// Filters all loaded assemblies with the specified <c>selector</c>, if any.
+    /// Gets all assemblies in the specified <paramref name="domain"/> matching the specified <paramref name="predicate"/>.
     /// </summary>
-    /// <param name="selector">The function to use to filter the assemblies. If <see langword="null"/>, all loaded assemblies will be included.</param>
-    /// <returns>All loaded assemblies, if the <c>selector</c> is <see langword="null"/>, or all loaded assemblies where the <c>selector</c> returns
-    /// <see langword="true"/>, if it is not <see langword="null"/>.</returns>
-    public static IEnumerable<Assembly> AllLoadedAssemblies(Func<Assembly, bool>? selector = null)
+    /// <param name="domain">The <see cref="AppDomain"/> whose assemblies to get.</param>
+    /// <param name="predicate">
+    /// A function which determines which assemblies to return. Only assemblies for which 
+    /// <paramref name="predicate"/> is <see langword="true"/> are returned.</param>
+    /// <returns>
+    /// The assemblies in <paramref name="domain"/> matching the <paramref name="predicate"/>.
+    /// </returns>
+    public static IEnumerable<Assembly> AssembliesWhere(this AppDomain domain, Func<Assembly, bool> predicate)
     {
-        foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies()) if (selector is null || selector(assembly)) yield return assembly;
+        foreach (Assembly assembly in domain.GetAssemblies())
+            if (predicate is null || predicate(assembly))
+                yield return assembly;
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="domain"></param>
+    /// <returns></returns>
+    public static IEnumerable<(Assembly assembly, T attr)> AssembliesWithAttribute<T>(this AppDomain domain)
+        where T : Attribute
+    {
+        foreach (Assembly assembly in domain.GetAssemblies())
+            if (assembly.GetCustomAttribute<T>() is T t)
+                yield return (assembly, t);
     }
     /// <summary>
     /// Tells whether the specified assembly has the specified attribute.
